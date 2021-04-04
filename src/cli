@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SXCM_CONSOLE_VERSION=0.0.1
+SXCM_CONSOLE_VERSION=devel
 REPO_PACKAGE_DIR=docs/packages
 WORK_BRANCH=devel
 MASTER_BRANCH=master
