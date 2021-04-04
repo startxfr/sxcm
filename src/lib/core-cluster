@@ -1,0 +1,864 @@
+#!/bin/bash
+
+# Manage OKD remote cluster
+OCP_INSTALLER_BRANCH=' 4.6.13'
+OCP_INSTALLER_RELEASE=' 4.6.13'
+OCP_INSTALLER_PACKAGE="openshift-install-linux-${OCP_INSTALLER_RELEASE}.tar.gz"
+OCP_INSTALLER_URL="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OCP_INSTALLER_BRANCH}/${OCP_INSTALLER_PACKAGE}"
+OCP_INSTALLER_TMP='/tmp/ocpi'
+OCP_INSTALLER_BIN='/usr/local/bin/openshift-install'
+ORDERED_PROFILES=(pico nano micro milli centi deci default deca hecto kilo mega giga tera peta)
+
+# append key to individual cluster conf
+function appendIndividualClusterConf {
+    echo "$2=$3" >> $CONF_DIR/$CONF_DIR_CLUSTER/$1/$CONF_FILE
+    export $2=$3
+}
+
+# reload cluster conf file
+function reloadIndividualClusterConf {
+    source $CONF_DIR/$CONF_DIR_CLUSTER/$1/$CONF_FILE
+}
+
+# load active cluster conf file
+function loadActiveClusterConf {
+    reloadIndividualClusterConf `getActiveCluster`
+}
+
+# Install openshift installer in /usr/local/bin/
+function installClusterInstaller {
+    echo -e "Start openshift installer \e[32minstallation\e[0m of \e[1m$OCP_INSTALLER_RELEASE\e[0m"
+    rm -rf $OCP_INSTALLER_TMP /tmp/$OCP_INSTALLER_PACKAGE &> /dev/null
+    mkdir $OCP_INSTALLER_TMP &> /dev/null
+    cd /tmp &> /dev/null
+    echo -e "Downloading \e[1m$OCP_INSTALLER_RELEASE\e[0m openshift installer from \e[1m$OCP_INSTALLER_BRANCH\e[0m "
+    wget $OCP_INSTALLER_URL
+    echo -e "Unarchive \e[1m$OCP_INSTALLER_RELEASE\e[0m openshift installer in \e[1m$OCP_INSTALLER_TMP\e[0m"
+    mv $OCP_INSTALLER_PACKAGE $OCP_INSTALLER_TMP/ &> /dev/null
+    cd - &> /dev/null
+    cd $OCP_INSTALLER_TMP &> /dev/null
+    tar xzvf $OCP_INSTALLER_PACKAGE &> /dev/null
+    echo -e "Install binary \e[1m$OCP_INSTALLER_RELEASE\e[0m openshift installer in \e[1m$OCP_INSTALLER_BIN\e[0m"
+    sudo mv openshift-install $OCP_INSTALLER_BIN &> /dev/null
+    cd - &> /dev/null
+    echo -e "Cleanup of \e[1m$OCP_INSTALLER_RELEASE\e[0m openshift installer"
+    rm -rf $OCP_INSTALLER_TMP /tmp/$OCP_INSTALLER_PACKAGE &> /dev/null
+    OCP_INSTALLER_RELEASE=$(openshift-install version | grep openshift-install | cut -dv -f2)
+}
+
+# Install openshift installer if not present in /usr/local/bin/
+function installClusterInstallerIfNotPresent {
+    if [[ ! -x "$OCP_INSTALLER_BIN" ]]; then
+        echo -e "Start openshift installer \e[32minstallation\e[0m (no $OCP_INSTALLER_BIN)"
+        installClusterInstaller
+    else
+        OCP_INSTALLER_RELEASE=$(openshift-install version | grep openshift-install | cut -dv -f2)
+    fi
+}
+
+# get list cluster configuration
+function getClusterConfigurationList {
+    local LIST=$(ls -d $CONF_DIR/$CONF_DIR_CLUSTER/*/ 2>/dev/null)
+    local COUNT=$(echo $LIST | wc -w)
+    if [[ $COUNT -gt 0 ]]; then
+        for configuration in $LIST
+        do
+            foo=${configuration#"$CONF_DIR/$CONF_DIR_CLUSTER/"}
+            foo=${foo%"/"}
+            echo "${foo}"
+        done
+    fi
+}
+
+# get list cluster configuration
+function getClusterProfiles {
+    local LIST=$(ls $SXCM_PROFILES_PATH/install-config-*.yml)
+    local COUNT=$(echo $LIST | wc -w)
+    if [[ $COUNT -gt 0 ]]; then
+        for profile in $LIST
+        do
+            foo=${profile#"$SXCM_PROFILES_PATH/install-config-"}
+            foo=${foo%".yml"}
+            echo "${foo}"
+        done
+    fi
+}
+
+
+# read the content of the cluster description in an install-config.yaml
+function getClusterDescription {
+    local descClusterConfig=$(grep -A0 -P '^    descriptionClusterconfig:' $1 | cut -d: -f2 | sed -r 's/["]+//g')
+    local desc=$(grep -A0 -P '^    description:' $1 | cut -d: -f2 | sed -r 's/["]+//g')
+    if [[ $2 == 'desc' ]]
+    then
+        echo "$desc"
+    elif [[ $2 == 'service' ]]
+    then
+        echo "$descClusterConfig"
+    else
+        echo "$desc - $descClusterConfig"
+    fi
+}
+
+# read the content of the cluster descriptionTab in an install-config.yaml
+function getClusterDescriptionTab {
+    local descClusterConfig=$(grep -A0 -P '^    descriptionClusterconfig:' $1 | cut -d: -f2 | sed -r 's/["]+//g')
+    local desc=$(grep -A0 -P '^    descriptionTab:' $1 | cut -d: -f2 | sed -r 's/["]+//g')
+    local hcost=$(getClusterHourlyCost $1)
+    echo "$desc | $hcost | $descClusterConfig"
+}
+
+# read the content of the cluster description in an install-config.yaml
+function getClusterHourlyCost {
+    echo $(grep -A0 -P '^    hourlyCost:' $1 | cut -d: -f2 | sed -r 's/["]+//g')
+}
+
+
+# get active cluster configuration
+function getActiveCluster {
+    echo $CLUSTER_ACTIVE
+}
+
+# set active cluster configuration
+function setActiveCluster {
+    appendClusterConf CLUSTER_ACTIVE $1
+    export CLUSTER_ACTIVE=$1
+}
+
+# create cluster resources
+function updateClusterResources {
+    local CLUSTER_NAME=$1
+    echo -e "Cluster \e[1m$CLUSTER_NAME\e[0m : \e[32mUpdate\e[0m the cluster resources \e[93m(admin)\e[0m"
+    doUpsertClusterResources update $CLUSTER_NAME
+}
+
+# create cluster resources
+function createClusterResources {
+    local CLUSTER_NAME=$1
+    echo -e "Cluster \e[1m$CLUSTER_NAME\e[0m : \e[32mCreate\e[0m the cluster resources \e[93m(admin)\e[0m"
+    doUpsertClusterResources create $CLUSTER_NAME
+}
+
+# create/update cluster resources
+function doUpsertClusterResources {
+    local UPSERT=$1
+    local CLUSTER_NAME=$2
+    local CLUSTER_CONF=""
+    local clusterconfig=""
+    local currentress=""
+    local RESOURCEDIR_PATH=$BASE_DIR/_console/okd-cluster-resources
+    local CLUSTERID=local CLUSTERID=$(oc get machineset -n openshift-machine-api -o jsonpath="{.items[0].metadata.labels}" | cut -d \" -f 4)
+    if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml ]]
+    then
+        CLUSTER_CONF=$CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml
+    else
+        CLUSTER_CONF=$CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml.back
+    fi
+    if [[ ! -r $CLUSTER_CONF ]]
+    then
+        echo -e "No cluster config found at \e[1m$CLUSTER_CONF\e[0m for loading \e[1m$CLUSTER_NAME\e[0m cluster resources"
+    else 
+        clusterconfig=$(grep -A0 -P '^    clusterconfig:'  $CLUSTER_CONF | cut -d: -f2 | tr "," "\n")
+        CLUSTER_REGION=$(cat $CLUSTER_CONF | yq .platform.aws.region -cr)
+        CLUSTER_PROFILE=$(cat $CLUSTER_CONF | yq .platform.aws.userTags.profile -cr)
+        for resource in $clusterconfig
+        do
+            currentress=""
+            local CLUSTERTIMEOUT=$(cat $RESOURCEDIR_PATH/$resource.yml | yq .metadata.annotations.sxv4_console_timeout -cr)
+            if [[ -r $RESOURCEDIR_PATH/$resource.yml ]]
+            then
+                currentress="$resource.yml"
+                echo -e "${UPSERT} \e[1m$resource\e[0m cluster resource in cluster \e[1m$CLUSTER_NAME\e[0m \e[93m(admin)\e[0m"
+                if [[ "$resource" == "quay" || "$resource" == "3scale" || "$resource" == "argocd-deploy" || "$resource" == "argocd-apps" ]]
+                then
+                    oc process -f $RESOURCEDIR_PATH/$resource.yml --local -o yaml \
+                    -p RHN_USER=$RHN_USER \
+                    -p RHN_PASSWORD=$RHN_PASSWORD \
+                    -p SCOPE=$SXCM_SCOPE \
+                    -p CLUSTER=$CLUSTER_NAME \
+                    -p ENV=$SXCM_ENV \
+                    -p VERSION=$SXCM_VERSION \
+                    -p AWS_ZONE=$AWS_ZONE \
+                    -p AWS_ACCESS_ID=$AWS_ID \
+                    -p AWS_ACCESS_KEY=$AWS_KEY \
+                    -p AWS_SMTP_USER=$AWS_SMTP_USER \
+                    -p AWS_SMTP_PASSWORD=$AWS_SMTP_PASSWORD \
+                    -p AWS_SMTP_ZONE=$AWS_SMTPZONE \
+                    -p AWS_SMTP_FROM=$AWS_SMTPFROM \
+                    -p CLUSTER_PROFILE=$CLUSTER_PROFILE \
+                    | oc apply $OCAPPLY_OPTS --token=$SXCM_ATOKEN -f -
+                elif [[ "$resource" == "machine" ]]
+                then
+                    oc process -f $RESOURCEDIR_PATH/$resource.yml --local -o yaml \
+                    -p SCOPE=$SXCM_SCOPE \
+                    -p CLUSTER=$CLUSTER_NAME \
+                    -p ENV=$SXCM_ENV \
+                    -p VERSION=$SXCM_VERSION \
+                    -p CLUSTERID=$CLUSTERID \
+                    -p CLUSTER_REGION=$CLUSTER_REGION \
+                    -p CLUSTER_PROFILE=$CLUSTER_PROFILE \
+                    | oc apply $OCAPPLY_OPTS --token=$SXCM_ATOKEN -f -
+                else
+                    oc process -f $RESOURCEDIR_PATH/$resource.yml --local -o yaml \
+                    -p SCOPE=$SXCM_SCOPE \
+                    -p CLUSTER=$CLUSTER_NAME \
+                    -p ENV=$SXCM_ENV \
+                    -p VERSION=$SXCM_VERSION \
+                    -p CLUSTER_PROFILE=$CLUSTER_PROFILE \
+                    | oc apply $OCAPPLY_OPTS --token=$SXCM_ATOKEN -f -
+                fi
+                if [[ "${UPSERT}" == "create" ]]; then
+                    echo -e "wait ${CLUSTERTIMEOUT}sec for operator dependencies start"
+                    temporize $CLUSTERTIMEOUT 5
+                else
+                    echo -e "wait 5sec for operator dependencies update"
+                    temporize 5 5
+                fi
+            fi
+            if [[ -d $RESOURCEDIR_PATH/$resource ]]
+            then
+                local ressscript="upsert.sh"
+                if [[ -x $RESOURCEDIR_PATH/$resource/$ressscript ]]
+                then
+                    currentress="$ressscript"
+                    echo -e "${UPSERT} \e[1m$resource\e[0m cluster resource in cluster \e[1m$CLUSTER_NAME\e[0m \e[93m(admin)\e[0m"
+                    . $RESOURCEDIR_PATH/$resource/$ressscript $CLUSTER_NAME $SXCM_SCOPE $SXCM_ENV $SXCM_VERSION
+                    if [[ "${UPSERT}" == "create" ]]; then
+                        echo -e "wait ${CLUSTERTIMEOUT}sec for deployment dependencies start"
+                        temporize $CLUSTERTIMEOUT 5
+                    fi
+                else 
+                    echo -e "No \e[1m$resource\e[0m cluster resource found at \e[1m$RESOURCEDIR_PATH/$resource/$ressscript\e[0 or is executable"
+                fi
+            fi
+            if [[ "$currentress" == "" ]]
+            then
+                echo -e "No \e[1m$resource\e[0m cluster resource found at \e[1m$RESOURCEDIR_PATH/$resource.yml\e[0m"
+            fi
+        done
+    fi
+}
+
+# Get openshift-install cluster admin credentials
+function getCredentialsFromCreatedCluster {
+    local CLUSTER_NAME=$1
+    cd $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME &> /dev/null
+    SXCM_CLUSTER_URL=$(cat auth/kubeconfig | grep server | cut -d: -f2-10 | xargs)
+    appendIndividualClusterConf $CLUSTER_NAME SXCM_CLUSTER_URL $SXCM_CLUSTER_URL
+    appendIndividualClusterConf $CLUSTER_NAME SXCM_CLUSTER_NAME $CLUSTER_NAME
+    SXCM_ADM=kubeadmin
+    SXCM_ADMPWD=$(cat auth/kubeadmin-password)
+    cd - &> /dev/null
+}
+
+# Record SXCM_ATOKEN for created cluster in sxv4 configuration
+function recordAdminTokenFromCreatedCluster {
+    local CLUSTER_NAME=$1
+    getCredentialsFromCreatedCluster $CLUSTER_NAME
+    oc login --insecure-skip-tls-verify -u $SXCM_ADM -p "$SXCM_ADMPWD" $SXCM_CLUSTER
+    if [[ "$?" != 0 ]]; then
+        echo -e "Cluster \e[1m$CLUSTER_NAME\e[0m : \e[1m\e[31mCould not login\e[0m to \e[1m$SXCM_CLUSTER\e[0m with user \e[1m$SXCM_ADM\e[0m"
+        echo -e "Log to openshift cluster first \e[37moc login -u $SXCM_ADM -p <pwd> $SXCM_CLUSTER\e[0m"
+        echo -e "try to run \e[2msxcm setup login\e[0m"
+        exit 1;
+    else
+        echo -e "Cluster \e[1m$CLUSTER_NAME\e[0m : Logged to \e[1m$SXCM_CLUSTER\e[0m with user \e[1m$SXCM_ADM\e[0m (capture token)"
+        tokena=`oc whoami -t`
+        SXCM_ATOKEN=$tokena
+        appendIndividualClusterConf $CLUSTER_NAME SXCM_ATOKEN $tokena
+    fi
+}
+
+# create cluster configuration
+function doClusterConfigurationCreate {
+    local CLUSTER_NAME=$1
+    local PROFILE=$2
+    if [[ $PROFILE == '' ]]; then
+        PROFILE="default"
+    fi
+    if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml ]]; then
+        echo -en "Do you want to reset \e[1m$CLUSTER_NAME\e[0m cluster configuration [y/N] : "
+        read removeConfig
+        if [[ "$removeConfig" == "y" ]]; then
+            rm -f $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml &> /dev/null
+            echo -e "Cluster configuration \e[1m$CLUSTER_NAME\e[0m \e[35mreset\e[0m "
+        else
+            exit;
+        fi
+    fi
+    if [[ -r $SXCM_PROFILES_PATH/install-config-$PROFILE.yml ]]; then
+        mkdir -p $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME
+        touch $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/$CONF_FILE
+        cp $SXCM_PROFILES_PATH/install-config-$PROFILE.yml $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml
+        sed -i -e "s/mycluster/$CLUSTER_NAME/g" $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml
+        cp $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml.back
+        cp $SSH_DIR/id_rsa.pub $SSH_DIR/id_rsa $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/
+        chown 400 $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/id_rsa.pub $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/id_rsa &> /dev/null
+        eval "$(ssh-agent -s)" &>/dev/null
+        `ssh-add $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/id_rsa`
+        echo -e "Cluster configuration \e[1m$CLUSTER_NAME\e[0m \e[32mcreated\e[0m based on \e[1m$PROFILE\e[0m profile"
+        setActiveCluster $CLUSTER_NAME
+        appendIndividualClusterConf $CLUSTER_NAME CLUSTER_NAME $CLUSTER_NAME
+        appendIndividualClusterConf $CLUSTER_NAME PROFILE $PROFILE
+        echo -e "Set \e[32mactive\e[0m cluster configuration to \e[1m$CLUSTER_NAME\e[0m"
+    else
+        echo -e "No profile named \e[1m$PROFILE\e[0m found"
+        echo -e "you could run \e[2msxcm profiles\e[0m to get a list of available profiles"
+        echo -en "Do you want to create a new cluster without profile [Y/n] : "
+        read newCluster
+        if [[ "$newCluster" == "n" ]]; then
+            echo -en "Do you want to create a new cluster using \e[1mdefault\e[0m profile [Y/n] : "
+            read newCluster
+            if [[ "$newCluster" == "n" ]]; then
+                echo -e "Cluster \e[1m$CLUSTER_NAME\e[0m \e[31mwas not created\e[0m"
+                exit 1;
+            else
+                doClusterConfigurationCreate $CLUSTER_NAME default
+            fi
+        else
+            installClusterInstallerIfNotPresent
+            echo -e "Start \e[1m$OCP_INSTALLER_RELEASE\e[0m openshift installer \e[32mconfiguration\e[0m"
+            if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/metadata.json ]]; then
+                echo -e "Could not configure because cluster is \e[1malready configured\e[0m"
+                echo -e "you should run \e[2msxcm destroy $CLUSTER_NAME\e[0m before"
+                exit 1;
+            fi
+            if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/terraform.tfstate ]]; then
+                echo -en "Do you want to connect to the running cluster [Y/n] : "
+                read connectOCP
+                echo -e ""
+                if [[ "$connectOCP" == "n" ]]; then
+                    echo -e "Could not \e[36mconfigure\e[0m because cluster is already running"
+                    echo -e "you should run \e[2msxcm destroy $CLUSTER_NAME\e[0m before"
+                    exit 1;
+                else
+                    recordAdminTokenFromCreatedCluster $CLUSTER_NAME
+                    exit;
+                fi
+            fi
+            if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml ]]; then
+                echo -en "Do you want to reset cluster configuration [y/N] : "
+                read removeConfig
+                if [[ "$removeConfig" == "y" ]]; then
+                    rm -f $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml &> /dev/null
+                    echo -e "Cluster configuration \e[1m$CLUSTER_NAME\e[0m \e[35mreset\e[0m "
+                else
+                    exit;
+                fi
+            fi
+            cd $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME &> /dev/null
+            openshift-install create install-config
+            cd - &> /dev/null
+        fi
+    fi
+}
+
+# info on cluster configuration
+function doClusterConfigurationInfo {
+    local CLUSTER_NAME=${1}
+    if [[ $CLUSTER_NAME == '' ]]; then
+        echo -e "You must give a \e[1mcluster configuration name\e[0m"
+        echo -e "You can create one using \e[2msxcm create <cluster-name>\e[0m" ;
+        echo -e "or get a list of available cluster configuration with \e[2msxcm list\e[0m" ;
+        exit 1;
+    fi
+    local clusterConfDir=$CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME
+    if [[ -r $clusterConfDir/$CONF_FILE ]]; then
+        echo -e "\e[34mInformation\e[0m on cluster \e[1m$CLUSTER_NAME\e[0m found in $clusterConfDir/$CONF_FILE"
+        . $clusterConfDir/$CONF_FILE;
+        local sourceConfFile=$SXCM_PROFILES_PATH/install-config-$PROFILE.yml
+        local desc=$(getClusterDescription $sourceConfFile desc)
+        local service=$(getClusterDescription $sourceConfFile service)
+        local hourlyCost=$(getClusterHourlyCost $sourceConfFile)
+        local admpwd=""
+        if [[ -r $clusterConfDir/auth/kubeadmin-password ]]; then
+            admpwd=$(cat $clusterConfDir/auth/kubeadmin-password)
+        fi
+        local STATE=""
+        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]]
+        then
+            if [[ -r $clusterConfDir/deployed ]]
+            then
+                STATE="\e[32mdeployed\e[0m"
+            else
+                STATE="\e[33mdeploying\e[0m"
+            fi
+        elif [[ -r $clusterConfDir/install-config.yaml ]]
+        then
+            STATE="\e[36mconfigured\e[0m"
+        else
+            STATE="\e[34mdefined\e[0m"
+        fi
+        printf "\e[1m%-8s\e[0m %s\n" name $CLUSTER_NAME
+        printf "\e[1m%-8s\e[0m %s\n" profile $PROFILE
+        printf "\e[1m%-8s\e[0m %s$STATE\n" state ""
+        printf "\e[1m%-8s\e[0m%s\n" desc "$desc"
+        printf "\e[1m%-8s\e[0m%s\n" services "$service"
+        printf "\e[1m%-8s\e[0m%s\n" cost " $hourlyCost €/h"
+        printf "\e[1m%-8s\e[0m %s\n" "adm user" "kubeadmin"
+        printf "\e[1m%-8s\e[0m %s\n" "adm pwd" "$admpwd"
+        exit 0;
+    else
+        echo -e "Cluster configuration named \e[1m$CLUSTER_NAME\e[0m in $clusterConfDir doesn't exist"
+        echo -e "You can create one using \e[2msxcm create $CLUSTER_NAME\e[0m" ;
+        exit 3;
+    fi
+}
+
+# edit cluster configuration
+function doClusterConfigurationEdit {
+    local CLUSTER_NAME=${1}
+    if [[ $CLUSTER_NAME == '' ]]; then
+        echo -e "You must give a \e[1mcluster configuration name\e[0m"
+        echo -e "You can create one using \e[2msxcm create <cluster-name>\e[0m" ;
+        echo -e "or get a list of available cluster configuration with \e[2msxcm list\e[0m" ;
+        exit 1;
+    fi
+    if [[ ! -w $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml ]]; then
+        echo -e "Cluster configuration named \e[1m$CLUSTER_NAME\e[0m in $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml doesn't exist or is not writable"
+        echo -e "You can create one using \e[2msxcm create $CLUSTER_NAME\e[0m" ;
+        exit 2;
+    else
+        if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/metadata.json || -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/terraform.tfstate ]]; then
+            echo -e "Could not edit because cluster is already deployed"
+            echo -e "you should run \e[2msxcm destroy $CLUSTER_NAME\e[0m before"
+            exit 21;
+        fi
+        if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml ]]; then
+            cp $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml.back
+            vi $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml
+            echo -e "Cluster configuration \e[1m$CLUSTER_NAME\e[0m \e[36mupdated\e[0m "
+        else
+            echo -e "Cluster configuration named \e[1m$CLUSTER_NAME\e[0m in $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml doesn't exist"
+            echo -e "You can create one using \e[2msxcm create $CLUSTER_NAME\e[0m" ;
+            exit 22;
+        fi
+    fi
+}
+
+# update cluster configuration
+function doClusterConfigurationUpdate {
+    local CLUSTER_NAME=${1}
+    if [[ $CLUSTER_NAME == '' ]]; then
+        echo -e "You must give a \e[1mcluster configuration name\e[0m"
+        echo -e "You can create one using \e[2msxcm create <cluster-name>\e[0m" ;
+        echo -e "or get a list of available cluster configuration with \e[2msxcm list\e[0m" ;
+        exit 1;
+    fi
+    if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/metadata.json || -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/terraform.tfstate ]]; then
+        updateClusterResources $CLUSTER_NAME
+        echo -e "Cluster configuration \e[1m$CLUSTER_NAME\e[0m \e[36mupdated\e[0m "
+    else
+        echo -e "Cluster configuration named \e[1m$CLUSTER_NAME\e[0m is not deployed"
+        echo -e "You can deploy it using \e[2msxcm deploy $CLUSTER_NAME\e[0m" ;
+        exit 22;
+    fi
+}
+
+# delete cluster configuration
+function doClusterConfigurationDelete {
+    local CLUSTER_NAME=${1}
+    if [[ $CLUSTER_NAME == '' ]]; then
+        echo -e "You must give a \e[1mcluster configuration name\e[0m"
+        echo -e "You can create one using \e[2msxcm create <cluster-name>\e[0m" ;
+        echo -e "or get a list of available cluster configuration with \e[2msxcm list\e[0m" ;
+        return 1;
+    fi
+    if [[ ! -w $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml ]]; then
+        echo -e "Cluster configuration named \e[1m$CLUSTER_NAME\e[0m doesn't exist or is not writable"
+        echo -e "You can create one using \e[2msxcm create $CLUSTER_NAME\e[0m" ;
+        return 2;
+    else
+        if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/metadata.json || -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/terraform.tfstate ]]; then
+            echo -e "\e[1m$CLUSTER_NAME\e[0m cluster configuration already \e[36mdeployed\e[0m"
+            echo -e "You must destroy it first with \e[2msxcm destroy $CLUSTER_NAME\e[0m" ;
+        else
+            rm -rf $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME
+            echo -e "Cluster configuration \e[1m$CLUSTER_NAME\e[0m \e[31mdeleted\e[0m "
+            if [[ $CLUSTER_NAME == `getActiveCluster` ]]; then
+                local LIST=$(getClusterConfigurationList)
+                local COUNT=$(echo $LIST | wc -w)
+                if [[ $COUNT -gt 0 ]]; then
+                    for cluster in $LIST
+                    do
+                        setActiveCluster $cluster
+                    done
+                else
+                    setActiveCluster ""
+                fi
+            fi
+        fi
+    fi
+}
+
+# list cluster configuration
+function doClusterConfigurationList {
+    local LIST=$(getClusterConfigurationList)
+    local COUNT=$(echo $LIST | wc -w)
+    local STATE=""
+    local CLUSTER_NAME=$(getActiveCluster)
+    local CLUSTER_CONF=""
+    local desc=""
+    if [[ $COUNT -gt 0 ]]; then
+        echo -e "\e[33mList\e[0m \e[1m$COUNT\e[0m cluster configuration in the cluster stack"
+        for cluster in $LIST
+        do
+            if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$cluster/metadata.json || -r $CONF_DIR/$CONF_DIR_CLUSTER/$cluster/terraform.tfstate ]]
+            then
+                local URL=$(cat $CONF_DIR/$CONF_DIR_CLUSTER/$cluster/auth/kubeconfig | grep server | cut -d: -f2-10 | xargs)
+                if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$cluster/deployed ]]
+                then
+                    STATE="\e[32m(deployed)  \e[0m - $URL"
+                else
+                    STATE="\e[33m(deploying) \e[0m - $URL"
+                fi
+                CLUSTER_CONF=$CONF_DIR/$CONF_DIR_CLUSTER/$cluster/install-config.yaml.back
+            elif [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$cluster/install-config.yaml ]]
+            then
+                CLUSTER_CONF=$CONF_DIR/$CONF_DIR_CLUSTER/$cluster/install-config.yaml
+                STATE="\e[36m(configured)\e[0m"
+            else
+                CLUSTER_CONF=$CONF_DIR/$CONF_DIR_CLUSTER/$cluster/install-config.yaml.back
+                STATE="\e[34m(defined)   \e[0m"
+            fi
+            if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$cluster/$CONF_FILE ]]; then
+                . $CONF_DIR/$CONF_DIR_CLUSTER/$cluster/$CONF_FILE;
+                CLUSTER_NAME=$(getActiveCluster);
+            fi
+            desc=$(getClusterDescription $CLUSTER_CONF)
+            if [[ $cluster == $CLUSTER_NAME ]]; then
+                printf "\e[1mx %-14s\e[0m $STATE %s\n" $cluster "$desc"
+            else
+                printf "  %-14s $STATE %s\n" $cluster "$desc"
+            fi
+            desc=""
+        done
+    else
+        echo -e "\e[1mNo\e[0m cluster configuration found in the cluster stack"
+        echo -e "You can create one using \e[2msxcm create\e[0m" ;
+    fi
+}
+
+# profiles cluster profile
+function doClusterListProfiles {
+    local LIST=($(getClusterProfiles))
+    local LISTRead=($(getClusterProfiles))
+    local COUNT=${#LIST[@]}
+    local desc=""
+    local orderedProfiles=(${ORDERED_PROFILES[@]})
+    echo -e "\e[33mList\e[0m \e[1m$COUNT\e[0m cluster profiles"
+    echo -e "   Profiles     |           Master                 |           Worker                 | Datacenter | Cost | Cluster services "
+    echo -e "                | N  | VC | Ram | Go  | typ | iops | N  | VC | Ram | Go  | typ | iops |            | €/h  | "
+    # display ordered profile and remove form list queue
+    for i in "${!orderedProfiles[@]}"; do
+        for j in "${!LISTRead[@]}"; do
+            local profile=${LISTRead[j]}
+            if [[ ${orderedProfiles[i]} = $profile ]]; then
+                desc=$(getClusterDescriptionTab $SXCM_PROFILES_PATH/install-config-$profile.yml)
+                printf "\e[1m%-14s\e[0m %s\n" $profile "$desc"
+                desc=""
+                unset 'LIST[j]'
+            fi
+        done
+    done
+    for profile in "${LIST[@]}"
+    do
+        desc=$(getClusterDescriptionTab $SXCM_PROFILES_PATH/install-config-$profile.yml)
+        printf "\e[1m%-14s\e[0m %s\n" $profile "$desc"
+        desc=""
+    done
+}
+
+# change active cluster
+function doClusterDisplayActive {
+    local CLUSTER_NAME=$(getActiveCluster)
+    if [[ "" == $CLUSTER_NAME ]]; then
+        echo -e "\e[31mNo\e[0m cluster configuration is set as \e[32mactive\e[0m cluster configuration"
+    else
+        echo -e "\e[1m$CLUSTER_NAME\e[0m cluster configuration is set as the \e[32mactive\e[0m cluster"
+    fi
+}
+
+# change active cluster
+function doClusterChangeActive {
+    local NAME=$1
+    local LIST=$(getClusterConfigurationList)
+    if [[ "" == $NAME ]]; then
+        echo -e "\eYou must give a cluster name to set as the active cluster"
+        echo -e "You can create a cluster using \e[2msxcm create $NAME\e[0m" ;
+        echo -e "or list available cluster configuration by running \e[2msxcm list\e[0m" ;
+        return 1;
+    else
+        for cluster in $LIST
+        do
+            if [[ $cluster == $NAME ]]; then
+                echo -e "Set \e[32mactive\e[0m cluster configuration to \e[1m$NAME\e[0m"
+                setActiveCluster $NAME
+                return 0;
+            fi
+        done
+    fi
+    echo -e "\e[1m$NAME\e[0m cluster configuration not found in the cluster stack"
+    echo -e "You can create it using \e[2msxcm create $NAME\e[0m" ;
+    echo -e "or list available cluster configuration by running \e[2msxcm list\e[0m" ;
+    return 1;
+}
+
+# deploy given cluster
+function doClusterDeploy {
+    local NAME=$1
+    if [[ "" == $NAME ]]
+    then
+        echo -e "\eYou must give a cluster name or set an active one"
+        echo -e "You can create a cluster using \e[2msxcm create clustername\e[0m" ;
+        echo -e "or list available cluster configuration by running \e[2msxcm list\e[0m" ;
+        echo -e "and set one as active with \e[2msxcm switch clustername\e[0m" ;
+        return 1;
+    elif [[ `getActiveCluster` != $NAME ]]
+    then
+        local LIST=$(getClusterConfigurationList)
+        for cluster in $LIST
+        do
+            if [[ $cluster == $NAME ]]; then
+                echo -e "Set \e[32mactive\e[0m cluster configuration to \e[1m$NAME\e[0m"
+                setActiveCluster $NAME
+            fi
+        done
+    fi
+    local CLUSTER_NAME=`getActiveCluster`
+    if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/metadata.json || -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/terraform.tfstate ]]; then
+        echo -e "\e[1m$CLUSTER_NAME\e[0m cluster configuration already \e[36mdeployed\e[0m"
+        createClusterResources $CLUSTER_NAME
+        echo -e "You can refresh connection by running \e[2msxcm connect $CLUSTER_NAME\e[0m" ;
+        echo -e "or destroy this cluster with \e[2msxcm destroy $CLUSTER_NAME\e[0m" ;
+    else
+        installClusterInstallerIfNotPresent
+        echo -e "Start \e[1m$CLUSTER_NAME\e[0m cluster deployment based on \e[1mopenshift $OCP_INSTALLER_RELEASE\e[0m"
+        cd $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME &> /dev/null
+        openshift-install create cluster
+        touch $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/deployed
+        echo -e "Cluster \e[1m$CLUSTER_NAME\e[0m \e[36mdeployed\e[0m"
+        cd - &> /dev/null
+        recordAdminTokenFromCreatedCluster $CLUSTER_NAME
+        createClusterResources $CLUSTER_NAME
+        echo -e "Cluster \e[1m$CLUSTER_NAME\e[0m \e[36mconfigured\e[0m"
+    fi
+}
+
+# deploy active cluster
+function doClusterDeployActive {
+    doClusterDeploy `getActiveCluster`
+}
+
+# destroy given cluster
+function doClusterDestroy {
+    local NAME=$1
+    if [[ "" == $NAME ]]
+    then
+        echo -e "\eYou must give a cluster name or set an active one"
+        echo -e "You can create a cluster using \e[2msxcm create clustername\e[0m" ;
+        echo -e "or list available cluster configuration by running \e[2msxcm list\e[0m" ;
+        echo -e "and set one as active with \e[2msxcm switch clustername\e[0m" ;
+        return 1;
+    elif [[ `getActiveCluster` != $NAME ]]
+    then
+        local LIST=$(getClusterConfigurationList)
+        for cluster in $LIST
+        do
+            if [[ $cluster == $NAME ]]; then
+                echo -e "Set \e[1mactive cluster\e[0m configuration to \e[1m$NAME\e[0m"
+                setActiveCluster $NAME
+            fi
+        done
+    fi
+    local CLUSTER_NAME=`getActiveCluster`
+    if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/metadata.json ]]; then
+        echo -en "Do you want to \e[31mdestroy\e[0m cluster $CLUSTER_NAME [y/N] : "
+        read doDestroy
+        if [[ "$doDestroy" == "y" ]]; then
+            installClusterInstallerIfNotPresent
+            echo -e "Start \e[1m$CLUSTER_NAME\e[0m cluster \e[31mdestruction\e[0m"
+            cd $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME &> /dev/null
+            openshift-install destroy cluster
+            cp $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml.back $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/install-config.yaml
+            rm $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/terraform.* $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/meta* $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/deployed &> /dev/null
+            echo -e "Cluster \e[1m$CLUSTER_NAME\e[0m \e[31mdestroyed\e[0m"
+            cd - &> /dev/null
+        else
+            exit;
+        fi
+    else
+        echo -e "\e[1m$CLUSTER_NAME\e[0m cluster configuration doesn't have metadata.json and terraform.tfstate files"
+        echo -e "You can create it using \e[2msxcm deploy $CLUSTER_NAME\e[0m" ;
+    fi
+}
+
+# destroy active cluster
+function doClusterDestroyActive {
+    doClusterDestroy `getActiveCluster`
+}
+
+# connect given cluster
+function doClusterConnect {
+    local NAME=$1
+    if [[ "" == $NAME ]]
+    then
+        echo -e "\eYou must give a cluster name or set an active one"
+        echo -e "You can create a cluster using \e[2msxcm create clustername\e[0m" ;
+        echo -e "or list available cluster configuration by running \e[2msxcm list\e[0m" ;
+        echo -e "and set one as active with \e[2msxcm switch clustername\e[0m" ;
+        return 1;
+    elif [[ `getActiveCluster` != $NAME ]]
+    then
+        local LIST=$(getClusterConfigurationList)
+        for cluster in $LIST
+        do
+            if [[ $cluster == $NAME ]]; then
+                echo -e "Set \e[1mactive cluster\e[0m configuration to \e[1m$NAME\e[0m"
+                setActiveCluster $NAME
+            fi
+        done
+    fi
+    local CLUSTER_NAME=`getActiveCluster`
+    if [[ -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/metadata.json && -r $CONF_DIR/$CONF_DIR_CLUSTER/$CLUSTER_NAME/terraform.tfstate ]]; then
+        recordAdminTokenFromCreatedCluster $CLUSTER_NAME
+        echo -e "\e[31mconnected\e[0m to cluster \e[1m$CLUSTER_NAME\e[0m "
+    else
+        echo -e "\e[1m$CLUSTER_NAME\e[0m cluster configuration doesn't have metadata.json and terraform.tfstate files"
+        echo -e "You can create it using \e[2msxcm deploy $CLUSTER_NAME\e[0m" ;
+    fi
+}
+
+# connect active cluster
+function doClusterConnectActive {
+    doClusterConnect `getActiveCluster`
+}
+
+# sub-menu for create command
+function menuClusterCreate {
+    if [[ -z "$1" || "$1" == "" ]]; then
+        menuHeadArt
+            cat <<EOF
+
+sxcm create sub-command for creating a sxcm managed cluster
+
+This sub-command helps you add a new cluster configuration to the managed cluster stack
+
+Usage:
+sxcm create NAME PROFILE
+
+Examples:
+# Create a cluster named samplecluster using the default type
+sxcm create samplecluster
+
+# Create a cluster named smallcluster using the small type
+sxcm create smallcluster small
+
+If you want to have a list of availables cluster profiles,
+you can run :
+$ sxcm profiles
+EOF
+    else
+        doClusterConfigurationCreate $1 $2
+    fi
+}
+
+# sub-menu for info command
+function menuClusterInfo {
+    if [[ -z "$1" || "$1" == "" ]]; then
+        doClusterConfigurationInfo `getActiveCluster`
+    else
+        doClusterConfigurationInfo $1
+    fi
+}
+
+# sub-menu for edit command
+function menuClusterEdit {
+    if [[ -z "$1" || "$1" == "" ]]; then
+        doClusterConfigurationEdit `getActiveCluster`
+    else
+        doClusterConfigurationEdit $1
+    fi
+}
+
+# sub-menu for update command
+function menuClusterUpdate {
+    if [[ -z "$1" || "$1" == "" ]]; then
+        doClusterConfigurationUpdate `getActiveCluster`
+    else
+        doClusterConfigurationUpdate $1
+    fi
+}
+
+# sub-menu for delete command
+function menuClusterDelete {
+    if [[ -z "$1" || "$1" == "" ]]; then
+        doClusterConfigurationDelete `getActiveCluster`
+    else
+        doClusterConfigurationDelete $1
+    fi
+}
+
+# sub-menu for list command
+function menuClusterList {
+    doClusterConfigurationList
+}
+
+# sub-menu for profiles command
+function menuClusterProfiles {
+    doClusterListProfiles
+}
+
+# sub-menu for current command
+function menuClusterCurrent {
+    if [[ -z "$1" || "$1" == "" ]]; then
+        doClusterDisplayActive
+    else
+        doClusterChangeActive $1
+    fi
+}
+
+# sub-menu for deploy command
+function menuClusterDeploy {
+    if [[ -z "$1" || "$1" == "" ]]; then
+        doClusterDeployActive
+    else
+        doClusterDeploy $1
+    fi
+}
+
+# sub-menu for destroy command
+function menuClusterDestroy {
+    if [[ -z "$1" || "$1" == "" ]]; then
+        doClusterDestroyActive
+    else
+        doClusterDestroy $1
+    fi
+}
+
+# sub-menu for connect command
+function menuClusterConnect {
+    if [[ -z "$1" || "$1" == "" ]]; then
+        doClusterConnectActive
+    else
+        doClusterConnect $1
+    fi
+}
+
+# main menu for the cluster sub-command
+function menuCluster {
+    case $1 in
+        create)         menuClusterCreate ${2} ${3};;
+        info)           menuClusterInfo ${2};;
+        edit)           menuClusterEdit ${2};;
+        update)         menuClusterUpdate ${2};;
+        delete)         menuClusterDelete ${2};;
+        list)           menuClusterList;;
+        current|switch) menuClusterCurrent ${2};;
+        deploy)         menuClusterDeploy ${2};;
+        destroy)        menuClusterDestroy ${2};;
+        connect|login)  menuClusterConnect ${2};;
+        profiles)       menuClusterProfiles;;
+        *)              menuUsageChart;;
+    esac
+}

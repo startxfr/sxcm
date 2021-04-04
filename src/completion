@@ -1,0 +1,25 @@
+#!/bin/bash
+
+_sxcm_all()
+{
+    local available="list create edit switch info deploy update destroy delete connect profiles current version"
+    local suggestions=($(compgen -W "$available" "${COMP_WORDS[1]}"))
+    if [ "${COMP_CWORD}" == "0" ]
+    then
+        COMPREPLY=("${suggestions[@]}")
+    elif [ "${COMP_CWORD}" == "1" ]
+    then
+        if [ "${#suggestions[@]}" == "1" ]
+        then
+            local number=$(echo ${suggestions[0]/%\ */})
+            COMPREPLY=("$number")
+        else
+            COMPREPLY=("${suggestions[@]}")
+        fi
+    else
+        return 0;
+    fi
+    return 0;
+}
+
+complete -F _sxcm_all sxcm

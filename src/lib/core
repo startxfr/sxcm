@@ -1,0 +1,111 @@
+#!/bin/bash
+
+CONF_DIR=~/.sxcm
+SSH_DIR=~/.ssh
+CONF_FILE=config
+CONF_DIR_CLUSTER=clusters
+BASE_DIR=.
+DEPLOY_SLEEP_FACTOR=2
+SXCM_CLUSTER_URL=https://localhost:6443
+SXCM_CLUSTER_NAME=localhost
+SXCM_SCOPE=startx
+SXCM_ATOKEN='xxx'
+SXCM_TOKEN='xxx'
+AWS_ID='XXXXX'
+AWS_KEY='XXXXX'
+AWS_ZONE=eu-west-3
+RHN_USER=startx_cl
+RHN_PASSWORD=xxxx
+OCAPPLY_OPTS=""
+# Options for  4.4.11 compat in cluster creation
+# OCAPPLY_OPTS="--force-conflicts=true --server-side"
+
+
+# Check if config file exist
+function CheckConfigExist {
+    if [[ -r $CONF_DIR/$CONF_FILE ]]; then
+        return 0;
+    else
+        return 1;
+    fi
+}
+
+# Check if cluster config exist
+function CheckConfigClusterExist {
+    if [[ -d $CONF_DIR/$CONF_DIR_CLUSTER ]]; then
+        return 0;
+    else
+        return 1;
+    fi
+}
+
+# Check if config exist and create otherwise
+function CheckConfigOrCreate {
+    if CheckConfigExist; then
+        echo "Using configuration $CONF_DIR/$CONF_FILE"
+    else
+        echo "Creating configuration $CONF_DIR/$CONF_FILE"
+        mkdir -p $CONF_DIR &> /dev/null
+        touch $CONF_DIR/$CONF_FILE
+    fi
+}
+
+# Check if cluster config exist and create otherwise
+function CheckConfigClusterOrCreate {
+    if CheckConfigClusterExist; then
+        echo "Using cluster configuration $CONF_DIR/$CONF_DIR_CLUSTER"
+    else
+        echo "Creating cluster configuration $CONF_DIR/$CONF_DIR_CLUSTER"
+        mkdir -p $CONF_DIR/$CONF_DIR_CLUSTER &> /dev/null
+        touch $CONF_DIR/$CONF_DIR_CLUSTER/$CONF_FILE
+    fi
+}
+
+# Create and load configuration files
+function LoadConfig {
+    if ! CheckConfigExist; then
+        CheckConfigOrCreate
+    fi
+    reloadConf
+    if ! CheckConfigClusterExist; then
+        CheckConfigClusterOrCreate
+    fi
+    reloadClusterConf
+    if [[ ! -z "${SXCM_ENV}" ]]; then
+        SXCM_ENV="dev"
+    fi
+}
+
+# append key to conf
+function appendConf {
+    echo "$1=$2" >> $CONF_DIR/$CONF_FILE
+    export $1=$2
+}
+
+# reload conf file
+function reloadConf {
+    source $CONF_DIR/$CONF_FILE
+}
+
+# append key to cluster conf
+function appendClusterConf {
+    echo "$1=$2" >> $CONF_DIR/$CONF_DIR_CLUSTER/$CONF_FILE
+    export $1=$2
+}
+
+# reload cluster conf file
+function reloadClusterConf {
+    source $CONF_DIR/$CONF_DIR_CLUSTER/$CONF_FILE
+}
+
+# temporize with a balanced sleep
+function temporize {
+    x=$1
+    echo "temporize during ${x}sec"
+    while [ $x -gt 0 ]
+    do
+        sleep $2
+        x=$(( $x - $2 ))
+        echo "wait for ${x}sec..."
+    done
+}

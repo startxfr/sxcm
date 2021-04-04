@@ -1,0 +1,69 @@
+#!/bin/bash
+
+SXCM_CONSOLE_VERSION=0.0.1
+REPO_PACKAGE_DIR=docs/packages
+WORK_BRANCH=devel
+MASTER_BRANCH=master
+GITHUB_USER=startxfr
+GITHUB_REPOSITORY=sxcm
+
+# router for version sub-command
+function routerVersion {
+    echo "sxcm version : $SXCM_CONSOLE_VERSION"
+    echo -n "Openshift : "
+    oc version 
+    echo -n "Helm : "
+    helm version --short
+}
+
+# menu switch for usage command
+function menuUsage {
+    menuHeadArt
+cat <<EOF
+
+This client helps you configure and deploy multiple Openshift cluster under a AWS environment.
+
+Available actions are : list, create, info, update, delete, profiles, current, switch, connect, deploy  and destroy
+
+Usage:
+  sxcm <action> [flags]
+
+- Clusters management actions (local) :
+  - list                              List available cluster configurations
+  - profiles                          List available cluster profiles
+  - current                           Return informations about the current cluster
+  - switch                            Change the current cluster
+
+- Cluster commands actions (remote) :
+  - create                            Add a new cluster configuration to the cluster stack
+  - edit                              change the cluster configuration (should require destroy one major change)
+  - info                              Get information about a cluster configuration
+  - update                            Update a cluster configuration
+  - delete                            Remove a cluster configuration from the cluster stack
+  - connect                           Connect to the given cluster (default is current cluster)
+  - deploy                            Deploy the given cluster (default is current cluster)
+  - destroy                           Deploy the given cluster (default is current cluster)
+
+- Examples  :
+  sxcm  create my-example <profile>   Create an new Openshift cluster
+  sxcm  switch <my-example>           Change the current cluster to my-example
+  sxcm  edit <my-example>             Edit the Openshift cluster configuration (default is current cluster)
+  sxcm  info <my-example>             Display info about the my-example cluster (default is current cluster)
+  sxcm  deploy <my-example>           Deploy the my-example cluster (default is current cluster)
+  sxcm  update <my-example>           Update the my-example cluster configuration (default is current cluster)
+  sxcm  destroy <my-example>          Destroy the my-example cluster (default is current cluster)
+  sxcm  delete <my-example>           Delete the my-example cluster configuration (default is current cluster)
+  sxcm  switch <my-example>           Change the current cluster to the my-example cluster
+  sxcm  connect <my-example>          Connect the local kubeconfig to the my-example cluster
+  sxcm  profiles                      List available cluster profiles
+  sxcm  current                       Return informations about the current cluster
+
+
+EOF
+}
+
+
+# menu display AsciiArt
+function menuHeadArt {
+cat $SXCM_PATH/header.txt
+}
