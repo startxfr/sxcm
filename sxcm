@@ -2,7 +2,7 @@
 SXCM_PATH=/usr/share/sxcm
 SXCM_PROFILES_PATH=$SXCM_PATH/profiles
 SXCM_LIB_PATH=$SXCM_PATH/lib
-SXCM_VERSION=main
+SXCM_VERSION=stable
 
 source $SXCM_PATH/cli
 source $SXCM_LIB_PATH/core
