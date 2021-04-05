@@ -1,0 +1,883 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxv4-cluster-sso-template
+  annotations:
+    openshift.io/display-name: STARTX cluster KeyCloak (admin)
+    description: Deploy cluster-wide resources to enable KeyCloak support according to sxv4-console definitions
+    iconClass: icon-openshift
+    tags: startx,cluster,config,admin,sso
+    openshift.io/provider-display-name: STARTX
+    openshift.io/generated-by: sxv4-console
+    sxv4_console_timeout: "15"
+  labels:
+    template: sxv4-cluster-sso-template
+    app.kubernetes.io/name: "sxv4-cluster-sso-template"
+    app.kubernetes.io/managed-by: sxv4-console
+message: |-
+  Your cluster serverless support is now enabled
+
+  Scope             : ${SCOPE}
+  Cluster           : ${CLUSTER}
+  Operator          : sso-operator.v9.0.2
+  Project           : ${KEYCLOAK_NS}
+  Services          : sso,freeipa
+labels:
+  template: sxv4-cluster-sso-template
+  app.kubernetes.io/managed-by: sxv4-console
+objects:
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: startx-cluster-sso-project
+    namespace: "${ARGOCD_NS}"
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "cluster-sso"
+      app.kubernetes.io/name: "argoapp-cluster-sso-project-application"
+      app.kubernetes.io/part-of: ${CLUSTER}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "cluster-sso"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxv4-console
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${KEYCLOAK_NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-sso/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-startx.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "startx-sso"
+          - name: project.enabled
+            value: "true"
+          - name: project.project.requester
+            value: "sxv4-console"
+          - name: operator.enabled
+            value: "false"
+          - name: sso.enabled
+            value: "false"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: startx-cluster-sso-operator
+    namespace: "${ARGOCD_NS}"
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "cluster-sso"
+      app.kubernetes.io/name: "argoapp-cluster-sso-operator-application"
+      app.kubernetes.io/part-of: ${CLUSTER}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "cluster-sso"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxv4-console
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${KEYCLOAK_NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-sso/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-startx.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "startx-sso"
+          - name: project.enabled
+            value: "false"
+          - name: operator.enabled
+            value: "true"
+          - name: sso.enabled
+            value: "false"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+    ignoreDifferences:
+      - group: operators.coreos.com
+        kind: OperatorGroup
+        namespace: "${KEYCLOAK_NS}"
+        jsonPointers:
+          - /metadata/annotations/olm.providedAPIs
+# - kind: Application
+#   apiVersion: argoproj.io/v1alpha1
+#   metadata:
+#     name: startx-cluster-sso-instance
+#     namespace: "${ARGOCD_NS}"
+#     labels:  &basic_labels
+#       app.startx.fr/scope: "${SCOPE}"
+#       app.startx.fr/cluster: "${CLUSTER}"
+#       app.startx.fr/component: "cluster-sso"
+#       app.kubernetes.io/name: "argoapp-cluster-sso-instance-application"
+#       app.kubernetes.io/part-of: ${CLUSTER}
+#       app.kubernetes.io/version: "${VERSION}"
+#       app.kubernetes.io/component: "cluster-sso"
+#     annotations: &basic_annotations
+#       openshift.io/generated-by: sxv4-console
+#       # argocd.argoproj.io/manifest-generate-paths: .
+#     finalizers:
+#       - resources-finalizer.argocd.argoproj.io
+#   spec:
+#     destination:
+#       namespace: "${KEYCLOAK_NS}"
+#       server: 'https://kubernetes.default.svc'
+#     info:
+#       - name: teammail
+#         value: dev@startx.fr
+#     project: cluster-admin
+#     source:
+#       path: charts/cluster-sso/
+#       repoURL: 'https://github.com/startxfr/helm-repository.git'
+#       targetRevision: devel
+#       helm:
+#         valueFiles:
+#           - values-startx.yaml
+#         parameters:
+#           - name: context.scope
+#             value: "${SCOPE}"
+#           - name: context.cluster
+#             value: "${CLUSTER}"
+#           - name: context.environment
+#             value: "${ENV}"
+#           - name: context.version
+#             value: "${VERSION}"
+#           - name: context.app
+#             value: "startx-sso"
+#           - name: project.enabled
+#             value: "false"
+#           - name: operator.enabled
+#             value: "false"
+#           - name: sso.enabled
+#             value: "true"
+#     syncPolicy:
+#       automated:
+#         prune: true
+#         selfHeal: true
+#       syncOptions:
+#         - CreateNamespace=false
+#         - Validate=true
+#       retry:
+#         limit: 3
+#         backoff:
+#           duration: 30s
+#           factor: 1
+#           maxDuration: 90s
+
+
+
+
+
+#   - kind: Project
+#     apiVersion: project.openshift.io/v1
+#     metadata:
+#       name: ${KEYCLOAK_NS}
+#       labels:  &basic_labels
+#         app.startx.fr/scope: "${SCOPE}"
+#         app.startx.fr/cluster: "${CLUSTER}"
+#         app.startx.fr/component: "cluster-keycloak"
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-namespace"
+#         app.kubernetes.io/part-of: ${CLUSTER}
+#         app.kubernetes.io/version: "${VERSION}"
+#         app.kubernetes.io/component: "cluster-keycloak"
+#       annotations: 
+#         openshift.io/description: "Keycloak Control plane"
+#         openshift.io/display-name: "STARTX Infra - KEYCLOAK"
+#         openshift.io/requester: sxv4-console
+#   - kind: ResourceQuota
+#     apiVersion: v1
+#     metadata:
+#       name: ${KEYCLOAK_NS}-quotas
+#       namespace: "${KEYCLOAK_NS}"
+#       labels: 
+#         <<: *basic_labels
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-quotas"
+#       annotations: &basic_annotations
+#         openshift.io/generated-by: sxv4-console
+#     spec:
+#       hard:
+#         limits.cpu: "4000m"
+#         limits.memory: "8Gi"
+#         requests.cpu: "1500m"
+#         requests.memory: "1500Mi"
+#         requests.storage: "4Gi"
+#         persistentvolumeclaims: "3"
+#         ephemeral-storage: "0" 
+#         gp2.storageclass.storage.k8s.io/requests.storage: "4Gi"
+#         gp2.storageclass.storage.k8s.io/persistentvolumeclaims: "3"
+#         aws-generic-retain.storageclass.storage.k8s.io/requests.storage: "0"
+#         aws-generic-retain.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+#         aws-generic-delete.storageclass.storage.k8s.io/requests.storage: "0"
+#         aws-generic-delete.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+#         aws-fast-retain.storageclass.storage.k8s.io/requests.storage: "0"
+#         aws-fast-retain.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+#         aws-fast-delete.storageclass.storage.k8s.io/requests.storage: "0"
+#         aws-fast-delete.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+#         aws-slow-retain.storageclass.storage.k8s.io/requests.storage: "0"
+#         aws-slow-retain.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+#         aws-slow-delete.storageclass.storage.k8s.io/requests.storage: "0"
+#         aws-slow-delete.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+#         ocs-generic-delete.storageclass.storage.k8s.io/requests.storage: "0"
+#         ocs-generic-delete.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+#         ocs-generic-retain.storageclass.storage.k8s.io/requests.storage: "0"
+#         ocs-generic-retain.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+#         ocs-fs-delete.storageclass.storage.k8s.io/requests.storage: "0"
+#         ocs-fs-delete.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+#         ocs-fs-retain.storageclass.storage.k8s.io/requests.storage: "0"
+#         ocs-fs-retain.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+#         ocs-storagecluster-ceph-rbd.storageclass.storage.k8s.io/requests.storage: "0"
+#         ocs-storagecluster-ceph-rbd.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+#         openshift-storage.noobaa.io.storageclass.storage.k8s.io/requests.storage: "0"
+#         openshift-storage.noobaa.io.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+#         pods: "5"
+#         services: "7"
+#         services.loadbalancers: "0"
+#         services.nodeports: "0"
+#         secrets: "28"
+#         configmaps: "3"
+#         replicationcontrollers: "5"
+#         openshift.io/imagestreams: "0"
+#         count/daemonsets.apps: "0"
+#         count/replicasets.apps: "5"
+#         count/deployments.apps: "3"
+#   - kind: LimitRange
+#     apiVersion: v1
+#     metadata:
+#       name: ${KEYCLOAK_NS}-limits
+#       namespace: "${KEYCLOAK_NS}"
+#       labels:
+#         <<: *basic_labels
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-limits"
+#       annotations:
+#         openshift.io/generated-by: sxv4-console
+#     spec:
+#       limits:
+#         - type: "Pod"
+#           min:
+#             cpu: 50m
+#             memory: 32Mi
+#           max:
+#             cpu: 800m
+#             memory: 1Gi
+#         - type: "Container"
+#           default:
+#             cpu: 300m
+#             memory: 512Mi
+#           defaultRequest:
+#             cpu: 100m
+#             memory: 128Mi
+#           min:
+#             cpu: 50m
+#             memory: 32Mi
+#           max:
+#             cpu: 1000m
+#             memory: 1Gi
+#   - kind: RoleBinding
+#     apiVersion: rbac.authorization.k8s.io/v1
+#     metadata:
+#       name: devops-rb
+#       namespace: ${KEYCLOAK_NS}
+#       labels:
+#         <<: *basic_labels
+#         app.kubernetes.io/name: "devops-rolebinding"
+#       annotations:
+#         <<: *basic_annotations
+#     roleRef:
+#       apiGroup: rbac.authorization.k8s.io
+#       kind: ClusterRole
+#       name: edit
+#     subjects:
+#       - kind: Group
+#         apiGroup: rbac.authorization.k8s.io
+#         name: "devops"
+#   - kind: OperatorGroup
+#     apiVersion: operators.coreos.com/v1
+#     metadata:
+#       name: ${KEYCLOAK_NS}
+#       namespace: ${KEYCLOAK_NS}
+#       annotations:
+#         openshift.io/generated-by: sxv4-console
+#         olm.providedAPIs: Keycloak.v1alpha1.keycloak.org,KeycloakBackup.v1alpha1.keycloak.org,KeycloakClient.v1alpha1.keycloak.org,KeycloakRealm.v1alpha1.keycloak.org,KeycloakUser.v1alpha1.keycloak.org
+#       labels:
+#         <<: *basic_labels
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-operatorgroup"
+#     spec:
+#       targetNamespaces:
+#       - ${KEYCLOAK_NS}
+#   - kind: Subscription
+#     apiVersion: operators.coreos.com/v1alpha1
+#     metadata:
+#       name: keycloak-operator
+#       namespace: ${KEYCLOAK_NS}
+#       annotations: &basic_annotations
+#         openshift.io/generated-by: sxv4-console
+#       labels:
+#         <<: *basic_labels
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-keycloak-operator-subscription"
+#     spec:
+#       channel: alpha
+#       installPlanApproval: Automatic
+#       name: keycloak-operator
+#       source: community-operators
+#       sourceNamespace: ${MARKETPLACE_NS}
+#       startingCSV: keycloak-operator.v9.0.2
+#   - kind: Secret
+#     apiVersion: v1
+#     type: Opaque
+#     metadata:
+#       name: credential-startx-keycloak
+#       namespace: ${KEYCLOAK_NS}
+#       labels:
+#         <<: *basic_labels
+#         app: "keycloak"
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-credential-startx-keycloak-secret"
+#       annotations:
+#         <<: *basic_annotations
+#     stringData:
+#       ADMIN_PASSWORD: secretdemerde
+#       ADMIN_USERNAME: admin
+#   - kind: Keycloak
+#     apiVersion: keycloak.org/v1alpha1
+#     metadata:
+#       name: startx
+#       namespace: ${KEYCLOAK_NS}
+#       labels: 
+#         <<: *basic_labels
+#         app: "startx-keycloak"
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-startx-keycloak"
+#       annotations: 
+#         <<: *basic_annotations
+#     spec:
+#       extensions:
+#         - >-
+#           https://github.com/aerogear/keycloak-metrics-spi/releases/download/1.0.4/keycloak-metrics-spi-1.0.4.jar
+#       # podDisruptionBudget:
+#       #   enabled: True
+#       # profile: RHSSO
+#       externalAccess:
+#         enabled: true
+#       instances: 1
+# # Configuration of startx realm
+#   - kind: KeycloakRealm
+#     apiVersion: keycloak.org/v1alpha1
+#     metadata:
+#       name: ${STARTX_REALM}
+#       namespace: ${KEYCLOAK_NS}
+#       annotations: &startxrealm_annotations
+#         <<: *basic_annotations
+#       labels: &startxrealm_labels
+#         <<: *basic_labels
+#         app: "${STARTX_REALM}"
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-${STARTX_REALM}-keycloakrealm"
+#     spec:
+#       instanceSelector:
+#         matchLabels:
+#           app: "startx-keycloak"
+#       realm:
+#         displayName: STARTX Realm
+#         enabled: true
+#         id: startx
+#         realm: startx
+#         eventsListeners:
+#           - "metrics-listener"
+#         users:
+#           - username: "admin"
+#             firstName: "User"
+#             lastName: "ADMIN"
+#             email: "cl+admin@startx.fr"
+#             enabled: True
+#             emailVerified: True
+#             credentials:
+#               - type: "password"
+#                 value: "secretdemerde"
+#             realmRoles:
+#               - "offline_access"
+#               - "uma_authorization"
+#             clientRoles:
+#               account:
+#                 - "manage-account"
+#                 - "view-profile"
+#               realm-management:
+#                 - "manage-users"
+#                 - "view-users"
+#                 - "query-users"
+#                 - "create-client"
+#       realmOverrides:
+#         - forFlow: "browser"
+#           identityProvider: "openshift-v4"
+#   - kind: KeycloakClient
+#     apiVersion: keycloak.org/v1alpha1
+#     metadata:
+#       name: startx-client-app1
+#       namespace: ${KEYCLOAK_NS}
+#       annotations:
+#         <<: *startxrealm_annotations
+#       labels:
+#         <<: *startxrealm_labels
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-client-app1-keycloakclient"
+#     spec:
+#       client:
+#         id: ${KEYCLOAK_NS}-client-app1
+#         clientId: startx-client-app1
+#         secret: startxapp1secret123
+#         directAccessGrantsEnabled: false
+#         clientAuthenticatorType: client-app1
+#         protocol: openid-connect
+#       realmSelector:
+#         matchLabels:
+#           app: "${STARTX_REALM}"
+#   - kind: KeycloakUser
+#     apiVersion: keycloak.org/v1alpha1
+#     metadata:
+#       name: startx-user
+#       namespace: ${KEYCLOAK_NS}
+#       annotations:
+#         <<: *startxrealm_annotations
+#       labels:
+#         <<: *startxrealm_labels
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-startx-user-keycloakuser"
+#     spec:
+#       realmSelector:
+#         matchLabels:
+#           app: ${STARTX_REALM}
+#       user:
+#         username: startx_user
+#         email: cl+startx@startx.fr
+#         firstName: STARTX
+#         lastName: USER
+#         enabled: true
+#         emailVerified: true
+#         credentials:
+#           - type: "password"
+#             value: "startx_user"
+#   - kind: KeycloakUser
+#     apiVersion: keycloak.org/v1alpha1
+#     metadata:
+#       name: startx-admin
+#       namespace: ${KEYCLOAK_NS}
+#       annotations:
+#         <<: *startxrealm_annotations
+#       labels:
+#         <<: *startxrealm_labels
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-startx-admin-keycloakuser"
+#     spec:
+#       realmSelector:
+#         matchLabels:
+#           app: ${STARTX_REALM}
+#       user:
+#         username: startx_admin
+#         email: cl+startx_admin@startx.fr
+#         firstName: STARTX
+#         lastName: ADMIN
+#         enabled: true
+#         emailVerified: true
+#         credentials:
+#           - type: "password"
+#             value: "startx_admin"
+#         realmRoles:
+#           - "offline_access"
+#         clientRoles:
+#           account:
+#             - "manage-account"
+#           realm-management:
+#             - "manage-users"
+#   # - kind: KeycloakBackup
+#   #   apiVersion: keycloak.org/v1alpha1
+#   #   metadata:
+#   #     name: startx-keycloakbackup
+#   #     namespace: ${KEYCLOAK_NS}
+#   #     annotations:
+#   #       <<: *startxrealm_annotations
+#   #     labels:
+#   #       <<: *startxrealm_labels
+#   #       app.kubernetes.io/name: "${KEYCLOAK_NS}-startx-keycloakbackup"
+#   #   spec:
+#   #     instanceSelector:
+#   #       matchLabels:
+#   #         app: "startx-keycloak"
+# # FreeIPA install
+#   - kind: ServiceAccount
+#     apiVersion: v1
+#     metadata:
+#       name: freeipa-pod
+#       namespace: "${KEYCLOAK_NS}"
+#       labels: &freeipa_labels
+#         <<: *startxrealm_labels
+#         app: "freeipa"
+#         app.startx.fr/component: "freeipa"
+#         app.kubernetes.io/component: "freeipa"
+#         app.kubernetes.io/name: "${SCOPE}-${ENV}-freeipa-pod-sa"
+#       annotations: &freeipa_annotations
+#         <<: *startxrealm_annotations
+#   - kind: Secret
+#     apiVersion: v1
+#     metadata:
+#       name: freeipa-pod
+#       namespace: "${KEYCLOAK_NS}"
+#       labels:
+#         <<: *freeipa_labels
+#         app.kubernetes.io/name: "${SCOPE}-${ENV}-freeipa-pod-secret"
+#       annotations:
+#         <<: *freeipa_annotations
+#         kubernetes.io/service-account.name: freeipa-pod
+#     type: kubernetes.io/service-account-token
+#   - kind: ClusterRoleBinding
+#     apiVersion: rbac.authorization.k8s.io/v1beta1
+#     metadata:
+#       name: role-deployers-binding
+#       namespace: "${KEYCLOAK_NS}"
+#       labels:
+#         <<: *freeipa_labels
+#         app.kubernetes.io/name: "${SCOPE}-${ENV}-freeipa-role-deployers-crb"
+#       annotations:
+#         <<: *freeipa_annotations
+#     roleRef:
+#       apiGroup: rbac.authorization.k8s.io
+#       kind: ClusterRole
+#       name: system:deployers
+#     subjects:
+#       - kind: ServiceAccount
+#         name: freeipa-pod
+#         namespace: "${KEYCLOAK_NS}"
+#   - kind: Secret
+#     apiVersion: v1
+#     metadata:
+#       name: "${IPA_SERVICE}-password"
+#       namespace: ${KEYCLOAK_NS}
+#       annotations:
+#         <<: *freeipa_annotations
+#       labels:
+#         <<: *freeipa_labels
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-${IPA_SERVICE}-password-secret"
+#     stringData:
+#       admin.password: "${IPA_ADMIN_PASSWORD}"
+#   - kind: PersistentVolumeClaim
+#     apiVersion: v1
+#     metadata:
+#       name: "${IPA_SERVICE}"
+#       namespace: ${KEYCLOAK_NS}
+#     spec:
+#       accessModes:
+#       - ReadWriteOnce
+#       resources:
+#         requests:
+#           storage: "1Gi"
+#   - kind: DeploymentConfig
+#     apiVersion: apps.openshift.io/v1
+#     metadata:
+#       name: "${IPA_SERVICE}"
+#       namespace: ${KEYCLOAK_NS}
+#       annotations:
+#         <<: *freeipa_annotations
+#       labels:
+#         <<: *freeipa_labels
+#         deploymentconfig: "${IPA_SERVICE}"
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-${IPA_SERVICE}-deploymentconfig"
+#     spec:
+#       strategy:
+#         type: Recreate
+#         recreateParams:
+#           timeoutSeconds: 600
+#       triggers:
+#         - type: ConfigChange
+#       replicas: 1
+#       test: false
+#       selector:
+#         app: "${IPA_SERVICE}"
+#         deploymentconfig: "${IPA_SERVICE}"
+#       template:
+#         metadata:
+#           name: "${IPA_SERVICE}"
+#           annotations:
+#             <<: *freeipa_annotations
+#           labels:
+#             <<: *freeipa_labels
+#             app: "${IPA_SERVICE}"
+#             deploymentconfig: "${IPA_SERVICE}"
+#             app.kubernetes.io/name: "${KEYCLOAK_NS}-${IPA_SERVICE}-pod"
+#         spec:
+#           serviceAccountName: "freeipa-pod"
+#           securityContext:
+#             privileged: true
+#             runAsUser: 0
+#             runAsGroup: 0
+#             fsGroup: 0
+#             allowPrivilegeEscalation: true
+#             capabilities:
+#               add: ["CAP_SYS_ADMIN", "SYS_ADMIN"]
+#           containers:
+#             - name: "${IPA_SERVICE}"
+#               # image: "freeipa/freeipa-server:fedora-31"
+#               image: "registry.access.redhat.com/rhel7/ipa-server"
+#               ports:
+#                 - containerPort: 53
+#                   protocol: TCP
+#                 - containerPort: 53
+#                   protocol: UDP
+#                 - containerPort: 80
+#                   protocol: TCP
+#                 - containerPort: 88
+#                   protocol: TCP
+#                 - containerPort: 88
+#                   protocol: UDP
+#                 - containerPort: 123
+#                   protocol: UDP
+#                 - containerPort: 389
+#                   protocol: TCP
+#                 - containerPort: 443
+#                   protocol: TCP
+#                 - containerPort: 464
+#                   protocol: TCP
+#                 - containerPort: 464
+#                   protocol: UDP
+#                 - containerPort: 636
+#                   protocol: TCP
+#               env:
+#                 - name: IPA_SERVER_HOSTNAME
+#                   value: "${IPA_SERVICE}-${KEYCLOAK_NS}.apps.${CLUSTER}.startx.fr"
+#                 - name: IPA_SERVER_IP
+#                   value: "${IPA_SERVER_IP}"
+#                 - name: IPA_SERVER_INSTALL_OPTS
+#                   value: "-U -r EXAMPLE.TEST --setup-dns --no-forwarders --no-ntp"
+#                 - name: PASSWORD
+#                   valueFrom:
+#                     secretKeyRef:
+#                       name: "${IPA_SERVICE}-password"
+#                       key: admin.password
+#               args:
+#                 - "ipa-server-install"
+#               resources: {}
+#               volumeMounts:
+#                 - name: "${IPA_SERVICE}-data"
+#                   mountPath: "/data"
+#                 - name: "${IPA_SERVICE}-run"
+#                   mountPath: "/run"
+#                 - name: "${IPA_SERVICE}-tmp"
+#                   mountPath: "/tmp"
+#                 - name: "${IPA_SERVICE}-journal"
+#                   mountPath: "/var/log/journal"
+#                 - name: "${IPA_SERVICE}-cgroup"
+#                   mountPath: "/sys/fs/cgroup"
+#               readinessProbe:
+#                 exec:
+#                   command:
+#                   - "/usr/bin/systemctl"
+#                   - status
+#                   - ipa
+#                 initialDelaySeconds: 60
+#                 timeoutSeconds: 10
+#                 periodSeconds: 10
+#                 successThreshold: 1
+#                 failureThreshold: 3
+#           restartPolicy: Always
+#           volumes:
+#             - name: "${IPA_SERVICE}-data"
+#               persistentVolumeClaim:
+#                 claimName: "${IPA_SERVICE}"
+#             - name: "${IPA_SERVICE}-run"
+#               emptyDir: {}
+#             - name: "${IPA_SERVICE}-tmp"
+#               emptyDir: {}
+#             - name: "${IPA_SERVICE}-journal"
+#               emptyDir: {}
+#             - name: "${IPA_SERVICE}-cgroup"
+#               hostPath: 
+#                 path: /sys/fs/cgroup
+#   - kind: Service
+#     apiVersion: v1
+#     metadata:
+#       name: "${IPA_SERVICE}"
+#       namespace: ${KEYCLOAK_NS}
+#       annotations:
+#         <<: *freeipa_annotations
+#       labels:
+#         <<: *freeipa_labels
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-${IPA_SERVICE}-service"
+#     spec:
+#       ports:
+#       - name: dns-tcp
+#         protocol: TCP
+#         port: 53
+#         targetPort: 53
+#       - name: dns-udp
+#         protocol: UDP
+#         port: 53
+#         targetPort: 53
+#       - name: http
+#         protocol: TCP
+#         port: 80
+#         targetPort: 80
+#       - name: kerberos-tcp
+#         protocol: TCP
+#         port: 88
+#         targetPort: 88
+#       - name: kerberos-udp
+#         protocol: UDP
+#         port: 88
+#         targetPort: 88
+#       - name: ntp
+#         protocol: UDP
+#         port: 123
+#         targetPort: 123
+#       - name: ldap
+#         protocol: TCP
+#         port: 389
+#         targetPort: 389
+#       - name: https
+#         protocol: TCP
+#         port: 443
+#         targetPort: 443
+#       - name: kpasswd-tcp
+#         protocol: TCP
+#         port: 464
+#         targetPort: 464
+#       - name: kpasswd-udp
+#         protocol: UDP
+#         port: 464
+#         targetPort: 464
+#       - name: ldaps
+#         protocol: TCP
+#         port: 636
+#         targetPort: 636
+#       clusterIP: "${IPA_SERVER_IP}"
+#       selector:
+#         deploymentconfig: "${IPA_SERVICE}"
+#   - kind: Route
+#     apiVersion: v1
+#     metadata:
+#       name: "${IPA_SERVICE}-https"
+#       namespace: ${KEYCLOAK_NS}
+#       annotations:
+#         <<: *freeipa_annotations
+#         description: Route for FreeIPA server's HTTPS
+#       labels:
+#         <<: *freeipa_labels
+#         app.kubernetes.io/name: "${KEYCLOAK_NS}-${IPA_SERVICE}-https-route"
+#     spec:
+#       host: "${IPA_SERVICE}-${KEYCLOAK_NS}.apps.${CLUSTER}.startx.fr"
+#       to:
+#         kind: Service
+#         name: "${IPA_SERVICE}"
+#       port:
+#         targetPort: https
+#       tls:
+#         termination: passthrough
+parameters:
+  - name: KEYCLOAK_NS
+    displayName: The namespace where sso server goes to
+    description: "Namespace to place sso server to"
+    value: startx-sso
+    required: true
+  - name: STARTX_REALM
+    displayName: The name of the realm where startx objects goes to
+    description: "realm to place startx objects to"
+    value: startx-realm
+    required: true
+  - name: ARGOCD_NS
+    displayName: The namespace where argocd server goes to
+    description: "Namespace to place argocd server to"
+    value: startx-argocd
+    required: true
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: sxv4)"
+    value: sxv4
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: 3.9.x-dev
+    required: true
+  - name: MARKETPLACE_NS
+    displayName: The operator marketplace namespace where objects goes to
+    description: "operator marketplace namespace to place objects to"
+    value: openshift-marketplace
+    required: true
+  - name: IPA_SERVICE
+    displayName: Service and deployment config name
+    required: true
+    value: freeipa
+  - name: IPA_SERVER_IP
+    displayName: FreeIPA server service IP address
+    required: true
+    value: "172.30.56.111"
+  - name: IPA_ADMIN_PASSWORD
+    displayName: Admin's password
+    value: adminfreeipa
+    required: true
+  - name: CLUSTER_PROFILE
+    displayName: Name of the cluster profile
+    description: "The name of the cluster profile"
+    value: default
+    required: true
+

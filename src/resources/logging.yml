@@ -1,0 +1,569 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxv4-cluster-logging-template
+  annotations:
+    openshift.io/display-name: STARTX cluster Logging (admin)
+    description: Deploy cluster-wide resources to enable logs aggregation support according to sxv4-console definitions
+    iconClass: icon-openshift
+    tags: startx,cluster,config,admin,logging
+    openshift.io/provider-display-name: STARTX
+    openshift.io/generated-by: sxv4-console
+    sxv4_console_timeout: "40"
+  labels:
+    template: sxv4-cluster-logging-template
+    app.kubernetes.io/name: "sxv4-cluster-logging-template"
+    app.kubernetes.io/managed-by: sxv4-console
+message: |-
+  Your cluster-wide logs aggregation support is now enabled.
+
+  Scope             : ${SCOPE}
+  Cluster           : ${CLUSTER}
+  Elasticsearch     : elasticsearch-operator.4.6
+  Operator          : clusterlogging.4.3.5
+labels:
+  template: sxv4-cluster-logging-template
+  app.kubernetes.io/managed-by: sxv4-console
+objects:
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: startx-cluster-logging-project
+    namespace: "${ARGOCD_NS}"
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "cluster-logging"
+      app.kubernetes.io/name: "startx-cluster-logging-project-application"
+      app.kubernetes.io/part-of: ${CLUSTER}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "cluster-logging"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxv4-console
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-logging/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-startx.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "openshift-logging"
+          - name: project.enabled
+            value: "true"
+          - name: project.project.requester
+            value: "sxv4-console"
+          - name: operator.enabled
+            value: "false"
+          - name: logging.enabled
+            value: "false"
+          - name: logging.reports.enabled
+            value: "false"
+          - name: eventrouter.enabled
+            value: "false"
+          - name: logforwarder.enabled
+            value: "false"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: startx-cluster-logging-operator
+    namespace: "${ARGOCD_NS}"
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "cluster-logging"
+      app.kubernetes.io/name: "startx-cluster-logging-operator-application"
+      app.kubernetes.io/part-of: ${CLUSTER}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "cluster-logging"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxv4-console
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-logging/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-startx.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "openshift-logging"
+          - name: project.enabled
+            value: "false"
+          - name: operator.enabled
+            value: "true"
+          - name: operatorElastic.enabled
+            value: "false"
+          - name: logging.enabled
+            value: "false"
+          - name: logging.reports.enabled
+            value: "false"
+          - name: eventrouter.enabled
+            value: "false"
+          - name: logforwarder.enabled
+            value: "false"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+    ignoreDifferences:
+      - group: operators.coreos.com
+        kind: OperatorGroup
+        namespace: "${NS}"
+        jsonPointers:
+          - /metadata/annotations/olm.providedAPIs
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: startx-cluster-logging-instance
+    namespace: "${ARGOCD_NS}"
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "cluster-logging"
+      app.kubernetes.io/name: "startx-cluster-logging-instance-application"
+      app.kubernetes.io/part-of: ${CLUSTER}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "cluster-logging"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxv4-console
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-logging/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-startx.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "openshift-logging"
+          - name: project.enabled
+            value: "false"
+          - name: operator.enabled
+            value: "false"
+          - name: logging.enabled
+            value: "true"
+          - name: logging.reports.enabled
+            value: "true"
+          - name: eventrouter.enabled
+            value: "true"
+          - name: logforwarder.enabled
+            value: "true"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 3
+        backoff:
+          duration: 90s
+          factor: 1
+          maxDuration: 300s
+  # - kind: Namespace
+  #   apiVersion: v1
+  #   metadata:
+  #     name: ${OPERATOR_NS}
+  #     labels:  &basic_labels
+  #       app.startx.fr/scope: "${SCOPE}"
+  #       app.startx.fr/cluster: "${CLUSTER}"
+  #       app.startx.fr/component: "cluster-logging"
+  #       app.kubernetes.io/name: "${SCOPE}-logging-${OPERATOR_NS}-namespace"
+  #       app.kubernetes.io/part-of: ${CLUSTER}
+  #       app.kubernetes.io/version: "${VERSION}"
+  #       app.kubernetes.io/component: "cluster-logging"
+  #       openshift.io/cluster-monitoring: "true"
+  #     annotations:
+  #       openshift.io/generated-by: sxv4-console
+  #       openshift.io/node-selector: ""
+  #   spec: {}
+  # - kind: Role
+  #   apiVersion: "rbac.authorization.k8s.io/v1"
+  #   metadata:
+  #     name: prometheus-k8s
+  #     namespace: "${OPERATOR_NS}"
+  #     annotations: &basic_annotations
+  #       openshift.io/generated-by: sxv4-console
+  #     labels:
+  #       <<: *basic_labels
+  #       app.kubernetes.io/name: "${SCOPE}-logging-${OPERATOR_NS}-prometheus-role"
+  #   rules:
+  #     - apiGroups:
+  #         - ""
+  #       resources:
+  #         - services
+  #         - endpoints
+  #         - pods
+  #       verbs:
+  #         - get
+  #         - list
+  #         - watch
+  # - kind: RoleBinding
+  #   apiVersion: "rbac.authorization.k8s.io/v1"
+  #   metadata:
+  #     name: prometheus-k8s
+  #     namespace: "${OPERATOR_NS}"
+  #     annotations:
+  #       <<: *basic_annotations
+  #     labels:
+  #       <<: *basic_labels
+  #       app.kubernetes.io/name: "${SCOPE}-logging-${OPERATOR_NS}-prometheus-rb"
+  #   roleRef:
+  #     apiGroup: rbac.authorization.k8s.io
+  #     kind: Role
+  #     name: prometheus-k8s
+  #   subjects:
+  #     - kind: ServiceAccount
+  #       name: prometheus-k8s
+  #   namespace: "${OPERATOR_NS}"
+  # - kind: Namespace
+  #   apiVersion: v1
+  #   metadata:
+  #     name: ${NS}
+  #     annotations:
+  #       <<: *basic_annotations
+  #       openshift.io/node-selector: ""
+  #     labels:
+  #       <<: *basic_labels
+  #       app.kubernetes.io/name: "${SCOPE}-logging-${NS}-namespace"
+  #       openshift.io/cluster-logging: "true"
+  #       openshift.io/cluster-monitoring: "true"
+  # - kind: RoleBinding
+  #   apiVersion: rbac.authorization.k8s.io/v1
+  #   metadata:
+  #     name: devops-rb
+  #     namespace: ${NS}
+  #     labels:
+  #       <<: *basic_labels
+  #       app.kubernetes.io/name: "devops-rolebinding"
+  #     annotations:
+  #       <<: *basic_annotations
+  #   roleRef:
+  #     apiGroup: rbac.authorization.k8s.io
+  #     kind: ClusterRole
+  #     name: view
+  #   subjects:
+  #     - kind: Group
+  #       apiGroup: rbac.authorization.k8s.io
+  #       name: "devops"
+  # - kind: OperatorGroup
+  #   apiVersion: operators.coreos.com/v1
+  #   metadata:
+  #     name: cluster-logging
+  #     namespace: ${NS}
+  #     annotations:
+  #       <<: *basic_annotations
+  #       olm.providedAPIs: ClusterLogging.v1.logging.openshift.io,Collector.v1alpha1.logging.openshift.io,LogForwarding.v1alpha1.logging.openshift.io
+  #     labels:
+  #       <<: *basic_labels
+  #       app.kubernetes.io/name: "${SCOPE}-logging-${NS}-operatorgroup"
+  #   spec:
+  #     targetNamespaces:
+  #     - ${NS}
+  # - kind: Subscription
+  #   apiVersion: "operators.coreos.com/v1alpha1"
+  #   metadata:
+  #     name: "cluster-logging"
+  #     namespace: "${NS}"
+  #     annotations:
+  #       <<: *basic_annotations
+  #     labels:
+  #       <<: *basic_labels
+  #       app.kubernetes.io/name: "${SCOPE}-logging-${NS}-subscription"
+  #   spec:
+  #     channel: "4.5"
+  #     installPlanApproval: Automatic
+  #     name: cluster-logging
+  #     source: redhat-operators
+  #     sourceNamespace: ${MARKETPLACE_NS}
+  #     startingCSV: clusterlogging.4.5.0-202009041228.p0
+  # - kind: "ClusterLogging"
+  #   apiVersion: "logging.openshift.io/v1"
+  #   metadata:
+  #     name: "instance" 
+  #     namespace: "${NS}"
+  #     annotations:
+  #       <<: *basic_annotations
+  #     labels:
+  #       <<: *basic_labels
+  #       app.kubernetes.io/name: "${SCOPE}-logging-${NS}-logging-instance"
+  #   spec:
+  #     managementState: "Managed"  
+  #     logStore:
+  #       type: "elasticsearch"  
+  #       elasticsearch:
+  #         nodeCount: 3
+  #         resources:
+  #           limits:
+  #             memory: 2Gi
+  #           requests:
+  #             cpu: 200m
+  #             memory: 2Gi
+  #         storage:
+  #           storageClassName: gp2 
+  #           size: 200G
+  #         redundancyPolicy: "SingleRedundancy"
+  #     visualization:
+  #       type: "kibana"  
+  #       kibana:
+  #         resources:
+  #           limits:
+  #             memory: 1Gi
+  #           requests:
+  #             cpu: 500m
+  #             memory: 1Gi
+  #         replicas: 1
+  #     curation:
+  #       type: "curator"  
+  #       curator:
+  #         resources:
+  #           limits:
+  #             memory: 200Mi
+  #           requests:
+  #             cpu: 200m
+  #             memory: 200Mi
+  #         schedule: "30 3 * * *"
+  #     collection:
+  #       logs:
+  #         type: "fluentd"  
+  #         fluentd:
+  #           resources:
+  #             limits:
+  #               memory: 1Gi
+  #             requests:
+  #               cpu: 200m
+  #               memory: 1Gi
+  # - kind: ServiceAccount 
+  #   apiVersion: v1
+  #   metadata:
+  #     name: eventrouter
+  #     namespace: "${NS}"
+  #     annotations:
+  #       <<: *basic_annotations
+  #     labels:
+  #       <<: *basic_labels
+  #       app.kubernetes.io/name: "${SCOPE}-logging-eventrouter-sa"
+  # - kind: ClusterRole 
+  #   apiVersion: v1
+  #   metadata:
+  #     name: event-reader
+  #     annotations:
+  #       <<: *basic_annotations
+  #     labels:
+  #       <<: *basic_labels
+  #       app.kubernetes.io/name: "${SCOPE}-logging-event-reader-cr"
+  #   rules:   
+  #   - apiGroups: [""]
+  #     resources: ["events"]
+  #     verbs: ["get", "watch", "list"]
+  # - kind: ClusterRoleBinding  
+  #   apiVersion: v1
+  #   metadata:
+  #     name: event-reader-binding
+  #     annotations:
+  #       <<: *basic_annotations
+  #     labels:
+  #       <<: *basic_labels
+  #       app.kubernetes.io/name: "${SCOPE}-logging-event-reader-crb"
+  #   subjects:
+  #   - kind: ServiceAccount
+  #     name: eventrouter
+  #     namespace: "${NS}"
+  #   roleRef:
+  #     kind: ClusterRole
+  #     name: event-reader
+  # - kind: ConfigMap
+  #   apiVersion: v1
+  #   metadata:
+  #     name: eventrouter
+  #     namespace: "${NS}"
+  #     annotations:
+  #       <<: *basic_annotations
+  #     labels:
+  #       <<: *basic_labels
+  #       app.kubernetes.io/name: "${SCOPE}-logging-eventrouter-configmap"
+  #   data:
+  #     config.json: |-
+  #       {
+  #         "sink": "stdout"
+  #       }
+  # - kind: Deployment
+  #   apiVersion: apps/v1
+  #   metadata:
+  #     name: eventrouter
+  #     namespace: "${NS}"
+  #     annotations:
+  #       <<: *basic_annotations
+  #     labels:
+  #       <<: *basic_labels
+  #       app.openshift.io/runtime: operator
+  #       app.kubernetes.io/name: "${SCOPE}-logging-eventrouter-deployment"
+  #       component: eventrouter
+  #       logging-infra: eventrouter
+  #       provider: openshift
+  #   spec:
+  #     selector:
+  #       matchLabels:
+  #         component: eventrouter
+  #         logging-infra: eventrouter
+  #         provider: openshift
+  #     replicas: 1
+  #     template:
+  #       metadata:
+  #         name: eventrouter
+  #         annotations:
+  #           <<: *basic_annotations
+  #         labels:
+  #           <<: *basic_labels
+  #           app.kubernetes.io/name: "${SCOPE}-logging-eventrouter-pod"
+  #           component: eventrouter
+  #           logging-infra: eventrouter
+  #           provider: openshift
+  #       spec:
+  #         serviceAccount: eventrouter
+  #         containers:
+  #           - name: kube-eventrouter
+  #             image: "registry.redhat.io/openshift4/ose-logging-eventrouter:latest"
+  #             imagePullPolicy: IfNotPresent
+  #             resources:
+  #               limits:
+  #                 memory: "128Mi"
+  #               requests:
+  #                 cpu: "100m"
+  #                 memory: "128Mi"
+  #             volumeMounts:
+  #             - name: config-volume
+  #               mountPath: /etc/eventrouter
+  #         volumes:
+  #           - name: config-volume
+  #             configMap:
+  #               name: eventrouter
+parameters:
+  - name: ARGOCD_NS
+    displayName: The namespace where argocd server goes to
+    description: "Namespace to place argocd server to"
+    value: startx-argocd
+    required: true
+  - name: NS
+    displayName: The namespace where objects goes to
+    description: "Namespace to place objects to"
+    value: openshift-logging
+    required: true
+  - name: OPERATOR_NS
+    displayName: The operator namespace where objects goes to
+    description: "operator namespace to place objects to"
+    value: openshift-operators-redhat
+    required: true
+  - name: MARKETPLACE_NS
+    displayName: The operator marketplace namespace where objects goes to
+    description: "operator marketplace namespace to place objects to"
+    value: openshift-marketplace
+    required: true
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: sxv4)"
+    value: sxv4
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: 3.9.x-dev
+    required: true
+  - name: CLUSTER_PROFILE
+    displayName: Name of the cluster profile
+    description: "The name of the cluster profile"
+    value: default
+    required: true
+

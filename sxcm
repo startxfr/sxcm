@@ -1,6 +1,7 @@
 #!/bin/bash
 SXCM_PATH=/usr/share/sxcm
 SXCM_PROFILES_PATH=$SXCM_PATH/profiles
+SXCM_RESOURCES_PATH=$SXCM_PATH/resources
 SXCM_LIB_PATH=$SXCM_PATH/lib
 SXCM_VERSION=devel
 
