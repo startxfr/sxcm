@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Client configuration
+SXCM_VERSION=devel
+
+# Manage OKD remote cluster
+SXCM_OCPI_BRANCH=' 4.6.13'
+SXCM_OCPI_RELEASE=' 4.6.13'
+SXCM_OCPI_PACKAGE="openshift-install-linux-${SXCM_OCPI_RELEASE}.tar.gz"
+SXCM_OCPI_URL="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${SXCM_OCPI_BRANCH}/${SXCM_OCPI_PACKAGE}"
+SXCM_OCPI_TMP='/tmp/ocpi'
+SXCM_OCPI_BIN='/usr/local/bin/openshift-install'
+
+# Manage sxcm profiles
+SXCM_PROFILES_ORDERED=(pico nano micro milli centi deci default deca hecto kilo mega giga tera peta)
+
+# sxcm user configuration
+SXCM_USER_CONF_DIR=~/.sxcm
+SXCM_USER_SSH_DIR=~/.ssh
+SXCM_USER_CONF_FILE=config
+SXCM_USER_CONF_DIR_CLUSTER=clusters
+
+# sxcm OCP configuration
+SXCM_OCP_DEPLOY_SLEEP_FACTOR=2
+SXCM_OCP_CLUSTER_URL=https://localhost:6443
+SXCM_OCP_CLUSTER_NAME=localhost
+SXCM_OCP_SCOPE=startx
+SXCM_OCP_ATOKEN='xxx'
+SXCM_OCP_TOKEN='xxx'
+
+# sxcm AWS configuration
+SXCM_AWS_ID='XXXXX'
+SXCM_AWS_KEY='XXXXX'
+SXCM_AWS_ZONE=eu-west-3
+SXCM_RHN_USER=startx_cl
+SXCM_RHN_PASSWORD=xxxx
+
+# sxcm oc configuration
+SXCM_OCAPPLY_OPTS=""
+# Options for  4.4.11 compat in cluster creation
+# SXCM_OCAPPLY_OPTS="--force-conflicts=true --server-side"
