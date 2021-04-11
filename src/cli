@@ -19,6 +19,7 @@ loadActiveClusterConf
 if [[ "$1" != "" ]]; then
     case $1 in
         list)     menuCluster $1 $2 ;;
+        import)   menuCluster $1 $2 ;;
         create)   menuCluster $1 $2 $3 ;;
         edit)     menuCluster $1 $2 $3 ;;
         switch)   menuCluster $1 $2 ;;
