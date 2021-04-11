@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Client configuration
+SXCM_VERSION=devel
+
+# Manage OKD remote cluster
+SXCM_OCPI_BRANCH=' 4.6.13'
+SXCM_OCPI_RELEASE=' 4.6.13'
+SXCM_OCPI_PACKAGE="openshift-install-linux-${SXCM_OCPI_RELEASE}.tar.gz"
+SXCM_OCPI_URL="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${SXCM_OCPI_BRANCH}/${SXCM_OCPI_PACKAGE}"
+SXCM_OCPI_TMP='/tmp/ocpi'
+SXCM_OCPI_BIN='/usr/local/bin/openshift-install'
+
+# Manage sxcm profiles
+SXCM_PROFILES_ORDERED=(pico nano micro milli centi deci default deca hecto kilo mega giga tera peta)
+
+# sxcm user configuration
+SXCM_USER_CONF_DIR=~/.sxcm
+SXCM_USER_SSH_DIR=~/.ssh
+SXCM_USER_CONF_FILE=config
+SXCM_USER_CONF_DIR_CLUSTER=clusters
+
+## sxcm OCP configuration (if commented, should be declared using 'sxcm setup aws' command)
+SXCM_CLUSTER_DEPLOY_SLEEP_FACTOR=2
+SXCM_CLUSTER_ACTIVE=myClusterName
+# SXCM_CLUSTER_URL=https://localhost:6443
+# SXCM_CLUSTER_NAME=localhost
+# SXCM_CLUSTER_ADMIN_TOKEN='xxx'
+# SXCM_CLUSTER_SCOPE=startx
+
+## sxcm AWS configuration (if commented, should be declared using 'sxcm setup aws' command)
+# SXCM_AWS_ID='XXXXX'
+# SXCM_AWS_KEY='XXXXX'
+SXCM_AWS_ZONE=eu-west-3
+
+## sxcm RHN configuration (if commented, should be declared using 'sxcm setup rhn' command)
+# SXCM_RHN_USER=startx_cl
+# SXCM_RHN_PASSWORD=xxxx
+# SXCM_RHN_EMAIL=cl@startx.fr
+# SXCM_RHN_PULLSECRET='{"auths":{"cloud.openshift.com":{"auth":"XXXX","email":"cl@startx.fr"},"quay.io":{"auth":"XXXX","email":"cl@startx.fr"},"registry.connect.redhat.com":{"auth":"XXXX","email":"cl@startx.fr"},"registry.redhat.io":{"auth":"XXXX","email":"cl@startx.fr"}}}'
+
+## sxcm GIT configuration (if commented, should be declared using 'sxcm setup git' command)
+SXCM_GIT_BRANCH_MAIN=main
+SXCM_GIT_BRANCH_DEFAULT=myClusterName
+# SXCM_GIT_REPO=https://github.com/startxfr/sxcm-cluster-repo.git
+# SXCM_GIT_LOGIN=mygithubname
+# SXCM_GIT_PASSWORD=mygithubpwd
+# SXCM_GIT_BRANCH=localhost
+
+# sxcm oc configuration
+SXCM_OCAPPLY_OPTS=""
+# Options for  4.4.11 compat in cluster creation
+# SXCM_OCAPPLY_OPTS="--force-conflicts=true --server-side"

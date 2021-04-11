@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# router for version sub-command
+function menuVersion {
+    echo "sxcm version : $SXCM_VERSION"
+    echo -n "Openshift : "
+    oc version 
+    echo -n "Helm : "
+    helm version --short
+}

@@ -82,5 +82,5 @@ test are OK.
 | ------- | -------- | ------------------------------ |
 | 0.0.4   | 21-04-03 | release sxcm for openshift 4.6 |
 | 0.0.3   | 21-04-03 | stable cli basic functions     |
-| 0.0.2   | 21-04-03 | stable initial li              |
+| 0.0.2   | 21-04-03 | adding the installer           |
 | 0.0.1   | 21-04-03 | Initial commit                 |
