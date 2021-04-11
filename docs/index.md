@@ -98,6 +98,8 @@ test are OK.
 
 ## Release history
 
+XXXXXXXXXXXXXX [history](history.md).
+
 ### version 0.1.x (seilhac)
 
 | Release | Date     | Description              |
