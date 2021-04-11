@@ -4,8 +4,10 @@ SXCM_PROFILES_PATH=$SXCM_PATH/profiles
 SXCM_RESOURCES_PATH=$SXCM_PATH/resources
 SXCM_LIB_PATH=$SXCM_PATH/lib
 
-source $SXCM_LIB_PATH/config
+source $SXCM_PATH/config
 source $SXCM_LIB_PATH/core
+source $SXCM_LIB_PATH/core-version
+source $SXCM_LIB_PATH/core-setup
 source $SXCM_LIB_PATH/core-cluster
 
 ## Start prog switch
@@ -29,6 +31,7 @@ if [[ "$1" != "" ]]; then
         connect)  menuCluster $1 $2 ;;
         profiles) menuCluster $1 ;;
         current)  menuCluster $1 $2 ;;
+        setup)    menuSetup $@ ;;
         version|--version)  menuVersion;;
         *)        menuUsage $@ ;;
     esac

@@ -11,7 +11,7 @@ function CheckConfigExist {
 
 # Check if cluster config exist
 function CheckConfigClusterExist {
-    if [[ -d $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER ]]; then
+    if [[ -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$1/$SXCM_USER_CONF_FILE ]]; then
         return 0;
     else
         return 1;
@@ -21,22 +21,11 @@ function CheckConfigClusterExist {
 # Check if config exist and create otherwise
 function CheckConfigOrCreate {
     if CheckConfigExist; then
-        echo "Using configuration $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_FILE"
+        echo -e "\e[36mUsing\e[0m user configuration file at $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_FILE"
     else
-        echo "Creating configuration $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_FILE"
+        echo -e "\e[32mCreating\e[0m user configuration file at $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_FILE"
         mkdir -p $SXCM_USER_CONF_DIR &> /dev/null
         touch $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_FILE
-    fi
-}
-
-# Check if cluster config exist and create otherwise
-function CheckConfigClusterOrCreate {
-    if CheckConfigClusterExist; then
-        echo "Using cluster configuration $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER"
-    else
-        echo "Creating cluster configuration $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER"
-        mkdir -p $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER &> /dev/null
-        touch $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$SXCM_USER_CONF_FILE
     fi
 }
 
@@ -46,10 +35,6 @@ function LoadConfig {
         CheckConfigOrCreate
     fi
     reloadConf
-    if ! CheckConfigClusterExist; then
-        CheckConfigClusterOrCreate
-    fi
-    reloadClusterConf
     if [[ ! -z "${SXCM_ENV}" ]]; then
         SXCM_ENV="dev"
     fi
@@ -68,13 +53,14 @@ function reloadConf {
 
 # append key to cluster conf
 function appendClusterConf {
-    echo "$1=$2" >> $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$SXCM_USER_CONF_FILE
-    export $1=$2
+    local clusterName=`getActiveCluster`
+    appendIndividualClusterConf $clusterName $1 $2
 }
 
 # reload cluster conf file
 function reloadClusterConf {
-    source $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$SXCM_USER_CONF_FILE
+    local clusterName=`getActiveCluster`
+    reloadIndividualClusterConf $clusterName
 }
 
 # temporize with a balanced sleep
@@ -89,15 +75,39 @@ function temporize {
     done
 }
 
+# append key to individual cluster conf
+function appendIndividualClusterConf {
+    if ! CheckConfigClusterExist $1; then
+        mkdir -p $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$1 &> /dev/null
+        touch $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$1/$SXCM_USER_CONF_FILE &> /dev/null
+    fi
+    echo "$2=$3" >> $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$1/$SXCM_USER_CONF_FILE
+    export $2=$3
+}
 
+# reload cluster conf file
+function reloadIndividualClusterConf {
+    if CheckConfigClusterExist $1; then
+        source $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$1/$SXCM_USER_CONF_FILE
+    else
+        echo -e "\e[31mCould not found\e[0m cluster \e[1m$1\e[0m configuration directory at $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$1"
+    fi
+}
 
-# router for version sub-command
-function menuVersion {
-    echo "sxcm version : $SXCM_VERSION"
-    echo -n "Openshift : "
-    oc version 
-    echo -n "Helm : "
-    helm version --short
+# load active cluster conf file
+function loadActiveClusterConf {
+    reloadIndividualClusterConf `getActiveCluster`
+}
+
+# get active cluster configuration
+function getActiveCluster {
+    echo $SXCM_CLUSTER_ACTIVE
+}
+
+# set active cluster configuration
+function setActiveCluster {
+    appendConf SXCM_CLUSTER_ACTIVE $1
+    export SXCM_CLUSTER_ACTIVE=$1
 }
 
 # menu switch for usage command
