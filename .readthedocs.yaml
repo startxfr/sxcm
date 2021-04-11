@@ -3,6 +3,7 @@
 
 # Required
 version: 2
+docs_dir: .
 
 mkdocs:
   configuration: mkdocs.yml
