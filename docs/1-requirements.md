@@ -17,5 +17,5 @@ yum install ansible yq helm oc
 ## Installation
 
 ```bash
-$(curl -s https://raw.githubusercontent.com/startxfr/sxcm/main/installer)
+$(curl -s https://raw.githubusercontent.com/startxfr/sxcm/stable/installer)
 ```
