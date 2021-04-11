@@ -5,71 +5,68 @@
 STARTX Openshift installer for various infrastructure configuration deployed under an AWS account.
 For more informations and how to install this cluster manager, you can visit the [startx sxcm homepage](https://startxfr.github.io/sxcm) or the [startx sxcm documentation](https://sxcm.readthedocs.io).
 
-## Requirements
+## 1. Requirements
 
-### System
+You must follow the [system requirements and client install documentation](1-requirements.md) to get and install the sxcm cli.
 
-```bash
-yum update -y
-```
+## 2. global config
 
-### library
+After this basic installation, you can [follow the configuration guide](2-configure.md).
 
-```bash
-yum install ansible yq helm oc
-```
+## 3. Cluster creation
 
-## Client install
-
-### Installation
+### Import existing undeployed cluster
 
 ```bash
-$(curl -s https://raw.githubusercontent.com/startxfr/sxcm/main/installer)
-```
-
-### Configuration
-
-```bash
-sxcm setup git https://github.com/startxfr/sxcm-cluster-repo-private.git devel
-sxcm switch devel
-```
-
-## Cluster config
-
-### Import existing cluster
-
-```bash
-sxcm import devel
+# import the undeployed example
+sxcm import undeployed
+# display information about the cluster 
 sxcm info
-```
-
-### Deploy cluster
-
-```bash
+# deploy this cluster
 sxcm deploy
-sxcm info
-```
-
-### Connection t cluster
-
-```bash
+# connect to this cluster
 sxcm connect
+# display various cluster informations
 oc get project
 oc get nodes
 ```
 
+### Import existing deployed cluster
+
+```bash
+# import the undeployed example
+sxcm import deployed
+# display information about the cluster 
+sxcm info
+# deploy this cluster
+sxcm deploy
+# connect to this cluster
+sxcm connect
+# display various cluster informations
+oc get project
+oc get nodes
+```
+
+## 4. Cluster deletion
+
 ### Destruction of cluster
 
 ```bash
+# destruction of the the active cluster
 sxcm destroy
+```
+
+### Removal of cluster
+
+```bash
+# Removal of the the active cluster
 sxcm delete
 ```
 
+## 5. Release lifecycle
 
-## Release lifecycle
+If you want to have move information about the sxcm relese lifecycle, you can read the [release lifecycle](5-release-lifecycle.md).
 
-If you want to have move information about the sxcm relese lifecycle, you can read the [release lifecycle](release-lifecycle.md).
+## 6. Release history
 
-## Release history
-
-If you want to have move information about the various sxcm release and their content, you can read the [release history](release-history.md).
+If you want to have move information about the various sxcm release and their content, you can read the [release history](6-release-history.md).
