@@ -1,4 +1,4 @@
-site_name: STARTX Helm repository
+site_name: SXCM Container cluster manager
 theme:
     name: readthedocs
     highlightjs: true

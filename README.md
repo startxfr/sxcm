@@ -1,41 +1,67 @@
-# sxcm
-STARTX Openshift OCP installer
-
-
-# sxcm ![sxapi](https://img.shields.io/badge/latest-v0.3.203-blue.svg) [![last commit](https://img.shields.io/github/last-commit/startxfr/sxcm.svg)](https://github.com/startxfr/sxcm) [![Doc](https://readthedocs.org/projects/sxcm/badge)](https://sxcm.readthedocs.io)
+# sxcm ![sxapi](https://img.shields.io/badge/latest-v0.0.4-blue.svg) [![last commit](https://img.shields.io/github/last-commit/startxfr/sxcm.svg)](https://github.com/startxfr/sxcm) [![Doc](https://readthedocs.org/projects/sxcm/badge)](https://sxcm.readthedocs.io)
 
 STARTX Openshift installer for various infrastructure configuration deployed under an AWS account.
-For more informations and install this cluster manager, you can visit the [startx sxcm homepage](https://startxfr.github.io/sxcm) or the [startx sxcm documentation](https://sxcm.readthedocs.io).
+For more informations and how to install this cluster manager, you can visit the [startx sxcm homepage](https://startxfr.github.io/sxcm) or the [startx sxcm documentation](https://sxcm.readthedocs.io).
 
-## Install this cluster manager (local install)
+## Requirements
 
-### 1. System install (operating-system)
+### System
 
-#### 1.1. Requirements
+```bash
+yum update -y
+```
 
-#### 1.2. Install & config
+### library
 
-#### 1.3. Access & usage
+```bash
+yum install ansible yq helm oc
+```
 
-### 2. Container install (container-runtime)
+## Client install
 
-#### 2.1. Requirements
+### Installation
 
-#### 2.2. Install & config
+```bash
+$(curl -s https://raw.githubusercontent.com/startxfr/sxcm/main/installer)
+```
 
-#### 2.3. Access & usage
+### Configuration
 
-## Install this cluster manager (cluster install)
+```bash
+sxcm setup git https://github.com/startxfr/sxcm-cluster-repo-private.git devel
+sxcm switch devel
+```
 
-### 1. Requirements
+## Cluster config
 
-### 2. Install sxcm
+### Import existing cluster
 
-#### 2.1. Kubernetes
+```bash
+sxcm import devel
+sxcm info
+```
 
-#### 2.2.Openshift
+### Deploy cluster
 
-## manage cluster
+```bash
+sxcm deploy
+sxcm info
+```
+
+### Connection t cluster
+
+```bash
+sxcm connect
+oc get project
+oc get nodes
+```
+
+### Destruction of cluster
+
+```bash
+sxcm destroy
+sxcm delete
+```
 
 ## Release convention
 
@@ -82,5 +108,5 @@ test are OK.
 | ------- | -------- | ------------------------------ |
 | 0.0.4   | 21-04-03 | release sxcm for openshift 4.6 |
 | 0.0.3   | 21-04-03 | stable cli basic functions     |
-| 0.0.2   | 21-04-03 | stable initial li              |
+| 0.0.2   | 21-04-03 | adding the installer           |
 | 0.0.1   | 21-04-03 | Initial commit                 |

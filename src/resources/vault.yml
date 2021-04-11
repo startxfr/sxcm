@@ -1,0 +1,180 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxv4-cluster-vault-template
+  annotations:
+    openshift.io/display-name: STARTX cluster Vault (admin)
+    description: Deploy cluster-wide resources to enable Vault 0.7.0 according to sxv4-console definitions
+    iconClass: icon-openshift
+    tags: startx,cluster,config,admin,sec,vault
+    openshift.io/provider-display-name: STARTX
+    openshift.io/generated-by: sxv4-console
+    sxv4_console_timeout: "20"
+  labels:
+    template: sxv4-cluster-vault-template
+    app.kubernetes.io/name: "sxv4-cluster-vault-template"
+    app.kubernetes.io/managed-by: sxv4-console
+message: |-
+  Your vault environment is configured.
+
+  Scope             : ${SCOPE}
+  Cluster           : ${CLUSTER}
+  Vault project     : ${NS}
+  Vault version     : 0.5.0
+labels:
+  template: sxv4-cluster-vault-template
+  app.kubernetes.io/managed-by: sxv4-console
+objects: 
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: startx-cluster-vault-project
+    namespace: "${ARGOCD_NS}"
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "cluster-vault"
+      app.kubernetes.io/name: "argoapp-cluster-vault-project-application"
+      app.kubernetes.io/part-of: ${CLUSTER}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "cluster-vault"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxv4-console
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/project/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-startx-vault.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "startx-vault"
+          - name: project.requester
+            value: "sxv4-console"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 30s
+# - kind: Application
+#   apiVersion: argoproj.io/v1alpha1
+#   metadata:
+#     name: startx-cluster-vault-instance
+#     namespace: "${ARGOCD_NS}"
+#     labels:  
+#       <<: *basic_labels
+#       app.kubernetes.io/name: "argoapp-cluster-vault-instance-application"
+#     annotations: 
+#       <<: *basic_annotations
+#       # argocd.argoproj.io/manifest-generate-paths: .
+#     finalizers:
+#       - resources-finalizer.argocd.argoproj.io
+#   spec:
+#     destination:
+#       namespace: "${NS}"
+#       server: 'https://kubernetes.default.svc'
+#     info:
+#       - name: teammail
+#         value: dev@startx.fr
+#     project: cluster-admin
+#     source:
+#       path: charts/cluster-vault/
+#       repoURL: 'https://github.com/startxfr/helm-repository.git'
+#       targetRevision: devel
+#       helm:
+#         valueFiles:
+#           - values-startx.yaml
+#         parameters:
+#           - name: context.scope
+#             value: "${SCOPE}"
+#           - name: context.cluster
+#             value: "${CLUSTER}"
+#           - name: project.enabled
+#             value: "false"
+#           - name: route.enabled
+#             value: "true"
+#           - name: vault.global.enabled
+#             value: "true"
+#     syncPolicy:
+#       automated:
+#         prune: false
+#         selfHeal: false
+#       syncOptions:
+#         - CreateNamespace=false
+#         - Validate=true
+#       retry:
+#         limit: 3
+#         backoff:
+#           duration: 60s
+#           factor: 2
+#           maxDuration: 300s
+#     ignoreDifferences:
+#       - group: admissionregistration.k8s.io
+#         kind: MutatingWebhookConfiguration
+#         jsonPointers:
+#           - /webhooks/0/clientConfig/caBundle
+parameters:
+  - name: ARGOCD_NS
+    displayName: The namespace where argocd server goes to
+    description: "Namespace to place argocd server to"
+    value: startx-argocd
+    required: true
+  - name: NS
+    displayName: The namespace where objects goes to
+    description: "Namespace to place objects to"
+    value: startx-vault
+    required: true
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: sxv4)"
+    value: sxv4
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: 3.9.x-dev
+    required: true
+  - name: CLUSTER_PROFILE
+    displayName: Name of the cluster profile
+    description: "The name of the cluster profile"
+    value: default
+    required: true
+

@@ -1,0 +1,240 @@
+#!/bin/bash
+
+
+
+# do setup git user
+function doSetupGit {
+    local repo=$1
+    local branch=$2
+    echo -e "Recording your \e[34mgit repository\e[0m \e[32maccess\e[0m"
+    if [[ "$repo" == "" ]]; then
+        echo -e "Set your \e[34mgitOps git repository\e[0m \e[32murl\e[0m"
+        echo -en "Git repo URL [$SXCM_GIT_REPO] : "
+        read repo
+    fi
+    if [[ "$branch" == "" ]]; then
+        echo -e "Set your \e[34mgitOps git repository\e[0m \e[32mcluster branch\e[0m"
+        echo -en "Git repo branch [$SXCM_GIT_BRANCH] : "
+        read branch
+    fi
+    if [[ "$repo" != "" ]]; then
+        echo -e "Switching to git repository url \e[1m$repo\e[0m"
+        appendConf SXCM_GIT_REPO $repo
+    fi
+    if [[ "$branch" == "" ]]; then
+        echo -e "Change git repository branch to \e[1m$SXCM_GIT_BRANCH_DEFAULT\e[0m"
+        appendConf SXCM_GIT_BRANCH $SXCM_GIT_BRANCH_DEFAULT
+    else
+        echo -e "Change git repository branch to \e[1m$branch\e[0m branch"
+        appendConf SXCM_GIT_BRANCH $branch
+    fi
+}
+
+# do setup redhat user
+function doSetupRedhat {
+    local rhnun=$1
+    local rhnpw=$2
+    local rhnem=$3
+    local rhnps=$4
+    echo -e "Recording your \e[34maccess.redhat.com\e[0m \e[32mcredentials\e[0m"
+    if [[ "$rhnun" == "" ]]; then
+        echo -e "Set your \e[34maccess.redhat.com\e[0m \e[32musername\e[0m"
+        echo -en "RHN username [$SXCM_RHN_USER] : "
+        read rhnun
+    fi
+    if [[ "$rhnpw" == "" ]]; then
+        echo -e "Set your \e[34maccess.redhat.com\e[0m \e[32mpassword\e[0m"
+        echo -en "RHN password [*********] : "
+        read -s rhnpw
+        echo
+    fi
+    if [[ "$rhnem" == "" ]]; then
+        echo -e "Set your \e[34maccess.redhat.com\e[0m \e[32me-mail\e[0m"
+        echo -en "RHN e-mail [$SXCM_RHN_EMAIL] : "
+        read rhnem
+    fi
+    if [[ "$rhnps" == "" ]]; then
+        echo -e "Set your \e[34mcloud.redhat.com\e[0m Openshift \e[32mpull secret\e[0m"
+        echo -en "RHN pullSecret [*********] : "
+        read -s rhnps
+        echo
+    fi
+    if [[ "$rhnun" != "" ]]; then
+        echo -e "Switching to RHN username \e[1m$rhnun\e[0m"
+        appendConf SXCM_RHN_USER $rhnun
+    fi
+    if [[ "$rhnpw" != "" ]]; then
+        echo -e "Change RHN \e[1m$rhnun\e[0m password"
+        appendConf SXCM_RHN_PASSWORD $rhnpw
+    fi
+    if [[ "$rhnem" != "" ]]; then
+        echo -e "Change RHN \e[1m$rhnun\e[0m email"
+        appendConf SXCM_RHN_EMAIL $rhnem
+    fi
+    if [[ "$rhnps" != "" ]]; then
+        echo -e "Change RHN \e[1m$rhnun\e[0m pullSecret"
+        appendConf SXCM_RHN_PULLSECRET $rhnps
+    fi
+}
+
+# do setup AWS Credentials
+function doSetupAWSCredentials {
+    local awsid=$1
+    local awskey=$2
+    local awszone=$3
+    echo -e "Recording your \e[34mAWS\e[0m \e[32mAPI\e[0m credentials"
+    if [[ "$awsid" == "" ]]; then
+        echo -e "Set your \e[34mAWS\e[0m \e[32mAPI ID\e[0m"
+        echo -en "AWS API ID [$AWS_ID] : "
+        read awsid
+    fi
+    if [[ "$awskey" == "" ]]; then
+        echo -e "Set your \e[34mAWS\e[0m \e[32mAPI Key\e[0m"
+        echo -en "AWS API Key [*********] : "
+        read -s awskey
+        echo
+    fi
+    if [[ "$awszone" == "" ]]; then
+        echo -e "Set your \e[34mAWS\e[0m \e[32mDatacenter\e[0m"
+        echo -en "AWS zone [$AWS_ZONE] : "
+        read awszone
+    fi
+    if [[ "$awsid" != "$AWS_ID" || "$awskey" != "$AWS_KEY" ]]; then
+        reconnectaws=true
+    fi
+    if [[ "$awsid" != "" ]]; then
+        echo -e "Switching to AWS ID \e[1m$awsid\e[0m"
+        appendConf AWS_ID $awsid
+        appendClusterConf AWS_ID $awsid
+    fi
+    if [[ "$awskey" != "" ]]; then
+        echo -e "Change AWS ID \e[1m$awsid\e[0m key"
+        appendConf AWS_KEY $awskey
+        appendClusterConf AWS_KEY $awskey
+    fi
+    if [[ "$awszone" != "" ]]; then
+        echo -e "Switching to AWS ZONE \e[1m$awszone\e[0m"
+        appendConf AWS_ZONE $awszone
+        appendClusterConf AWS_ZONE $awszone
+    fi
+    if [[ $reconnectaws == true ]]; then
+        export AWS_ACCESS_KEY_ID=$AWS_ID
+        export AWS_ACCESS_KEY=$AWS_KEY
+        export AWS_DEFAULT_REGION=$AWS_ZONE
+        AWSDIR=~/.aws
+        AWSCONF=$AWSDIR/credentials
+        mkdir -p $AWSDIR
+        touch $AWSCONF
+        echo "" > $AWSCONF
+        echo "[default]" >> $AWSCONF
+        echo "aws_access_key_id = $AWS_ACCESS_KEY_ID" >> $AWSCONF
+        echo "aws_secret_access_key = $AWS_ACCESS_KEY" >> $AWSCONF
+        aws configure
+        echo -e "Logged to AWS \e[1m$AWS_ZONE\e[0m with access ID \e[1m$AWS_ACCESS_KEY_ID\e[0m"
+    fi
+}
+
+
+# menu switch for login command
+function menuLogin {
+    reconnecta=true
+    local an=$1
+    local apw=$2
+    echo -e "Recording your \e[34m$SXCM_CLUSTER_NAME\e[0m \e[32madmin\e[0m user credentials"
+    if [[ "$an" == "" ]]; then
+        echo -e "Set your \e[34m$SXCM_CLUSTER_NAME\e[0m \e[32musername\e[0m"
+        echo -en "Username : "
+        read an
+    fi
+    if [[ "$apw" == "" ]]; then
+        echo -e "Set your \e[34m$SXCM_CLUSTER_NAME\e[0m \e[32mpassword\e[0m"
+        echo -en "Password : "
+        read -s apw
+    fi
+    echo -e ""
+    if [[ $reconnecta == true ]]; then
+        if [[ "$an" != "" ]]; then
+            echo -e "Switching to admin \e[1m$an\e[0m"
+        fi
+        if [[ "$apw" != "" ]]; then
+            echo -e "Change \e[1m$an\e[0m password"
+        fi
+        if [[ "$an" != "" ]]; then
+            oc login --insecure-skip-tls-verify -u $an -p "$apw" $SXCM_CLUSTER_URL
+        else
+            oc login --insecure-skip-tls-verify $SXCM_CLUSTER_URL
+        fi
+        if [[ "$?" != 0 ]]; then
+            echo -e "\e[1m\e[31mCould not login\e[0m to \e[1m$SXCM_CLUSTER_NAME\e[0m with user \e[1m$an\e[0m"
+            echo -e "Log to openshift cluster first 'oc login --insecure-skip-tls-verify -u $an -p <pwd> $SXCM_CLUSTER_URL'"
+            echo -e "try to run \e[2msxcm setup login\e[0m"
+        else
+            echo -e "Logged to \e[1m$SXCM_CLUSTER_NAME\e[0m with user \e[1m$an\e[0m (capture token)"
+            tokena=`oc whoami -t`
+            appendClusterConf SXCM_CLUSTER_ADMIN_TOKEN $tokena
+        fi
+    fi
+    echo -e "You can now run \e[2msxcm connect\e[0m or use the cluster with \e[2moc get projects\e[0m"
+    exit 0;
+}
+
+# menu switch for usage command
+function doSetupUsage {
+    menuHeadArt
+cat <<EOF
+
+This action helps you configure various account required to use sxcm
+
+Available actions are : aws, rhn and git
+
+Usage:
+  sxcm setup <action> [flags]
+
+- Availables actions :
+  - aws                                      Setup an AWS account under the .aws directory
+  - rhn                                      Setup an Redhat account under the sxcm personnal configuration file
+  - git                                      Setup an git repository to record cluster gitops state
+
+- Examples  :
+  sxcm  aws                                  Interactive setup of the aws account
+  sxcm  aws <accessId> <accessKey> <dcName>  Full setup of the aws account
+  sxcm  rhn                                  Interactive setup of the rhn account
+  sxcm  rhn <user> <pwd> <mail> <pullSecret> Full setup of the rhn account
+  sxcm  git                                  Interactive setup of the git cluster repository
+  sxcm  git <repo> <branch> <user> <pwd>     Full setup of the git cluster repository
+
+EOF
+}
+
+
+# menu switch for setup command
+function menuSetup {
+    case $2 in
+        redhat|rhn|-r)
+            doSetupRedhat $3 $4 $5 $6;
+            echo -e "You can now run \e[2msxcm setup git\e[0m"
+        ;;
+        git|-g)
+            doSetupGit $3 $4 $5 $6;
+            echo -e "You can now run \e[2msxcm setup aws\e[0m"
+        ;;
+        amazon|aws|-a)
+            doSetupAWSCredentials $3 $4 $5;
+            echo -e "You can now run \e[2msxcm setup login\e[0m"
+        ;;
+        login|-l)
+            menuLogin $3 $4;
+            echo -e "You can now run \e[2msxcm create\e[0m or \e[2msxcm import\e[0m"
+        ;;
+        all|"")
+            doSetupRedhat;
+            doSetupGit;
+            doSetupAWSCredentials;
+            menuLogin;
+            echo -e "You can now run \e[2msxcm environment create\e[0m"
+        ;;
+        *)
+            doSetupUsage;
+        ;;
+    esac;
+}

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# router for version sub-command
+function menuVersion() {
+    printf "\e[1m%-15s\e[0m %s\n" "sxcm version" $SXCM_VERSION
+    printf "\e[1m%-15s\e[0m %s\n" "Openshift" $(oc version)
+    printf "\e[1m%-15s\e[0m %s\n" "Helm" $(helm version --short)
+    printf "\e[1m%-15s\e[0m \e[1m%s\e[0m branch \e[1m%s\e[0m %s\n" "Active cluster" "$SXCM_CLUSTER_ACTIVE" "@$SXCM_GIT_BRANCH" "on $SXCM_GIT_REPO"
+}

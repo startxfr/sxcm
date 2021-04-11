@@ -1,69 +1,43 @@
 #!/bin/bash
 
-SXCM_CONSOLE_VERSION=v0.0.2
-REPO_PACKAGE_DIR=docs/packages
-WORK_BRANCH=v0.0.2
-MASTER_BRANCH=main
-GITHUB_USER=startxfr
-GITHUB_REPOSITORY=sxcm
+SXCM_PATH=/usr/share/sxcm
+SXCM_PROFILES_PATH=$SXCM_PATH/profiles
+SXCM_RESOURCES_PATH=$SXCM_PATH/resources
+SXCM_LIB_PATH=$SXCM_PATH/lib
 
-# router for version sub-command
-function routerVersion {
-    echo "sxcm version : $SXCM_CONSOLE_VERSION"
-    echo -n "Openshift : "
-    oc version 
-    echo -n "Helm : "
-    helm version --short
-}
+source $SXCM_PATH/config
+source $SXCM_LIB_PATH/core
+source $SXCM_LIB_PATH/core-version
+source $SXCM_LIB_PATH/core-setup
+source $SXCM_LIB_PATH/core-cluster
 
-# menu switch for usage command
-function menuUsage {
-    menuHeadArt
-cat <<EOF
-
-This client helps you configure and deploy multiple Openshift cluster under a AWS environment.
-
-Available actions are : list, create, info, update, delete, profiles, current, switch, connect, deploy  and destroy
-
-Usage:
-  sxcm <action> [flags]
-
-- Clusters management actions (local) :
-  - list                              List available cluster configurations
-  - profiles                          List available cluster profiles
-  - current                           Return informations about the current cluster
-  - switch                            Change the current cluster
-
-- Cluster commands actions (remote) :
-  - create                            Add a new cluster configuration to the cluster stack
-  - edit                              change the cluster configuration (should require destroy one major change)
-  - info                              Get information about a cluster configuration
-  - update                            Update a cluster configuration
-  - delete                            Remove a cluster configuration from the cluster stack
-  - connect                           Connect to the given cluster (default is current cluster)
-  - deploy                            Deploy the given cluster (default is current cluster)
-  - destroy                           Deploy the given cluster (default is current cluster)
-
-- Examples  :
-  sxcm  create my-example <profile>   Create an new Openshift cluster
-  sxcm  switch <my-example>           Change the current cluster to my-example
-  sxcm  edit <my-example>             Edit the Openshift cluster configuration (default is current cluster)
-  sxcm  info <my-example>             Display info about the my-example cluster (default is current cluster)
-  sxcm  deploy <my-example>           Deploy the my-example cluster (default is current cluster)
-  sxcm  update <my-example>           Update the my-example cluster configuration (default is current cluster)
-  sxcm  destroy <my-example>          Destroy the my-example cluster (default is current cluster)
-  sxcm  delete <my-example>           Delete the my-example cluster configuration (default is current cluster)
-  sxcm  switch <my-example>           Change the current cluster to the my-example cluster
-  sxcm  connect <my-example>          Connect the local kubeconfig to the my-example cluster
-  sxcm  profiles                      List available cluster profiles
-  sxcm  current                       Return informations about the current cluster
+## Start prog switch
+LoadConfig
+loadActiveClusterConf
 
 
-EOF
-}
 
-
-# menu display AsciiArt
-function menuHeadArt {
-cat $SXCM_PATH/header.txt
-}
+if [[ "$1" != "" ]]; then
+    case $1 in
+        list)     menuCluster $1 $2 ;;
+        import)   menuCluster $1 $2 ;;
+        init)     menuCluster $1 $2 $3 ;;
+        create)   menuCluster $1 $2 $3 ;;
+        edit)     menuCluster $1 $2 $3 ;;
+        switch)   menuCluster $1 $2 ;;
+        info)     menuCluster $1 $2 ;;
+        deploy)   menuCluster $1 $2 ;;
+        update)   menuCluster $1 $2 ;;
+        destroy)  menuCluster $1 $2 ;;
+        delete)   menuCluster $1 $2 ;;
+        switch)   menuCluster $1 $2 ;;
+        connect)  menuCluster $1 $2 ;;
+        profiles) menuCluster $1 ;;
+        current)  menuCluster $1 $2 ;;
+        setup)    menuSetup $@ ;;
+        version|--version)  menuVersion;;
+        *)        menuUsage $@ ;;
+    esac
+else
+    menuUsage
+fi
