@@ -1,8 +1,8 @@
 site_name: SXCM Container cluster manager
 theme:
-    name: readthedocs
-    highlightjs: true
-    hljs_languages:
+  name: readthedocs
+  highlightjs: true
+  hljs_languages:
     - yaml
     - bash
-    include_homepage_in_sidebar: false
+  include_homepage_in_sidebar: false
