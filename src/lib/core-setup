@@ -6,24 +6,11 @@
 function doSetupGit {
     local repo=$1
     local branch=$2
-    local login=$3
-    local pwd=$4
     echo -e "Recording your \e[34mgit repository\e[0m \e[32maccess\e[0m"
     if [[ "$repo" == "" ]]; then
         echo -e "Set your \e[34mgitOps git repository\e[0m \e[32murl\e[0m"
         echo -en "Git repo URL [$SXCM_GIT_REPO] : "
         read repo
-    fi
-    if [[ "$login" == "" ]]; then
-        echo -e "Set your \e[34mgitOps git repository\e[0m \e[32musername\e[0m"
-        echo -en "Git repo username [$SXCM_GIT_LOGIN] : "
-        read login
-    fi
-    if [[ "$pwd" == "" ]]; then
-        echo -e "Set your \e[34mgitOps git repository\e[0m \e[32mpassword\e[0m"
-        echo -en "Git repo password [*********] : "
-        read -s pwd
-        echo
     fi
     if [[ "$branch" == "" ]]; then
         echo -e "Set your \e[34mgitOps git repository\e[0m \e[32mcluster branch\e[0m"
@@ -33,14 +20,6 @@ function doSetupGit {
     if [[ "$repo" != "" ]]; then
         echo -e "Switching to git repository url \e[1m$repo\e[0m"
         appendConf SXCM_GIT_REPO $repo
-    fi
-    if [[ "$login" != "" ]]; then
-        echo -e "Change git repository username to \e[1m$login\e[0m"
-        appendConf SXCM_GIT_LOGIN $login
-    fi
-    if [[ "$pwd" != "" ]]; then
-        echo -e "Change git repository \e[1m$login\e[0m password"
-        appendConf SXCM_GIT_PASSWORD $pwd
     fi
     if [[ "$branch" == "" ]]; then
         echo -e "Change git repository branch to \e[1m$SXCM_GIT_BRANCH_DEFAULT\e[0m"

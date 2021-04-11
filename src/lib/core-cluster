@@ -36,13 +36,15 @@ function installClusterInstallerIfNotPresent {
 function getClusterConfigurationList {
     local LIST=$(ls -d $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/*/ 2>/dev/null)
     local COUNT=$(echo $LIST | wc -w)
+    local OUT=""
     if [[ $COUNT -gt 0 ]]; then
         for configuration in $LIST
         do
             foo=${configuration#"$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/"}
             foo=${foo%"/"}
-            echo "${foo}"
+            OUT="${OUT} ${foo}"
         done
+        echo $OUT
     fi
 }
 
@@ -271,29 +273,22 @@ function doClusterConfigurationCreate {
             rm -f $CLUSTER_CONFDIR/install-config.ya* &> /dev/null
             git add . &> /dev/null
             git commit -m "[$cn] Reset the $cn cluster" &> /dev/null
-            git push origin $cn &> /dev/null
+            git push origin $cn
             cd - &> /dev/null
             echo -e "\e[1m\e[35mReset\e[0m cluster \e[1m$cn\e[0m configuration"
         else
             exit;
         fi
     fi
-    if [[ -z "${SXCM_GIT_REPO}" || -z "${SXCM_GIT_LOGIN}" || -z "${SXCM_GIT_PASSWORD}" || -z "${SXCM_GIT_BRANCH}" ]]; then
+    if [[ -z "${SXCM_GIT_REPO}" || -z "${SXCM_GIT_BRANCH}" ]]; then
         doSetupGit
     fi
     if [[ -z "${SXCM_RHN_USER}" || -z "${SXCM_RHN_PASSWORD}" || -z "${SXCM_RHN_EMAIL}" || -z "${SXCM_RHN_PULLSECRET}" ]]; then
         doSetupRedhat
     fi
     if [[ -r $SXCM_PROFILES_PATH/install-config-$PROFILE.yml ]]; then
-        git clone $SXCM_GIT_REPO $CLUSTER_CONFDIR &> /dev/null
+        git clone $SXCM_GIT_REPO $CLUSTER_CONFDIR
         echo -e "  \e[32mcreated\e[0m cluster directory \e[1m$CLUSTER_CONFDIR\e[0m from \e[1m$SXCM_GIT_BRANCH\e[0m branch in \e[1m$SXCM_GIT_REPO\e[0m repository"
-        echo -n "${SXCM_GIT_REPO} " > /tmp/sxcmcached
-        if [[ "${SXCM_GIT_LOGIN}" != "" && "${SXCM_GIT_PASSWORD}" != "" ]]; then
-            sed -i "s|https:\/\/|https:\/\/${SXCM_GIT_LOGIN}:${SXCM_GIT_PASSWORD}@|g" /tmp/sxcmcached &> /dev/null
-        fi
-        local pwurl=`cat /tmp/sxcmcached`
-        rm -rf /tmp/sxcmcached  &> /dev/null
-        sed -i "s|${SXCM_GIT_REPO}|${pwurl}|g" $CLUSTER_CONFDIR/.git/config &> /dev/null
         cd $CLUSTER_CONFDIR &> /dev/null
         echo -e "  \e[33mupdated\e[0m git repository configuration in \e[1m$CLUSTER_CONFDIR\e[0m"
         git checkout $SXCM_GIT_BRANCH &> /dev/null
@@ -303,15 +298,13 @@ function doClusterConfigurationCreate {
             git checkout $SXCM_GIT_BRANCH_MAIN &> /dev/null
             git branch $cn &> /dev/null
             git checkout $cn &> /dev/null
-            git push origin $cn &> /dev/null
+            git push origin $cn
             echo -e "  \e[32mcreated\e[0m git repository branch \e[1m$cn\e[0m based on \e[1m$SXCM_GIT_BRANCH_MAIN\e[0m branch"
         fi
         git checkout $cn &> /dev/null
         echo -e "  \e[33mswitched\e[0m to branch \e[1m$cn\e[0m"
         touch $CLUSTER_CONFDIR/$SXCM_USER_CONF_FILE &> /dev/null
         appendIndividualClusterConf $cn SXCM_GIT_REPO $SXCM_GIT_REPO
-        appendIndividualClusterConf $cn SXCM_GIT_LOGIN $SXCM_GIT_LOGIN
-        # appendIndividualClusterConf $cn SXCM_GIT_PASSWORD $SXCM_GIT_PASSWORD
         appendIndividualClusterConf $cn SXCM_GIT_BRANCH $SXCM_GIT_BRANCH
         appendIndividualClusterConf $cn SXCM_RHN_USER $SXCM_RHN_USER
         # appendIndividualClusterConf $cn SXCM_RHN_PASSWORD $SXCM_RHN_PASSWORD
@@ -332,7 +325,7 @@ function doClusterConfigurationCreate {
         cp $CLUSTER_CONFDIR/install-config.yaml $CLUSTER_CONFDIR/install-config.yaml.back &> /dev/null
         git add . &> /dev/null
         git commit -am "[$cn] Create the $cn cluster" &> /dev/null
-        git push origin $cn  &> /dev/null
+        git push origin $cn
         cd - &> /dev/null
         echo -e "  \e[32mrecorded\e[0m cluster configuration based on \e[1m$PROFILE\e[0m profile"
         setActiveCluster $cn
@@ -373,7 +366,7 @@ function doClusterConfigurationCreate {
                     recordAdminTokenFromCreatedCluster $cn
                     git add . &> /dev/null
                     git commit -m "[$cn] Add new token to the $cn cluster" &> /dev/null
-                    git push origin $cn &> /dev/null
+                    git push origin $cn
                     cd - &> /dev/null
                     exit;
                 fi
@@ -389,7 +382,7 @@ function doClusterConfigurationCreate {
                     rm -f $CLUSTER_CONFDIR/auth &> /dev/null
                     git add . &> /dev/null
                     git commit -m "[$cn] Reset the $cn cluster" &> /dev/null
-                    git push origin $cn &> /dev/null
+                    git push origin $cn
                     cd - &> /dev/null
                     echo -e "  Cluster configuration \e[1m$cn\e[0m \e[35mreset\e[0m "
                 else
@@ -401,10 +394,55 @@ function doClusterConfigurationCreate {
             openshift-install create install-config &> /dev/null
             git add . &> /dev/null
             git commit -m "[$cn] Record the $cn cluster config" &> /dev/null
-            git push origin $cn &> /dev/null
+            git push origin $cn
             cd - &> /dev/null
         fi
     fi
+}
+
+
+
+# import cluster configuration
+function doClusterConfigurationImport {
+    local cn=$1
+    rm -rf /tmp/sxcm-repo  &> /dev/null
+    echo -e "\e[1m\e[34mStart\e[0m import process for cluster \e[1m$cn\e[0m"
+    if [[ "$cn" == "" ]]; then
+        echo -en "Cluster name [$cn] : "
+        read cn
+    fi
+    if [[ $cn == '' ]]; then
+        cn="myClusterName"
+    fi
+    local CLUSTER_CONFDIR=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local SXCM_GIT_BRANCH=$cn
+    if [[ -d $CLUSTER_CONFDIR ]]; then
+        echo -e "  Cluster \e[1m$cn\e[0m \e[31mis already managed\e[0m. Could not import \e[1m$cn\e[0m"
+        exit;
+    else
+        echo -e "  Cluster \e[1m$cn\e[0m \e[32mis not managed\e[0m"
+    fi
+    git clone $SXCM_GIT_REPO /tmp/sxcm-repo
+    if [[ $? -gt 0 ]]; then
+        echo -e "  Repository \e[1m$SXCM_GIT_REPO\e[0m \e[31mis not clonable\e[0m. Could not import \e[1m$cn\e[0m"
+        exit;
+    else
+        echo -e "  Repository \e[1m$SXCM_GIT_REPO\e[0m \e[32mis cloned\e[0m"
+    fi
+    cd /tmp/sxcm-repo  &> /dev/null
+    git checkout $SXCM_GIT_BRANCH  &> /dev/null
+    if [[ $? -gt 0 ]]; then
+        echo -e "  Cluster state \e[1m$SXCM_GIT_BRANCH\e[0m \e[31mdoesn't exist\e[0m. Could not import \e[1m$cn\e[0m"
+        exit;
+    else
+        echo -e "  Cluster state \e[1m$SXCM_GIT_BRANCH\e[0m \e[32mis cloned\e[0m"
+    fi
+    mv /tmp/sxcm-repo $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn &> /dev/null
+    echo -e "  Cluster \e[1m$cn\e[0m is \e[32mimported\e[0m from \e[1m$SXCM_GIT_BRANCH\e[0m cluster state "
+    cd -  &> /dev/null
+    rm -rf /tmp/sxcm-repo  &> /dev/null
+    setActiveCluster $cn
+    echo -e "  \e[1m\e[32mSet active\e[0m cluster set to \e[1m$cn\e[0m"
 }
 
 # info on cluster configuration
@@ -443,14 +481,16 @@ function doClusterConfigurationInfo {
         else
             STATE="\e[34mdefined\e[0m"
         fi
-        printf "\e[1m%-8s\e[0m %s\n" name $cn
-        printf "\e[1m%-8s\e[0m %s\n" profile $PROFILE
-        printf "\e[1m%-8s\e[0m %s$STATE\n" state ""
-        printf "\e[1m%-8s\e[0m%s\n" desc "$desc"
-        printf "\e[1m%-8s\e[0m%s\n" services "$service"
-        printf "\e[1m%-8s\e[0m%s\n" cost " $hourlyCost €/h"
-        printf "\e[1m%-8s\e[0m %s\n" "adm user" "kubeadmin"
-        printf "\e[1m%-8s\e[0m %s\n" "adm pwd" "$admpwd"
+        printf "\e[1m%-10s\e[0m %s\n" name $cn
+        printf "\e[1m%-10s\e[0m %s\n" profile $PROFILE
+        printf "\e[1m%-10s\e[0m %s$STATE\n" state ""
+        printf "\e[1m%-10s\e[0m%s\n" desc "$desc"
+        printf "\e[1m%-10s\e[0m%s\n" services "$service"
+        printf "\e[1m%-10s\e[0m%s\n" cost " $hourlyCost €/h"
+        printf "\e[1m%-10s\e[0m %s\n" "git repo" "$SXCM_GIT_REPO"
+        printf "\e[1m%-10s\e[0m %s\n" "git branch" "$SXCM_GIT_BRANCH"
+        printf "\e[1m%-10s\e[0m %s\n" "adm user" "kubeadmin"
+        printf "\e[1m%-10s\e[0m %s\n" "adm pwd" "$admpwd"
         exit 0;
     else
         echo -e "Cluster configuration named \e[1m$cn\e[0m in $clusterConfDir doesn't exist"
@@ -796,7 +836,22 @@ function doClusterConnectActive {
 
 # sub-menu for create command
 function menuClusterCreate {
-    if [[ -z "$1" || "$1" == "" ]]; then
+    if [[ "$1" == "init"  && "$2" == "" ]]; then
+        menuHeadArt
+            cat <<EOF
+
+sxcm init sub-command for initialize a sxcm managed cluster
+
+This sub-command helps you initialize a cluster configuration to the managed cluster stack
+
+Usage:
+sxcm init NAME
+
+Examples:
+# Initialize a cluster named myClusterName
+sxcm init myClusterName
+EOF
+    elif [[ -z "$2" || "$2" == "" ]]; then
         menuHeadArt
             cat <<EOF
 
@@ -819,7 +874,30 @@ you can run :
 $ sxcm profiles
 EOF
     else
-        doClusterConfigurationCreate $1 $2
+        doClusterConfigurationCreate $2 $3
+    fi
+}
+
+# sub-menu for import command
+function menuClusterImport {
+    if [[ -z "$1" || "$1" == "" ]]; then
+        menuHeadArt
+            cat <<EOF
+
+sxcm import sub-command for importing a sxcm managed cluster
+
+This sub-command helps you add an existing cluster configuration to the managed cluster stack
+
+Usage:
+sxcm import NAME
+
+Examples:
+# Import the cluster named myClusterName using the cluster git repository
+sxcm import myClusterName
+
+EOF
+    else
+        doClusterConfigurationImport $1 $2
     fi
 }
 
@@ -908,7 +986,8 @@ function menuClusterConnect {
 # main menu for the cluster sub-command
 function menuCluster {
     case $1 in
-        create)         menuClusterCreate ${2} ${3};;
+        import)         menuClusterImport ${2};;
+        create|init)    menuClusterCreate ${1} ${2} ${3};;
         info)           menuClusterInfo ${2};;
         edit)           menuClusterEdit ${2};;
         update)         menuClusterUpdate ${2};;
