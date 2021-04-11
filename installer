@@ -5,7 +5,7 @@ SXCM_RESOURCES_PATH=$SXCM_PATH/resources
 SXCM_LIB_PATH=$SXCM_PATH/lib
 SXCM_COMPLETION_PATH=/etc/bash_completion.d/sxcm
 SXCM_BIN_PATH=/usr/bin/sxcm
-SXCM_VERSION=v0.0.2
+SXCM_VERSION=v0.0.4
 SXCM_ARCHIVE_URL=https://github.com/startxfr/sxcm/archive/refs/tags/$SXCM_VERSION.zip
 
 if [ `whoami` != 'root' ]
