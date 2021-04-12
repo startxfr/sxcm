@@ -34,7 +34,7 @@ oc get nodes
 ### Import existing deployed cluster
 
 ```bash
-# import the undeployed example
+# import the deployed example
 sxcm import deployed
 # display information about the cluster 
 sxcm info
