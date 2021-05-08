@@ -3,12 +3,15 @@ SCOPE=$2
 CLUSTER=$1
 ENV=$3
 VERSION=$4
+OCTOKEN=$5
+OCCLUSTER=$6
 ARGOCDPREFIX=startx
 PROJECT=startx-argocd
 DIR=`dirname $(readlink -f $0)`
 DIR="$DIR/_console/okd-cluster-resources/argod-deploy"
 SERVER_NAME="$ARGOCDPREFIX-server"
-DELAY="80"
+DELAY="60"
+
 
 function checkAllComponents {
     local SERVICE="$1"
@@ -34,7 +37,7 @@ function checkAllComponents {
 function checkOneComponent {
     local COMPONENT="$1"
     local PROJECT="$2"
-    oc wait po -l app.kubernetes.io/name=$COMPONENT --for=condition=Ready --timeout=2000ms -n $PROJECT &>/dev/null
+    oc wait po -l app.kubernetes.io/name=$COMPONENT --for=condition=Ready --timeout=2000ms -n $PROJECT --token=$OCTOKEN --cluster=$OCCLUSTER &>/dev/null
     if [[ $? == "0" ]]
     then
         echo -e " - Pod $COMPONENT is running"

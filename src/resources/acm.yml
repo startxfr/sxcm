@@ -96,7 +96,7 @@ objects:
   metadata:
     name: startx-cluster-acm-operator
     namespace: "${ARGOCD_NS}"
-    labels:  &basic_labels
+    labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "cluster-acm"
@@ -104,7 +104,7 @@ objects:
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-acm"
-    annotations: &basic_annotations
+    annotations:
       openshift.io/generated-by: sxv4-console
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
@@ -167,7 +167,7 @@ objects:
   metadata:
     name: startx-cluster-acm-instance
     namespace: "${ARGOCD_NS}"
-    labels:  &basic_labels
+    labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "cluster-acm"
@@ -175,7 +175,7 @@ objects:
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-acm"
-    annotations: &basic_annotations
+    annotations:
       openshift.io/generated-by: sxv4-console
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
