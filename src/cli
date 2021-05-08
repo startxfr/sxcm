@@ -13,9 +13,6 @@ source $SXCM_LIB_PATH/core-cluster
 
 ## Start prog switch
 LoadConfig
-loadActiveClusterConf
-
-
 
 if [[ "$1" != "" ]]; then
     case $1 in
