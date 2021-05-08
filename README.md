@@ -1,4 +1,4 @@
-# startx cluster manage (sxcm)
+# startx cluster manager (sxcm)
 
 ![sxcm](https://img.shields.io/badge/latest-v0.1.0-blue.svg) [![last commit](https://img.shields.io/github/last-commit/startxfr/sxcm.svg)](https://github.com/startxfr/sxcm) [![Doc](https://readthedocs.org/projects/sxcm/badge)](https://sxcm.readthedocs.io)
 
