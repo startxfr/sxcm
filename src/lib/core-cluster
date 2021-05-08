@@ -139,19 +139,19 @@ function doUpsertClusterResources {
                 if [[ "$resource" == "quay" || "$resource" == "3scale" || "$resource" == "argocd-deploy" || "$resource" == "argocd-apps" ]]
                 then
                     oc process -f $RESOURCEDIR_PATH/$resource.yml --local -o yaml \
-                    -p SXCM_RHN_USER=$SXCM_RHN_USER \
-                    -p SXCM_RHN_PASSWORD=$SXCM_RHN_PASSWORD \
+                    -p RHN_USER=$SXCM_RHN_USER \
+                    -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
                     -p SCOPE=$SXCM_CLUSTER_SCOPE \
                     -p CLUSTER=$cn \
                     -p ENV=$SXCM_ENV \
                     -p VERSION=$SXCM_VERSION \
-                    -p SXCM_AWS_ZONE=$SXCM_AWS_ZONE \
-                    -p SXCM_AWS_ACCESS_ID=$SXCM_AWS_ID \
-                    -p SXCM_AWS_ACCESS_KEY=$SXCM_AWS_KEY \
-                    -p SXCM_AWS_SMTP_USER=$SXCM_AWS_SMTP_USER \
-                    -p SXCM_AWS_SMTP_PASSWORD=$SXCM_AWS_SMTP_PASSWORD \
-                    -p SXCM_AWS_SMTP_ZONE=$SXCM_AWS_SMTPZONE \
-                    -p SXCM_AWS_SMTP_FROM=$SXCM_AWS_SMTPFROM \
+                    -p AWS_ZONE=$SXCM_AWS_ZONE \
+                    -p AWS_ACCESS_ID=$SXCM_AWS_ID \
+                    -p AWS_ACCESS_KEY=$SXCM_AWS_KEY \
+                    -p AWS_SMTP_USER=$SXCM_AWS_SMTP_USER \
+                    -p AWS_SMTP_PASSWORD=$SXCM_AWS_SMTP_PASSWORD \
+                    -p AWS_SMTP_ZONE=$SXCM_AWS_SMTPZONE \
+                    -p AWS_SMTP_FROM=$SXCM_AWS_SMTPFROM \
                     -p CLUSTER_PROFILE=$CLUSTER_PROFILE \
                     | oc apply $SXCM_OCAPPLY_OPTS --token=$SXCM_CLUSTER_ADMIN_TOKEN -f -
                 elif [[ "$resource" == "machine" ]]
@@ -179,7 +179,7 @@ function doUpsertClusterResources {
                     temporize $CLUSTERTIMEOUT 5
                 else
                     echo -e "wait 5sec for operator dependencies update"
-                    temporize 5 5
+                    temporize 2 1
                 fi
             fi
             if [[ -d $RESOURCEDIR_PATH/$resource ]]
