@@ -104,7 +104,7 @@ objects:
   metadata:
     name: startx-cluster-knative-operator
     namespace: "${ARGOCD_NS}"
-    labels:  &basic_labels
+    labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "cluster-knative"
@@ -112,7 +112,7 @@ objects:
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-knative"
-    annotations: &basic_annotations
+    annotations: 
       openshift.io/generated-by: sxv4-console
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
@@ -179,7 +179,7 @@ objects:
   metadata:
     name: startx-cluster-knative-instance
     namespace: "${ARGOCD_NS}"
-    labels:  &basic_labels
+    labels:
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "cluster-knative"
@@ -187,7 +187,7 @@ objects:
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-knative"
-    annotations: &basic_annotations
+    annotations:
       openshift.io/generated-by: sxv4-console
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
@@ -248,27 +248,22 @@ parameters:
     displayName: The namespace where argocd server goes to
     description: "Namespace to place argocd server to"
     value: startx-argocd
-    required: true
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
     value: openshift-serverless
-    required: true
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
     value: sxv4
-    required: true
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"
     value: sxsf
-    required: true
   - name: ENV
     displayName: Project environment
     description: "Project environment (ex: dev, factory, preprod or prod)"
     value: dev
-    required: true
   - name: VERSION
     displayName: Project version
     description: "Project deployed release"
@@ -277,5 +272,4 @@ parameters:
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
-    required: true
 

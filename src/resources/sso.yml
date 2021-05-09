@@ -96,7 +96,7 @@ objects:
   metadata:
     name: startx-cluster-sso-operator
     namespace: "${ARGOCD_NS}"
-    labels:  &basic_labels
+    labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "cluster-sso"
@@ -104,7 +104,7 @@ objects:
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-sso"
-    annotations: &basic_annotations
+    annotations:
       openshift.io/generated-by: sxv4-console
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
@@ -165,7 +165,7 @@ objects:
 #   metadata:
 #     name: startx-cluster-sso-instance
 #     namespace: "${ARGOCD_NS}"
-#     labels:  &basic_labels
+#     labels: 
 #       app.startx.fr/scope: "${SCOPE}"
 #       app.startx.fr/cluster: "${CLUSTER}"
 #       app.startx.fr/component: "cluster-sso"
@@ -173,7 +173,7 @@ objects:
 #       app.kubernetes.io/part-of: ${CLUSTER}
 #       app.kubernetes.io/version: "${VERSION}"
 #       app.kubernetes.io/component: "cluster-sso"
-#     annotations: &basic_annotations
+#     annotations:
 #       openshift.io/generated-by: sxv4-console
 #       # argocd.argoproj.io/manifest-generate-paths: .
 #     finalizers:
@@ -232,7 +232,7 @@ objects:
 #     apiVersion: project.openshift.io/v1
 #     metadata:
 #       name: ${KEYCLOAK_NS}
-#       labels:  &basic_labels
+#       labels: 
 #         app.startx.fr/scope: "${SCOPE}"
 #         app.startx.fr/cluster: "${CLUSTER}"
 #         app.startx.fr/component: "cluster-keycloak"
@@ -827,57 +827,45 @@ parameters:
     displayName: The namespace where sso server goes to
     description: "Namespace to place sso server to"
     value: startx-sso
-    required: true
   - name: STARTX_REALM
     displayName: The name of the realm where startx objects goes to
     description: "realm to place startx objects to"
     value: startx-realm
-    required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
     description: "Namespace to place argocd server to"
     value: startx-argocd
-    required: true
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
     value: sxv4
-    required: true
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"
     value: sxsf
-    required: true
   - name: ENV
     displayName: Project environment
     description: "Project environment (ex: dev, factory, preprod or prod)"
     value: dev
-    required: true
   - name: VERSION
     displayName: Project version
     description: "Project deployed release"
     value: 3.9.x-dev
-    required: true
   - name: MARKETPLACE_NS
     displayName: The operator marketplace namespace where objects goes to
     description: "operator marketplace namespace to place objects to"
     value: openshift-marketplace
-    required: true
   - name: IPA_SERVICE
     displayName: Service and deployment config name
-    required: true
     value: freeipa
   - name: IPA_SERVER_IP
     displayName: FreeIPA server service IP address
-    required: true
     value: "172.30.56.111"
   - name: IPA_ADMIN_PASSWORD
     displayName: Admin's password
     value: adminfreeipa
-    required: true
   - name: CLUSTER_PROFILE
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
-    required: true
 
