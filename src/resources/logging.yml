@@ -101,7 +101,7 @@ objects:
   metadata:
     name: startx-cluster-logging-operator
     namespace: "${ARGOCD_NS}"
-    labels:  &basic_labels
+    labels:
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "cluster-logging"
@@ -109,7 +109,7 @@ objects:
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-logging"
-    annotations: &basic_annotations
+    annotations:
       openshift.io/generated-by: sxv4-console
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
@@ -178,7 +178,7 @@ objects:
   metadata:
     name: startx-cluster-logging-instance
     namespace: "${ARGOCD_NS}"
-    labels:  &basic_labels
+    labels:
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "cluster-logging"
@@ -186,7 +186,7 @@ objects:
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-logging"
-    annotations: &basic_annotations
+    annotations: 
       openshift.io/generated-by: sxv4-console
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
@@ -246,7 +246,7 @@ objects:
   #   apiVersion: v1
   #   metadata:
   #     name: ${OPERATOR_NS}
-  #     labels:  &basic_labels
+  #     labels: 
   #       app.startx.fr/scope: "${SCOPE}"
   #       app.startx.fr/cluster: "${CLUSTER}"
   #       app.startx.fr/component: "cluster-logging"

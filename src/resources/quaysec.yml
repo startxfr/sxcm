@@ -100,7 +100,7 @@ objects:
   metadata:
     name: startx-cluster-quay-secvuln-operator
     namespace: "${ARGOCD_NS}"
-    labels:  &basic_labels
+    labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "cluster-quaysec"
@@ -108,7 +108,7 @@ objects:
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-quaysec"
-    annotations: &basic_annotations
+    annotations:
       openshift.io/generated-by: sxv4-console
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
@@ -212,10 +212,6 @@ parameters:
     displayName: AWS access Key
     description: AWS Access Key used for accessing AWS ressources
     value: "ZiMhYy1WB3qugYDNadKdaiWs5pnM/+vOnmccgPw"
-  - name: AWS_SQS_BUS
-    displayName: AWS SQS Bus ID
-    description: AWS SQS message bus ID for all message endpoints
-    value: "791728029433"
   - name: AWS_SMTP_ZONE
     displayName: AWS SMTP zone
     description: AWS availability zone for SES service

@@ -106,8 +106,22 @@ function getActiveCluster {
 
 # set active cluster configuration
 function setActiveCluster {
-    appendConf SXCM_CLUSTER_ACTIVE $1
-    export SXCM_CLUSTER_ACTIVE=$1
+    local NAME=${1,,}
+    if [[ "" != $NAME ]]
+    then
+        local LIST=$(getClusterConfigurationList)
+        for cluster in $LIST
+        do
+            if [[ $cluster == $NAME ]]; then
+                appendConf SXCM_CLUSTER_ACTIVE $NAME
+                export SXCM_CLUSTER_ACTIVE=$NAME
+                echo -e "\e[32mSet\e[0m active cluster to \e[1m$NAME\e[0m"
+                return 0
+            fi
+        done
+    else 
+       echo -e "\e[31mWarning\e[0m could not set active cluster with empty name"
+    fi
 }
 
 # menu switch for usage command

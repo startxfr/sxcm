@@ -104,7 +104,7 @@ objects:
   metadata:
     name: startx-cluster-knative-operator
     namespace: "${ARGOCD_NS}"
-    labels:  &basic_labels
+    labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "cluster-knative"
@@ -112,7 +112,7 @@ objects:
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-knative"
-    annotations: &basic_annotations
+    annotations: 
       openshift.io/generated-by: sxv4-console
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
@@ -179,7 +179,7 @@ objects:
   metadata:
     name: startx-cluster-knative-instance
     namespace: "${ARGOCD_NS}"
-    labels:  &basic_labels
+    labels:
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "cluster-knative"
@@ -187,7 +187,7 @@ objects:
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-knative"
-    annotations: &basic_annotations
+    annotations:
       openshift.io/generated-by: sxv4-console
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
