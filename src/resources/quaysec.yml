@@ -212,10 +212,6 @@ parameters:
     displayName: AWS access Key
     description: AWS Access Key used for accessing AWS ressources
     value: "ZiMhYy1WB3qugYDNadKdaiWs5pnM/+vOnmccgPw"
-  - name: AWS_SQS_BUS
-    displayName: AWS SQS Bus ID
-    description: AWS SQS message bus ID for all message endpoints
-    value: "791728029433"
   - name: AWS_SMTP_ZONE
     displayName: AWS SMTP zone
     description: AWS availability zone for SES service
