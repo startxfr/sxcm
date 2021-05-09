@@ -440,10 +440,17 @@ function doClusterConfigurationImport {
     else
         echo -e "  Cluster state defined in branch \e[1m$SXCM_GIT_BRANCH\e[0m \e[32mis cloned\e[0m"
     fi
-    mv /tmp/sxcm-repo $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn &> /dev/null
+    mv /tmp/sxcm-repo $CLUSTER_CONFDIR &> /dev/null
+    rm -rf /tmp/sxcm-repo  &> /dev/null
     echo -e "  Cluster \e[1m$cn\e[0m is \e[32mimported\e[0m from \e[1m$SXCM_GIT_BRANCH\e[0m cluster state "
     cd -  &> /dev/null
-    rm -rf /tmp/sxcm-repo  &> /dev/null
+    cd $CLUSTER_CONFDIR &> /dev/null
+    git checkout $cn &> /dev/null
+    cat $CLUSTER_CONFDIR/install-config.yaml > $CLUSTER_CONFDIR/install-config.yaml.back
+    git add . &> /dev/null
+    git commit -m "[$cn] Record the $cn cluster install config backup" &> /dev/null
+    git push origin $cn
+    cd - &> /dev/null
     setActiveCluster $cn
     echo -e "  \e[1m\e[32mSet active\e[0m cluster set to \e[1m$cn\e[0m"
 }
@@ -782,6 +789,7 @@ function doClusterDeploy {
     else
         installClusterInstallerIfNotPresent
         echo -e "Start \e[1m$cn\e[0m cluster deployment based on \e[1mopenshift $SXCM_OCPI_RELEASE\e[0m"
+        cat $CLUSTER_CONFDIR/install-config.yaml > $CLUSTER_CONFDIR/install-config.yaml.back
         cd $CLUSTER_CONFDIR &> /dev/null
         openshift-install create cluster
         touch $CLUSTER_CONFDIR/deployed
@@ -826,11 +834,19 @@ function doClusterDestroy {
             installClusterInstallerIfNotPresent
             echo -e "Start \e[1m$cn\e[0m cluster \e[31mdestruction\e[0m"
             cd $CLUSTER_CONFDIR &> /dev/null
+            git checkout $cn &> /dev/null
+            git add . &> /dev/null
+            git commit -m "[$cn] Record state just before destruction of the $cn cluster" &> /dev/null
             openshift-install destroy cluster
-            cp $CLUSTER_CONFDIR/install-config.yaml.back $CLUSTER_CONFDIR/install-config.yaml
-            rm $CLUSTER_CONFDIR/terraform.* $CLUSTER_CONFDIR/meta* $CLUSTER_CONFDIR/deployed &> /dev/null
-            echo -e "Cluster \e[1m$cn\e[0m \e[31mdestroyed\e[0m"
+            git add . &> /dev/null
+            git commit -m "[$cn] Record state just after destruction of the $cn cluster" &> /dev/null
+            cat $CLUSTER_CONFDIR/install-config.yaml.back > $CLUSTER_CONFDIR/install-config.yaml
+            rm $CLUSTER_CONFDIR/install-config.yaml.back $CLUSTER_CONFDIR/terraform.* $CLUSTER_CONFDIR/meta* $CLUSTER_CONFDIR/deployed &> /dev/null
+            git add . &> /dev/null
+            git commit -m "[$cn] Record state after post-destruction actions of the $cn cluster" &> /dev/null
+            git push origin $cn
             cd - &> /dev/null
+            echo -e "Cluster \e[1m$cn\e[0m \e[31mdestroyed\e[0m"
         else
             exit;
         fi
