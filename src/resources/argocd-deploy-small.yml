@@ -71,15 +71,7 @@ objects:
           - "*"
       server:
         autoscale:
-          enabled: true
-          hpa:
-            maxReplicas: 4
-            minReplicas: 2
-            scaleTargetRef:
-              apiVersion: apps/v1
-              kind: Deployment
-              name: startx-server
-            targetCPUUtilizationPercentage: 60
+          enabled: false
         insecure: true
         resources:
           limits:
@@ -101,15 +93,15 @@ objects:
       controller:
         appSync: 120s
         processors:
-          operation: 10
-          status: 25
+          operation: 5
+          status: 15
         resources:
           limits:
-            cpu: 3500m
+            cpu: 1500m
             ephemeral-storage: 256Mi
             memory: 4Gi
           requests:
-            cpu: 1200m
+            cpu: 800m
             ephemeral-storage: 64Mi
             memory: 2Gi
       ha:
@@ -138,8 +130,8 @@ objects:
       rbac:
         defaultPolicy: edit
       grafana:
-        enabled: true
-        size: 2
+        enabled: false
+        size: 1
         resources:
           limits:
             cpu: 200m
@@ -155,7 +147,7 @@ objects:
           enabled: false
       prometheus:
         enabled: true
-        size: 2
+        size: 1
         route:
           enabled: true
       repo:
