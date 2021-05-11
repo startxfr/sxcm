@@ -1,0 +1,367 @@
+#!/bin/bash
+
+# resources cluster resource
+function doListResources {
+    echo -e "\e[33mList\e[0m \e[1mavailables cluster resources\e[0m"
+    doListResourcesAbstract "local" "false"
+    doListResourcesAbstract "shared" "false"
+}
+
+# resources cluster resource generator for both local or shared
+function doListResourcesAbstract {
+    local LIST
+    local LISTRead=()
+    local TITLE=shared
+    local ECHOTITLE=true
+    if [[ $1 == "local" ]]; then
+        LIST=$(getResourcesLocal)
+        TITLE=local
+    else
+        LIST=$(getResourcesDefault)
+        TITLE=shared
+    fi
+    if [[ $2 == "false" ]]; then
+        ECHOTITLE=false
+    fi
+    local LISTOutput=($(constructResourcesList "${LIST[@]}" "${LISTRead[@]}"))
+    COUNT=${#LISTOutput[@]}
+    if [[ $ECHOTITLE == "true" ]]; then
+        echo -e "\e[33mList\e[0m \e[1m$COUNT\e[0m availables \e[0m$TITLE\e[0m cluster resources"
+    fi
+    for resource in "${LISTOutput[@]}"
+    do
+        filepath=$SXCM_RESOURCES_PATH/$resource
+        filepathlocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
+        type=none
+        if [[ -d $filepath ]]; then
+            type="shared (script)"
+        elif [[ -f $filepath.yml ]]; then
+            type="shared (yaml)"
+        elif [[ -d $filepathlocal/$resource ]]; then
+            type="local  (script)"
+        elif [[ -f $filepathlocal/$resource.yml ]]; then
+            type="local  (yaml)"
+        fi
+        printf "\e[1m%-20s\e[0m %s\n" $resource "$type"
+        desc=""
+    done
+}
+
+# construct a list of resources
+function constructResourcesList {
+    local LISTin=$1
+    local LISTout=$2
+    local COUNT=${#LISTin[@]}
+    for i in "${!LISTin[@]}"; do
+        local newresource=${LISTin[i]}
+        local isFound=false
+        for j in "${!LISTout[@]}"; do
+            local recordedresource=${LISTout[j]}
+            if [[ $newresource = $recordedresource ]]; then
+                isFound=true
+            fi
+        done
+        if [[ $isFound == "false" ]]; then
+            LISTout+=("$newresource")
+        fi
+    done
+    for i in "${!LISTout[@]}"; do
+        echo "${LISTout[i]}"
+    done
+}
+
+# get list cluster configuration
+function getResourcesDefault {
+    echo $(getResources $SXCM_RESOURCES_PATH)
+}
+
+# get list cluster configuration
+function getResourcesLocal {
+    echo $(getResources $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES)
+}
+
+# get list cluster configuration
+function getResources {
+    local path=${1}
+    local LIST=$(ls $path)
+    local COUNT=$(echo $LIST | wc -w)
+    if [[ $COUNT -gt 0 ]]; then
+        for resource in $LIST
+        do
+            foo=${resource#"$path/"}
+            foo=${foo%".yml"}
+            echo "${foo}"
+        done
+    fi
+}
+
+# read the name of the cluster resource description given with $1
+function getResourceTitle {
+    local title=$(grep -A0 -P '^    openshift.io/display-name:' $1 | cut -d: -f2 | sed -r 's/["]+//g')
+    echo "$title"
+}
+
+# read the description of the cluster resource description given with $1
+function getResourceDescription {
+    local desc=$(grep -A0 -m1 -P '^    description:' $1 | cut -d: -f2 | sed -r 's/["]+//g')
+    echo "$desc"
+}
+
+##################
+
+
+# create cluster resource configuration
+function doResourceCreate {
+    local resourceName=$1
+    local sourceFile=$2
+    echo -e "\e[1m\e[34mStart\e[0m creation process for cluster resource \e[1m$resourceName\e[0m"
+    if [[ "$resourceName" == "" ]]; then
+        echo -en "Resource name [myresource] : "
+        read resourceName
+    fi
+    if [[ $resourceName == '' ]]; then
+        resourceName="myresource"
+    fi
+    if [[ $sourceFile == '' ]]; then
+        sourceFile="./$resourceName.yml"
+    fi
+    local CLUSTER_CONFDIR=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
+    if [[ -r $CLUSTER_CONFDIR/$resourceName.yml ]]; then
+        echo -en "  Do you want to reset \e[1m$resourceName\e[0m cluster resource [y/N] : "
+        read removeConfig
+        if [[ "$removeConfig" == "y" ]]; then
+            rm -f $CLUSTER_CONFDIR/$resourceName.yml &> /dev/null
+            echo -e "\e[1m\e[35mReset\e[0m cluster resource \e[1m$resourceName\e[0m"
+        else
+            exit;
+        fi
+    fi
+    if [[ -r "$sourceFile" ]]; then
+        cat "$sourceFile" > $CLUSTER_CONFDIR/$resourceName.yml
+        echo -e "\e[1m\e[32mCreated\e[0m cluster resource \e[1m$resourceName\e[0m"
+    else
+        echo -e "\e[1m\e[35mCould not read\e[0m file \e[1m$sourceFile\e[0m"
+    fi
+}
+
+# edit cluster resource configuration
+function doResourceEdit {
+    local resourceName=$1
+    echo -e "\e[1m\e[34mEditing\e[0m the cluster resource \e[1m$resourceName\e[0m"
+    if [[ "$resourceName" == "" ]]; then
+        echo -en "Resource name [myresource] : "
+        read resourceName
+    fi
+    if [[ $resourceName == '' ]]; then
+        resourceName="myresource"
+    fi
+    local CLUSTER_CONFDIR=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
+    if [[ -r $CLUSTER_CONFDIR/$resourceName.yml ]]; then
+        vi $CLUSTER_CONFDIR/$resourceName.yml
+        echo -e "\e[1m\e[32mUpdated\e[0m cluster resource \e[1m$resourceName\e[0m"
+    else
+        echo -e "\e[1m\e[35mCould not read\e[0m file \e[1m$resourceName.yml\e[0m in $CLUSTER_CONFDIR"
+    fi
+}
+
+# delete cluster resource configuration
+function doResourceDelete {
+    local resourceName=$1
+    echo -e "\e[1m\e[34mDeleting\e[0m the cluster resource \e[1m$resourceName\e[0m"
+    if [[ "$resourceName" == "" ]]; then
+        echo -en "Resource name [myresource] : "
+        read resourceName
+    fi
+    if [[ $resourceName == '' ]]; then
+        resourceName="myresource"
+    fi
+    local CLUSTER_CONFDIR=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
+    if [[ -r $CLUSTER_CONFDIR/$resourceName.yml ]]; then
+        rm -f $CLUSTER_CONFDIR/$resourceName.yml
+        echo -e "\e[1m\e[32mDeleted\e[0m cluster resource \e[1m$resourceName\e[0m"
+    else
+        echo -e "\e[1m\e[35mCould not find\e[0m file \e[1m$resourceName.yml\e[0m in $CLUSTER_CONFDIR"
+    fi
+}
+
+# information cluster resource configuration
+function doResourceInfo {
+    local resourceName=$1
+    echo -e "\e[1m\e[34mInfo\e[0m about the cluster resource \e[1m$resourceName\e[0m"
+    if [[ "$resourceName" == "" ]]; then
+        echo -en "Resource name [myresource] : "
+        read resourceName
+    fi
+    if [[ $resourceName == '' ]]; then
+        resourceName="myresource"
+    fi
+    local CLUSTER_CONFDIR=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
+    if [[ -r $CLUSTER_CONFDIR/$resourceName.yml ]]; then
+        echo "kind       :  local" 
+        echo "location   :  $CLUSTER_CONFDIR/$resourceName.yml" 
+        echo "title      : " $(getResourceTitle $CLUSTER_CONFDIR/$resourceName.yml)
+        echo "description: " $(getResourceDescription $CLUSTER_CONFDIR/$resourceName.yml)
+    elif [[ -r $SXCM_RESOURCES_PATH/$resourceName.yml ]]; then
+        echo "kind       :  shared" 
+        echo "location   :  $SXCM_RESOURCES_PATH/$resourceName.yml" 
+        echo "title      : " $(getResourceTitle $SXCM_RESOURCES_PATH/$resourceName.yml)
+        echo "description: " $(getResourceDescription $SXCM_RESOURCES_PATH/$resourceName.yml)
+    else
+        echo -e "\e[1m\e[35mCould not read\e[0m file \e[1m$resourceName.yml\e[0m in $CLUSTER_CONFDIR"
+    fi
+}
+
+
+###################
+
+# sub-menu for create command
+function menuResourceCreate {
+    if [[ "$1" == ""  || "$2" == "" ]]; then
+        menuHeadArt
+            cat <<EOF
+
+sxcm resource create sub-command to create a new cluster resource into the local cluster resource stack
+
+Usage:
+sxcm resource create NAME FILE
+
+Examples:
+# Create a cluster resource named mycluster with the content from the ./myresource.yml local file
+sxcm resource create myresource ./myresource.yml
+
+EOF
+    else
+        doResourceCreate $1 $2
+    fi
+}
+
+# sub-menu for info command
+function menuResourceInfo {
+    if [[ "$1" == "" ]]; then
+        menuHeadArt
+            cat <<EOF
+
+sxcm resource info sub-command to read detail from a cluster resource stored into the local cluster resource stack
+
+Usage:
+sxcm resource info NAME
+
+Examples:
+# Read a cluster resource info from the local cluster resource stack
+sxcm resource info myresource
+
+EOF
+    else
+        doResourceInfo $1 $2
+    fi
+}
+
+# sub-menu for edit command
+function menuResourceEdit {
+    if [[ "$1" == "" ]]; then
+        menuHeadArt
+            cat <<EOF
+
+sxcm resource edit sub-command to change content of a cluster resource stored into the local cluster resource stack
+
+Usage:
+sxcm resource edit NAME
+
+Examples:
+# Start editor on mycluster cluster resource and record change into the local cluster resource stack
+sxcm resource edit myresource
+
+EOF
+    else
+        doResourceEdit $1 $2
+    fi
+}
+
+# sub-menu for delete command
+function menuResourceDelete {
+    if [[ "$1" == "" ]]; then
+        menuHeadArt
+            cat <<EOF
+
+sxcm resource delete sub-command to change content of a cluster resource stored into the local cluster resource stack
+
+Usage:
+sxcm resource delete NAME
+
+Examples:
+# Remove the mycluster cluster resource from the local cluster resource stack
+sxcm resource delete myresource
+
+EOF
+    else
+        doResourceDelete $1 $2
+    fi
+}
+
+
+
+
+
+# menu switch for resource usage command
+function menuResourceUsage {
+    menuHeadArt
+cat <<EOF
+
+This client helps you manage cluster resources availables and their association with configured clusters
+
+Available actions are : list, create, edit, info, enable, disable, associate, dissociate and delete
+
+Usage:
+  sxcm resource <action> [flags]
+
+- Manage cluster resource (local) :
+  - list                                  List available cluster configurations
+  - create myresource file.yml            Add a new cluster resource to the  local cluster resource stack
+  - edit myresource                       edit a cluster resource (only local)
+  - info myresource                       Get information about a cluster resource (only local)
+  - delete myresource                     Remove a cluster resource from the local cluster resource stack
+
+- Activation of cluster resource into cluster :
+  - associate myresource [mycluster]      Add a cluster resource into a cluster resource list and record it (default is active cluster)
+  - dissociate myresource [mycluster]     Remove a cluster resource from a cluster resource list and record deletion (default is active cluster)
+  - enable myresource [mycluster]         Add a cluster resource into a cluster resource list, record, apply to running cluster and record it (default is active cluster)
+  - disable myresource [mycluster]        Remove a cluster resource from the cluster, record it, remove the cluster resource list and record it (default is active cluster)
+
+- Examples  :
+  sxcm  list                              List available cluster profiles
+  sxcm  create myresource myresource.yml  Add the myresource cluster resource to the  local cluster resource stack based on the content of the myresource.yml file
+  sxcm  edit myresource                   Edit the myresource cluster resource stored into the local cluster resource stack
+  sxcm  info myresource                   Display info about the myresource cluster resource stored into the local cluster resource stack
+  sxcm  delete  myresource                Delete the myresource cluster resource stored into the local cluster resource stack
+  sxcm  associate myresource              Add the myresource cluster resource into the cluster resource list of the curently active cluster and record it
+  sxcm  associate myresource mycluster    Add the myresource cluster resource into the mycluster cluster resource list and record it
+  sxcm  dissociate myresource             Remove the myresource cluster resource from the curently active cluster resource list and record deletion
+  sxcm  dissociate myresource mycluster   Remove the myresource cluster resource from the mycluster cluster resource list and record deletion
+  sxcm  enable myresource                 Add the myresource cluster resource into the cluster resource list of the curently active cluster and apply it to the running cluster
+  sxcm  enable myresource mycluster       Add the myresource cluster resource into the mycluster cluster resource list and apply it to the running cluster
+  sxcm  disable myresource                Remove the myresource cluster resource from the curently active cluster resource list and apply it to the running cluster
+  sxcm  disable myresource mycluster      Remove the myresource cluster resource from the mycluster cluster resource list and apply it to the running cluster
+
+EOF
+}
+
+# sub-menu for resources command
+function menuResources {
+    doListResources
+}
+
+# main menu for the cluster sub-command
+function menuResource {
+    case $1 in
+        create)        menuResourceCreate  ${2} ${3};;
+        info)          menuResourceInfo ${2};;
+        edit)          menuResourceEdit ${2};;
+        delete)        menuResourceDelete ${2};;
+        list)          menuResources;;
+        associate)     menuResourceAssociate ${2};;
+        dissociate)    menuResourceDissociate ${2};;
+        enable)        menuResourceEnable ${2};;
+        disable)       menuResourceDisable ${2};;
+        *)             menuResourceUsage;;
+    esac
+}

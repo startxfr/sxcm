@@ -899,9 +899,7 @@ function menuClusterCreate {
         menuHeadArt
             cat <<EOF
 
-sxcm init sub-command for initialize a sxcm managed cluster
-
-This sub-command helps you initialize a cluster configuration to the managed cluster stack
+sxcm init sub-command for initialize a sxcm managed cluster stored into the managed cluster stack
 
 Usage:
 sxcm init NAME
@@ -909,14 +907,13 @@ sxcm init NAME
 Examples:
 # Initialize a cluster named mycluster
 sxcm init mycluster
+
 EOF
     elif [[ -z "$2" || "$2" == "" ]]; then
         menuHeadArt
             cat <<EOF
 
-sxcm create sub-command for creating a sxcm managed cluster
-
-This sub-command helps you add a new cluster configuration to the managed cluster stack
+sxcm create sub-command for creating a sxcm managed cluster by adding a new cluster configuration to the managed cluster stack
 
 Usage:
 sxcm create NAME PROFILE
@@ -931,6 +928,7 @@ sxcm create mycluster small
 If you want to have a list of availables cluster profiles,
 you can run :
 $ sxcm profiles
+
 EOF
     else
         doClusterConfigurationCreate $2 $3
@@ -943,9 +941,8 @@ function menuClusterImport {
         menuHeadArt
             cat <<EOF
 
-sxcm import sub-command for importing a sxcm managed cluster
-
-This sub-command helps you create a local cluster configuration based on a remote cluster repository
+sxcm import sub-command for importing a sxcm managed cluster. It will create a local cluster configuration 
+based on a remote cluster repository
 
 Usage:
 sxcm import NAME [BRANCH]
