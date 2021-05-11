@@ -12,6 +12,10 @@ DIR="$DIR/_console/okd-cluster-resources/argod-project"
 SERVER_NAME="argocd-operator"
 DELAY="60"
 
+echo "STOP WORD IN ARGOCD PROJECT DEPLOY !!!!!!!!!!!"
+exit
+
+
 oc wait po -l name=$SERVER_NAME --for=condition=Ready --timeout=500ms -n $PROJECT --token=$OCTOKEN --cluster=$OCCLUSTER &>/dev/null
 if [[ $? == "0" ]]
 then

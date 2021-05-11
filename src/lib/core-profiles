@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# profiles cluster profile
+function doListProfiles {
+    local LIST=($(getProfiles))
+    local LISTRead=($(getProfiles))
+    local COUNT=${#LIST[@]}
+    local desc=""
+    local orderedProfiles=(${SXCM_PROFILES_ORDERED[@]})
+    echo -e "\e[33mList\e[0m \e[1m$COUNT\e[0m cluster profiles"
+    echo -e "   Profiles     |           Master                 |           Worker                 | Datacenter | Cost | Cluster services "
+    echo -e "                | N  | VC | Ram | Go  | typ | iops | N  | VC | Ram | Go  | typ | iops |            | €/h  | "
+    # display ordered profile and remove form list queue
+    for i in "${!orderedProfiles[@]}"; do
+        for j in "${!LISTRead[@]}"; do
+            local profile=${LISTRead[j]}
+            if [[ ${orderedProfiles[i]} = $profile ]]; then
+                desc=$(getClusterDescriptionTab $SXCM_PROFILES_PATH/install-config-$profile.yml)
+                printf "\e[1m%-14s\e[0m %s\n" $profile "$desc"
+                desc=""
+                unset 'LIST[j]'
+            fi
+        done
+    done
+    for profile in "${LIST[@]}"
+    do
+        desc=$(getClusterDescriptionTab $SXCM_PROFILES_PATH/install-config-$profile.yml)
+        printf "\e[1m%-14s\e[0m %s\n" $profile "$desc"
+        desc=""
+    done
+}
+
+# get list cluster configuration
+function getProfiles {
+    local LIST=$(ls $SXCM_PROFILES_PATH/install-config-*.yml)
+    local COUNT=$(echo $LIST | wc -w)
+    if [[ $COUNT -gt 0 ]]; then
+        for profile in $LIST
+        do
+            foo=${profile#"$SXCM_PROFILES_PATH/install-config-"}
+            foo=${foo%".yml"}
+            echo "${foo}"
+        done
+    fi
+}
+
+
+# sub-menu for profiles command
+function menuProfiles {
+    doListProfiles
+}
