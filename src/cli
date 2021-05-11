@@ -2,7 +2,7 @@
 
 SXCM_PATH=/usr/share/sxcm
 SXCM_PROFILES_PATH=$SXCM_PATH/profiles
-SXCM_RESOURCES_PATH=$SXCM_PATH/resources
+SXCM_RESOURCES_PATH="$SXCM_PATH/resources"
 SXCM_LIB_PATH=$SXCM_PATH/lib
 
 source $SXCM_PATH/config
@@ -11,31 +11,35 @@ source $SXCM_LIB_PATH/core-version
 source $SXCM_LIB_PATH/core-setup
 source $SXCM_LIB_PATH/core-cluster
 source $SXCM_LIB_PATH/core-profiles
+source $SXCM_LIB_PATH/core-resources
 
 ## Start prog switch
 LoadConfig
 
 if [[ "$1" != "" ]]; then
     case $1 in
-        current)  menuCluster $1 $2 ;;
-        list)     menuCluster $1 $2 ;;
-        import)   menuCluster $1 $2 $3 ;;
-        export)   menuCluster $1 $2 $3 ;;
-        init)     menuCluster $1 $2 $3 ;;
-        create)   menuCluster $1 $2 $3 ;;
-        edit)     menuCluster $1 $2 $3 ;;
-        switch)   menuCluster $1 $2 ;;
-        info)     menuCluster $1 $2 ;;
-        deploy)   menuCluster $1 $2 ;;
-        update)   menuCluster $1 $2 ;;
-        destroy)  menuCluster $1 $2 ;;
-        delete)   menuCluster $1 $2 ;;
-        switch)   menuCluster $1 $2 ;;
-        connect)  menuCluster $1 $2 ;;
-        profiles) menuProfiles $1 ;;
-        setup)    menuSetup $@ ;;
-        version|--version|-v)  menuVersion;;
-        *)        menuUsage $@ ;;
+        current)   menuCluster $1 $2 ;;
+        list)      menuCluster $1 $2 ;;
+        import)    menuCluster $1 $2 $3 ;;
+        export)    menuCluster $1 $2 $3 ;;
+        init)      menuCluster $1 $2 $3 ;;
+        create)    menuCluster $1 $2 $3 ;;
+        edit)      menuCluster $1 $2 $3 ;;
+        switch)    menuCluster $1 $2 ;;
+        info)      menuCluster $1 $2 ;;
+        deploy)    menuCluster $1 $2 ;;
+        update)    menuCluster $1 $2 ;;
+        destroy)   menuCluster $1 $2 ;;
+        delete)    menuCluster $1 $2 ;;
+        switch)    menuCluster $1 $2 ;;
+        connect)   menuCluster $1 $2 ;;
+        profiles)  menuProfiles;;
+        resources) menuResources;;
+        resource)  menuResource  $2 $3 $4;;
+        setup)     menuSetup $@ ;;
+        version|--version|-v)  
+                   menuVersion;;
+        *)         menuUsage $@ ;;
     esac
 else
     menuUsage

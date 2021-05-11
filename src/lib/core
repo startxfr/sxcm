@@ -155,8 +155,8 @@ Usage:
 - Examples  :
   sxcm  list                            List available cluster configurations
   sxcm  profiles                        List available cluster profiles
-  sxcm  create myClusterName <profile>  Create an new Openshift cluster based on profile (default is default profile)
-  sxcm  switch myClusterName            Change the current cluster to my-example
+  sxcm  create mycluster <profile>      Create an new Openshift cluster based on profile (default is default profile)
+  sxcm  switch mycluster                Change the current cluster to my-example
   sxcm  edit                            Edit the Openshift cluster configuration (default is current cluster)
   sxcm  info                            Display info about the my-example cluster (default is current cluster)
   sxcm  deploy                          Deploy the my-example cluster (default is current cluster)

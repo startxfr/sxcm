@@ -11,13 +11,16 @@ source $SXCM_LIB_PATH/core
 source $SXCM_LIB_PATH/core-version
 source $SXCM_LIB_PATH/core-setup
 source $SXCM_LIB_PATH/core-cluster
+source $SXCM_LIB_PATH/core-profiles
+source $SXCM_LIB_PATH/core-resources
 
 LoadConfig
 loadActiveClusterConf
 
 _sxcm_all()
 {
-    local available="list init create edit switch info deploy update destroy delete connect profiles current version setup import"
+    local available="list init create edit switch info deploy update destroy delete connect profiles current version setup import export resources resource"
+    local availableService="list create edit info delete associate dissociate enable disable"
     local available2=" "
     if [[ "${COMP_WORDS[1]}" == "edit" ||
             "${COMP_WORDS[1]}" == "switch" ||
@@ -27,7 +30,45 @@ _sxcm_all()
             "${COMP_WORDS[1]}" == "destroy"  ||
             "${COMP_WORDS[1]}" == "delete"  ||
             "${COMP_WORDS[1]}" == "connect"  ||
-            "${COMP_WORDS[1]}" == "current" ]] && [[ "${COMP_CWORD}" == "2" ]]
+            "${COMP_WORDS[1]}" == "current" ||
+            "${COMP_WORDS[1]}" == "export" ]] && [[ "${COMP_CWORD}" == "2" ]]
+    then
+        available2=$(getClusterConfigurationList)
+    elif [[ "${COMP_WORDS[1]}" == "resource" ]] && [[ "${COMP_CWORD}" == "2" || "${COMP_CWORD}" == "3" ]]
+    then
+        if  [[ "${COMP_WORDS[2]}" == "edit" ]] && [[ "${COMP_CWORD}" == "3" ]]
+        then
+            available2=$(getResourcesLocal)
+        elif  [[ "${COMP_WORDS[2]}" == "info" ||
+                "${COMP_WORDS[2]}" == "associate"  ||
+                "${COMP_WORDS[2]}" == "dissociate"  ||
+                "${COMP_WORDS[2]}" == "enable"  ||
+                "${COMP_WORDS[2]}" == "disable" ]] && [[ "${COMP_CWORD}" == "3" ]]
+        then
+            available2="$(getResourcesLocal) $(getResourcesDefault)"
+        elif  [[ "${COMP_WORDS[2]}" == "delete" ||
+                "${COMP_WORDS[2]}" == "edit" ]] && [[ "${COMP_CWORD}" == "3" ]]
+        then
+            available2=$(getResourcesLocal)
+        elif  [[ "${COMP_CWORD}" == "3" ]] && [[ "${COMP_WORDS[2]}" == "create" ]]
+        then
+            available2="myresource"
+        elif  [[ "${COMP_CWORD}" == "3" ]] && [[ "${COMP_WORDS[2]}" == "list" ]]
+        then
+            available2=""
+        else
+            available2=$availableService
+        fi
+    elif [[ "${COMP_WORDS[1]}" == "edit" ||
+            "${COMP_WORDS[1]}" == "switch" ||
+            "${COMP_WORDS[1]}" == "info" ||
+            "${COMP_WORDS[1]}" == "deploy" ||
+            "${COMP_WORDS[1]}" == "update"  ||
+            "${COMP_WORDS[1]}" == "destroy"  ||
+            "${COMP_WORDS[1]}" == "delete"  ||
+            "${COMP_WORDS[1]}" == "connect"  ||
+            "${COMP_WORDS[1]}" == "current" ||
+            "${COMP_WORDS[1]}" == "export" ]] && [[ "${COMP_CWORD}" == "2" ]]
     then
         available2=$(getClusterConfigurationList)
     elif [[ "${COMP_WORDS[1]}" == "list" ||
@@ -44,15 +85,18 @@ _sxcm_all()
     then
         if [[ "${COMP_WORDS[2]}" == "" ]] || [[ "${COMP_WORDS[2]}" == "\t" ]]
         then
-            available2="myClusterName"
+            available2="mycluster"
         else
             available2=${SXCM_PROFILES_ORDERED[@]}
         fi
     fi
     local suggestions=($(compgen -W "$available" "${COMP_WORDS[1]}"))
-    if [[ "${COMP_CWORD}" == "3" ]] || [[ "${COMP_CWORD}" == "2" ]]
+    if [[ "${COMP_CWORD}" == "3" ]]
     then
         local suggestions2=($(compgen -W "$available2" "${COMP_WORDS[3]}"))
+    elif [[ "${COMP_CWORD}" == "4" ]]
+    then
+        local suggestions2=($(compgen -W "$available2" "${COMP_WORDS[4]}"))
     else
         local suggestions2=($(compgen -W "$available2" "${COMP_WORDS[2]}"))
     fi
