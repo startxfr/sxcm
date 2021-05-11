@@ -143,6 +143,7 @@ Usage:
   - profiles                            List available cluster profiles
   - current                             Return informations about the current cluster
   - switch                              Change the current cluster
+  - resource                            Management of the availables cluster resource
 
 - Cluster commands actions (remote) :
   - create                              Add a new cluster configuration to the cluster stack
@@ -155,18 +156,18 @@ Usage:
   - destroy                             Deploy the given cluster (default is current cluster)
 
 - Examples  :
-  sxcm  list                            List available cluster configurations
-  sxcm  profiles                        List available cluster profiles
-  sxcm  create mycluster <profile>      Create an new Openshift cluster based on profile (default is default profile)
-  sxcm  switch mycluster                Change the current cluster to my-example
-  sxcm  edit                            Edit the Openshift cluster configuration (default is current cluster)
-  sxcm  info                            Display info about the my-example cluster (default is current cluster)
-  sxcm  deploy                          Deploy the my-example cluster (default is current cluster)
-  sxcm  update                          Update the my-example cluster configuration (default is current cluster)
-  sxcm  destroy                         Destroy the my-example cluster (default is current cluster)
-  sxcm  connect                         Connect the local kubeconfig to the my-example cluster
-  sxcm  delete                          Delete the my-example cluster configuration (default is current cluster)
-  sxcm  current                         Return informations about the current cluster
+  sxcm list                            List available cluster configurations
+  sxcm profiles                        List available cluster profiles
+  sxcm create mycluster <profile>      Create an new Openshift cluster based on profile (default is default profile)
+  sxcm switch mycluster                Change the current cluster to my-example
+  sxcm edit                            Edit the Openshift cluster configuration (default is current cluster)
+  sxcm info                            Display info about the my-example cluster (default is current cluster)
+  sxcm deploy                          Deploy the my-example cluster (default is current cluster)
+  sxcm update                          Update the my-example cluster configuration (default is current cluster)
+  sxcm destroy                         Destroy the my-example cluster (default is current cluster)
+  sxcm connect                         Connect the local kubeconfig to the my-example cluster
+  sxcm delete                          Delete the my-example cluster configuration (default is current cluster)
+  sxcm current                         Return informations about the current cluster
 
 EOF
 }

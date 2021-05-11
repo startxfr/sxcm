@@ -70,14 +70,21 @@ function constructResourcesList {
     done
 }
 
-# get list cluster configuration
+# get list of default cluster resources
 function getResourcesDefault {
     echo $(getResources $SXCM_RESOURCES_PATH)
 }
 
-# get list cluster configuration
+# get list of local cluster resources
 function getResourcesLocal {
     echo $(getResources $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES)
+}
+
+# get list of cluster cluster resources
+function getResourcesCluster {
+    local cn=$1
+    local CLUSTER_CONFDIR=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn/$SXCM_USER_CONF_DIR_RESOURCES
+    echo $(getResources $CLUSTER_CONFDIR)
 }
 
 # get list cluster configuration
@@ -299,9 +306,6 @@ EOF
 }
 
 
-
-
-
 # menu switch for resource usage command
 function menuResourceUsage {
     menuHeadArt
@@ -315,32 +319,32 @@ Usage:
   sxcm resource <action> [flags]
 
 - Manage cluster resource (local) :
-  - list                                  List available cluster configurations
-  - create myresource file.yml            Add a new cluster resource to the  local cluster resource stack
-  - edit myresource                       edit a cluster resource (only local)
-  - info myresource                       Get information about a cluster resource (only local)
-  - delete myresource                     Remove a cluster resource from the local cluster resource stack
+  - list                                 List available cluster configurations
+  - create myresource file.yml           Add a new cluster resource to the  local cluster resource stack
+  - edit myresource                      edit a cluster resource (only local)
+  - info myresource                      Get information about a cluster resource (only local)
+  - delete myresource                    Remove a cluster resource from the local cluster resource stack
 
 - Activation of cluster resource into cluster :
-  - associate myresource [mycluster]      Add a cluster resource into a cluster resource list and record it (default is active cluster)
-  - dissociate myresource [mycluster]     Remove a cluster resource from a cluster resource list and record deletion (default is active cluster)
-  - enable myresource [mycluster]         Add a cluster resource into a cluster resource list, record, apply to running cluster and record it (default is active cluster)
-  - disable myresource [mycluster]        Remove a cluster resource from the cluster, record it, remove the cluster resource list and record it (default is active cluster)
+  - associate myresource [mycluster]     Add a cluster resource into a cluster resource list and record it (default is active cluster)
+  - dissociate myresource [mycluster]    Remove a cluster resource from a cluster resource list and record deletion (default is active cluster)
+  - enable myresource [mycluster]        Add a cluster resource into a cluster resource list, record, apply to running cluster and record it (default is active cluster)
+  - disable myresource [mycluster]       Remove a cluster resource from the cluster, record it, remove the cluster resource list and record it (default is active cluster)
 
 - Examples  :
-  sxcm  list                              List available cluster profiles
-  sxcm  create myresource myresource.yml  Add the myresource cluster resource to the  local cluster resource stack based on the content of the myresource.yml file
-  sxcm  edit myresource                   Edit the myresource cluster resource stored into the local cluster resource stack
-  sxcm  info myresource                   Display info about the myresource cluster resource stored into the local cluster resource stack
-  sxcm  delete  myresource                Delete the myresource cluster resource stored into the local cluster resource stack
-  sxcm  associate myresource              Add the myresource cluster resource into the cluster resource list of the curently active cluster and record it
-  sxcm  associate myresource mycluster    Add the myresource cluster resource into the mycluster cluster resource list and record it
-  sxcm  dissociate myresource             Remove the myresource cluster resource from the curently active cluster resource list and record deletion
-  sxcm  dissociate myresource mycluster   Remove the myresource cluster resource from the mycluster cluster resource list and record deletion
-  sxcm  enable myresource                 Add the myresource cluster resource into the cluster resource list of the curently active cluster and apply it to the running cluster
-  sxcm  enable myresource mycluster       Add the myresource cluster resource into the mycluster cluster resource list and apply it to the running cluster
-  sxcm  disable myresource                Remove the myresource cluster resource from the curently active cluster resource list and apply it to the running cluster
-  sxcm  disable myresource mycluster      Remove the myresource cluster resource from the mycluster cluster resource list and apply it to the running cluster
+  sxcm list                              List available cluster profiles
+  sxcm create myresource myresource.yml  Add the myresource cluster resource to the  local cluster resource stack based on the content of the myresource.yml file
+  sxcm edit myresource                   Edit the myresource cluster resource stored into the local cluster resource stack
+  sxcm info myresource                   Display info about the myresource cluster resource stored into the local cluster resource stack
+  sxcm delete  myresource                Delete the myresource cluster resource stored into the local cluster resource stack
+  sxcm associate myresource              Add the myresource cluster resource into the cluster resource list of the curently active cluster and record it
+  sxcm associate myresource mycluster    Add the myresource cluster resource into the mycluster cluster resource list and record it
+  sxcm dissociate myresource             Remove the myresource cluster resource from the curently active cluster resource list and record deletion
+  sxcm dissociate myresource mycluster   Remove the myresource cluster resource from the mycluster cluster resource list and record deletion
+  sxcm enable myresource                 Add the myresource cluster resource into the cluster resource list of the curently active cluster and apply it to the running cluster
+  sxcm enable myresource mycluster       Add the myresource cluster resource into the mycluster cluster resource list and apply it to the running cluster
+  sxcm disable myresource                Remove the myresource cluster resource from the curently active cluster resource list and apply it to the running cluster
+  sxcm disable myresource mycluster      Remove the myresource cluster resource from the mycluster cluster resource list and apply it to the running cluster
 
 EOF
 }
