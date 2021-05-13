@@ -302,20 +302,20 @@ function doClusterConfigurationCreateUpdateResources {
                 echo "" &> /dev/null
             elif [[ -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES/$resource.yml ]]; then
                 cp $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES/$resource.yml $clusterConfDirResource/$resource.yml &> /dev/null
-                echo -e "\e[1m\e[32mCopy\e[0m \e[1m$resource\e[0m cluster resource form \e[1mlocal\e[0m resource stack"
+                echo -e "\e[1m\e[90mCopy\e[0m \e[1m$resource\e[0m cluster resource form \e[1mlocal\e[0m resource stack"
             elif [[ -r $SXCM_RESOURCES_PATH/$resource.yml ]]; then
                 cp $SXCM_RESOURCES_PATH/$resource.yml $clusterConfDirResource/$resource.yml &> /dev/null
-                echo -e "\e[1m\e[32mCopy\e[0m \e[1m$resource\e[0m cluster resource form \e[1mshared\e[0m resource stack"
+                echo -e "\e[1m\e[90mCopy\e[0m \e[1m$resource\e[0m cluster resource form \e[1mshared\e[0m resource stack"
             fi
             if [[ -d $clusterConfDirResource/$resource ]]; then
                 # do nothing, leave reasource unchanged
                 echo "" &> /dev/null
             elif [[ -d $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES/$resource ]]; then
                 cp -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES/$resource $clusterConfDirResource/$resource &> /dev/null
-                echo -e "\e[1m\e[32mCopy\e[0m \e[1m$resource\e[0m cluster resource form \e[1mlocal\e[0m resource stack"
+                echo -e "\e[1m\e[90mCopy\e[0m \e[1m$resource\e[0m cluster resource form \e[1mlocal\e[0m resource stack"
             elif [[ -d $SXCM_RESOURCES_PATH/$resource ]]; then
                 cp -r $SXCM_RESOURCES_PATH/$resource $clusterConfDirResource/$resource &> /dev/null
-                echo -e "\e[1m\e[32mCopy\e[0m \e[1m$resource\e[0m cluster resource form \e[1mshared\e[0m resource stack"
+                echo -e "\e[1m\e[90mCopy\e[0m \e[1m$resource\e[0m cluster resource form \e[1mshared\e[0m resource stack"
             fi
         done
     fi
@@ -325,7 +325,6 @@ function doClusterConfigurationCreateUpdateResources {
 function doClusterConfigurationCreate {
     local cn=$1
     local profile=$2
-    echo -e "\e[1m\e[34mStart\e[0m creation process for cluster \e[1m$cn\e[0m"
     if [[ "$cn" == "" ]]; then
         echo -en "Cluster name [$cn] : "
         read cn
@@ -336,6 +335,7 @@ function doClusterConfigurationCreate {
     if [[ $profile == '' ]]; then
         profile="default"
     fi
+    echo -e "\e[1m\e[32mCreate\e[0m cprocess for cluster \e[1m$cn\e[0m"
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local gitBranch=$cn
     if [[ -r $clusterConfDir/install-config.yaml || -r $clusterConfDir/install-config.yaml.back ]]; then
@@ -349,7 +349,7 @@ function doClusterConfigurationCreate {
             git commit -m "[$cn] Reset the $cn cluster" &> /dev/null
             git push origin $cn
             cd - &> /dev/null
-            echo -e "\e[1m\e[35mReset\e[0m cluster \e[1m$cn\e[0m configuration"
+            echo -e "\e[31mReset\e[0m cluster \e[1m$cn\e[0m configuration"
         else
             exit;
         fi
@@ -374,7 +374,7 @@ function doClusterConfigurationCreate {
             git push origin $cn
             echo -e "  \e[32mcreated\e[0m git repository branch \e[1m$cn\e[0m based on \e[1m$SXCM_GIT_BRANCH_MAIN\e[0m branch"
         else
-            echo -e "  \e[32mmoved\e[0m to git repository branch \e[1m$cn\e[0m previously created"
+            echo -e "  \e[33mmoved\e[0m to git repository branch \e[1m$cn\e[0m previously created"
         fi
         echo -e "  \e[33mswitched\e[0m to branch \e[1m$cn\e[0m"
         touch $clusterConfDir/$SXCM_USER_CONF_FILE &> /dev/null
@@ -405,7 +405,7 @@ function doClusterConfigurationCreate {
         cd - &> /dev/null
         echo -e "  \e[32mrecorded\e[0m cluster configuration based on \e[1m$PROFILE\e[0m profile"
         setActiveCluster $cn
-        echo -e "\e[1m\e[32mSet active\e[0m cluster set to \e[1m$cn\e[0m"
+        echo -e "\e[1m\e[34mSet active\e[0m cluster set to \e[1m$cn\e[0m"
     else
         echo -e "  No profile named \e[1m$PROFILE\e[0m found"
         echo -e "  you could run \e[90;4msxcm profiles\e[0m to get a list of available profiles"
@@ -481,7 +481,7 @@ function doClusterConfigurationImport {
     local cn=$1
     local branch=$2
     rm -rf /tmp/sxcm-repo  &> /dev/null
-    echo -e "\e[1m\e[34mStart\e[0m import process for cluster \e[1m$cn\e[0m"
+    echo -e "\e[1m\e[36mImport\e[0m process for cluster \e[1m$cn\e[0m"
     if [[ "$cn" == "" ]]; then
         echo -en "Cluster name [mycluster] : "
         read cn
@@ -526,7 +526,7 @@ function doClusterConfigurationImport {
     # git commit -m "[$cn] Record the $cn cluster install config in branch $branch" &> /dev/null
     # git push origin $cn
     # cd - &> /dev/null
-    echo -e "  \e[1m\e[32mImport\e[0m of \e[1m$cn\e[0m cluster is \e[34mdone\e[0m"
+    echo -e "  \e[1m\e[36mImport\e[0m of \e[1m$cn\e[0m cluster is \e[34mdone\e[0m"
 }
 
 # export cluster configuration
@@ -535,7 +535,7 @@ function doClusterConfigurationExport {
     if [[ "$cn" == "" ]]; then
         cn=`getActiveCluster`
     fi
-    echo -e "\e[1m\e[34mStart\e[0m export process for cluster \e[1m$cn\e[0m"
+    echo -e "\e[1m\e[35mStart\e[0m export process for cluster \e[1m$cn\e[0m"
     reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ ! -d $clusterConfDir ]]; then
@@ -555,7 +555,7 @@ function doClusterConfigurationExport {
     git commit -m "[$cn] Export the $cn cluster state" &> /dev/null
     git push origin $cn
     cd - &> /dev/null
-    echo -e "  \e[1m\e[32mExport\e[0m of \e[1m$cn\e[0m cluster is \e[34mdone\e[0m"
+    echo -e "  \e[1m\e[35mExport\e[0m of \e[1m$cn\e[0m cluster is \e[34mdone\e[0m"
 }
 
 # info on cluster configuration
@@ -582,7 +582,7 @@ function doClusterConfigurationInfo {
     fi
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ -r $clusterConfDir/$SXCM_USER_CONF_FILE ]]; then
-        echo -e "\e[34mInformation\e[0m on cluster \e[1m$cn\e[0m found in $clusterConfDir/$SXCM_USER_CONF_FILE"
+        echo -e "\e[1m\e[34mInformation\e[0m on cluster \e[1m$cn\e[0m found in $clusterConfDir/$SXCM_USER_CONF_FILE"
         . $clusterConfDir/$SXCM_USER_CONF_FILE;
         local sourceConfFile=$SXCM_PROFILES_PATH/install-config-$PROFILE.yml
         local desc=$(extractOCPInstallDescription $sourceConfFile desc)
@@ -648,6 +648,7 @@ function doClusterConfigurationEdit {
         echo -e "or get a list of available cluster configuration with \e[90;4msxcm list\e[0m" ;
         exit 1;
     fi
+    echo -e "\e[1m\e[33Edit\e[0m the cluster \e[1m$cn\e[0m profile in $clusterConfDir"
     if [[ ! -w $clusterConfDir/install-config.yaml ]]; then
         echo -e "Cluster configuration named \e[1m$cn\e[0m in $clusterConfDir/install-config.yaml doesn't exist or is not writable"
         echo -e "You can create one using \e[90;4msxcm create $cn\e[0m" ;
@@ -699,6 +700,7 @@ function doClusterConfigurationUpdate {
         echo -e "or get a list of available cluster configuration with \e[90;4msxcm list\e[0m" ;
         exit 1;
     fi
+    echo -e "\e[1m\e[33Update\e[0m the cluster \e[1m$cn\e[0m profile in $clusterConfDir"
     if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]]; then
         updateClusterResources $cn
         echo -e "Cluster configuration \e[1m$cn\e[0m \e[36mupdated\e[0m "
@@ -748,7 +750,7 @@ function doClusterConfigurationDelete {
             echo -e "You must destroy it first with \e[90;4msxcm destroy $cn\e[0m" ;
         else
             rm -rf $clusterConfDir
-            echo -e "Cluster configuration \e[1m$cn\e[0m \e[31mdeleted\e[0m "
+            echo -e "\e[1m\e[31Delete\e[0m the cluster \e[1m$cn\e[0m"
             if [[ $cn == `getActiveCluster` ]]; then
                 local LIST=$(listClusterConfigs)
                 local COUNT=$(echo $LIST | wc -w)
@@ -774,7 +776,7 @@ function doClusterConfigurationList {
     local clusterConfOCPInstallFile=""
     local desc=""
     if [[ $COUNT -gt 0 ]]; then
-        echo -e "\e[33mList\e[0m \e[1m$COUNT\e[0m cluster configuration in the cluster stack"
+        echo -e "\e[34mList\e[0m \e[1m$COUNT\e[0m cluster configuration in the cluster stack"
         for cluster in $LIST
         do
             if [[ -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/metadata.json || -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/terraform.tfstate ]]
@@ -816,11 +818,7 @@ function doClusterConfigurationList {
 # change active cluster
 function doClusterDisplayActive {
     local cn=$(getActiveCluster)
-    if [[ "" == $cn ]]; then
-        echo -e "\e[31mNo\e[0m cluster configuration is set as \e[32mactive\e[0m cluster configuration"
-    else
-        echo -e "\e[1m$cn\e[0m cluster configuration is set as the \e[32mactive\e[0m cluster"
-    fi
+    echo -e "\e[1m$cn\e[0m cluster configuration is set as the \e[32mactive\e[0m cluster"
 }
 
 # change active cluster
@@ -828,7 +826,7 @@ function doClusterChangeActive {
     local NAME=$1
     local LIST=$(listClusterConfigs)
     if [[ "" == $NAME ]]; then
-        echo -e "\eYou must give a cluster name to set as the active cluster"
+        echo -e "You must give a cluster name to set as the active cluster"
         echo -e "You can create a cluster using \e[90;4msxcm create mycluster\e[0m" ;
         echo -e "or list available cluster configuration by running \e[90;4msxcm list\e[0m" ;
         return 1;
@@ -893,7 +891,7 @@ function doClusterDeploy {
         git commit -m "[$cn] Configuration day-two of the $cn cluster" &> /dev/null
         git push origin $cn
         cd - &> /dev/null
-        echo -e "Cluster \e[1m$cn\e[0m \e[36mconfigured\e[0m"
+        echo -e "Cluster \e[1m$cn\e[0m \e[93mdeployed\e[0m"
     fi
 }
 
@@ -938,7 +936,7 @@ function doClusterDestroy {
             git commit -m "[$cn] Record state after post-destruction actions of the $cn cluster" &> /dev/null
             git push origin $cn
             cd - &> /dev/null
-            echo -e "Cluster \e[1m$cn\e[0m \e[31mdestroyed\e[0m"
+            echo -e "Cluster \e[1m$cn\e[0m \e[91mdestroyed\e[0m"
         else
             exit;
         fi
@@ -978,7 +976,7 @@ function doClusterConnect {
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ -r $clusterConfDir/metadata.json && -r $clusterConfDir/terraform.tfstate ]]; then
         recordAdminTokenFromCreatedCluster $cn
-        echo -e "\e[31mconnected\e[0m to cluster \e[1m$cn\e[0m "
+        echo -e "\e[1\e[36mconnected\e[0m to cluster \e[1m$cn\e[0m "
     else
         echo -e "\e[1m$cn\e[0m cluster configuration doesn't have metadata.json and terraform.tfstate files"
         echo -e "You can create it using \e[90;4msxcm deploy $cn\e[0m" ;

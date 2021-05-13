@@ -137,14 +137,14 @@ function doResourceCreate {
     if [[ $sourceFile == '' ]]; then
         sourceFile="./$rn.yml"
     fi
-    echo -e "\e[1m\e[34mStart\e[0m creation process for cluster resource \e[1m$rn\e[0m"
+    echo -e "\e[1m\e[32mCreate\e[0m  the cluster resource \e[1m$rn\e[0m"
     local resourceDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
     if [[ -r $resourceDirLocal/$rn.yml ]]; then
         echo -en "  Do you want to reset \e[1m$rn\e[0m cluster resource [y/N] : "
         read removeConfig
         if [[ "$removeConfig" == "y" ]]; then
             rm -f $resourceDirLocal/$rn.yml &>/dev/null
-            echo -e "\e[1m\e[35mReset\e[0m cluster resource \e[1m$rn\e[0m"
+            echo -e "\e[1m\e[91mReset\e[0m cluster resource \e[1m$rn\e[0m"
         else
             exit
         fi
@@ -153,7 +153,7 @@ function doResourceCreate {
         cat "$sourceFile" >$resourceDirLocal/$rn.yml
         echo -e "\e[1m\e[32mCreated\e[0m cluster resource \e[1m$rn\e[0m"
     else
-        echo -e "\e[1m\e[35mCould not read\e[0m file \e[1m$sourceFile\e[0m"
+        echo -e "\e[1m\e[31mCould not read\e[0m file \e[1m$sourceFile\e[0m"
     fi
 }
 
@@ -167,13 +167,13 @@ function doResourceEdit {
             rn="myresource"
         fi
     fi
-    echo -e "\e[1m\e[34mEditing\e[0m the cluster resource \e[1m$rn\e[0m"
+    echo -e "\e[1m\e[33mEditing\e[0m the cluster resource \e[1m$rn\e[0m"
     local resourceDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
     if [[ -r $resourceDirLocal/$rn.yml ]]; then
         vi $resourceDirLocal/$rn.yml
-        echo -e "\e[1m\e[32mUpdated\e[0m cluster resource \e[1m$rn\e[0m"
+        echo -e "\e[1m\e[33mUpdated\e[0m cluster resource \e[1m$rn\e[0m"
     else
-        echo -e "\e[1m\e[35mCould not read\e[0m file \e[1m$rn.yml\e[0m in $resourceDirLocal"
+        echo -e "\e[1m\e[31mCould not read\e[0m file \e[1m$rn.yml\e[0m in $resourceDirLocal"
     fi
 }
 
@@ -187,13 +187,13 @@ function doResourceDelete {
             rn="myresource"
         fi
     fi
-    echo -e "\e[1m\e[34mDeleting\e[0m the cluster resource \e[1m$rn\e[0m"
+    echo -e "\e[1m\e[31mDeleting\e[0m the cluster resource \e[1m$rn\e[0m"
     local resourceDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
     if [[ -r $resourceDirLocal/$rn.yml ]]; then
         rm -f $resourceDirLocal/$rn.yml
-        echo -e "\e[1m\e[32mDeleted\e[0m cluster resource \e[1m$rn\e[0m"
+        echo -e "\e[1m\e[31mDeleted\e[0m cluster resource \e[1m$rn\e[0m"
     else
-        echo -e "\e[1m\e[35mCould not find\e[0m file \e[1m$rn.yml\e[0m in $resourceDirLocal"
+        echo -e "\e[1m\e[31mCould not find\e[0m file \e[1m$rn.yml\e[0m in $resourceDirLocal"
     fi
 }
 
@@ -239,7 +239,7 @@ function doResourceInfo {
             echo "description: " $(extractResourceDescription $resourceDirShared/$rn)
         fi
     else
-        echo -e "\e[1m\e[35mCould not read\e[0m file \e[1m$rn.yml\e[0m in $resourceDirLocal or $resourceDirShared"
+        echo -e "\e[1m\e[31mCould not read\e[0m file \e[1m$rn.yml\e[0m in $resourceDirLocal or $resourceDirShared"
     fi
 }
 
@@ -278,11 +278,11 @@ function doResourceAssociate {
             fi
         done
         if [[ "$resourceIsFoundInOCPInstall" == "true" ]]; then
-            echo -e "\e[1m\e[35mCould not activate\e[0m cluster resource \e[1m$rn\e[0m to cluster \e[1m$cn\e[0m because this resource already exist"
+            echo -e "\e[1m\e[31mCould not activate\e[0m cluster resource \e[1m$rn\e[0m to cluster \e[1m$cn\e[0m because this resource already exist"
         else
             resourceNewResourceListForOCPInstall="$resourceNewResourceListForOCPInstall$rn"
             sed -i "/    clusterconfig/c\    clusterconfig: $resourceNewResourceListForOCPInstall" $clusterConfOCPInstallFile
-            echo -e "\e[1m\e[34mAssociate\e[0m the cluster resource \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
+            echo -e "\e[1m\e[96mAssociate\e[0m the cluster resource \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
         fi
         if [[ "$resourceIsFoundInResourceDir" == "false" ]]; then
             local resourceDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
@@ -290,18 +290,18 @@ function doResourceAssociate {
             if [[ -r $resourceDirLocal/$rn.yml || -d $resourceDirLocal/$rn ]]; then
                 if [[ -r $resourceDirLocal/$rn.yml ]]; then
                     cp $resourceDirLocal/$rn.yml $clusterResourceDir/$rn.yml &>/dev/null
-                    echo -e "\e[1m\e[32mCopy\e[0m \e[1mlocal\e[0m cluster resource \e[1m$rn\e[0m (yaml) to cluster \e[1m$cn\e[0m"
+                    echo -e "\e[1m\e[90mCopy\e[0m \e[1mlocal\e[0m cluster resource \e[1m$rn\e[0m (yaml) to cluster \e[1m$cn\e[0m"
                 else
                     cp -r $resourceDirLocal/$rn $clusterResourceDir/$rn &>/dev/null
-                    echo -e "\e[1m\e[32mCopy\e[0m \e[1mlocal\e[0m cluster resource \e[1m$rn\e[0m (directory) to cluster \e[1m$cn\e[0m"
+                    echo -e "\e[1m\e[90mCopy\e[0m \e[1mlocal\e[0m cluster resource \e[1m$rn\e[0m (directory) to cluster \e[1m$cn\e[0m"
                 fi
             elif [[ -r $resourceDirShared/$rn.yml || -d $resourceDirShared/$rn ]]; then
                 if [[ -r $resourceDirShared/$rn.yml ]]; then
                     cp $resourceDirShared/$rn.yml $clusterResourceDir/$rn.yml &>/dev/null
-                    echo -e "\e[1m\e[32mCopy\e[0m \e[1mshared\e[0m cluster resource \e[1m$rn\e[0m (yaml) to cluster \e[1m$cn\e[0m"
+                    echo -e "\e[1m\e[90mCopy\e[0m \e[1mshared\e[0m cluster resource \e[1m$rn\e[0m (yaml) to cluster \e[1m$cn\e[0m"
                 else
                     cp -r $resourceDirShared/$rn $clusterResourceDir/$rn &>/dev/null
-                    echo -e "\e[1m\e[32mCopy\e[0m \e[1mshared\e[0m cluster resource \e[1m$rn\e[0m (directory) to cluster \e[1m$cn\e[0m"
+                    echo -e "\e[1m\e[90mCopy\e[0m \e[1mshared\e[0m cluster resource \e[1m$rn\e[0m (directory) to cluster \e[1m$cn\e[0m"
                 fi
             fi
         fi
@@ -333,7 +333,7 @@ function doResourceDissociate {
     local resourceNewResourceListForOCPInstall=""
     local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
     if [[ ! -r $clusterConfOCPInstallFile ]]; then
-        echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
+        echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
     else
         for resource in $(extractOCPInstallResourceList $clusterConfOCPInstallFile); do
             if [[ "$resource" == "$rn" ]]; then
@@ -345,9 +345,9 @@ function doResourceDissociate {
         if [[ "$resourceIsFoundInOCPInstall" == "true" ]]; then
             resourceNewResourceListForOCPInstall="${resourceNewResourceListForOCPInstall::-1}"
             sed -i "/    clusterconfig/c\    clusterconfig: $resourceNewResourceListForOCPInstall" $clusterConfOCPInstallFile
-            echo -e "\e[1m\e[34mDissociate\e[0m the cluster resource \e[1m$rn\e[0m from the cluster \e[1m$cn\e[0m"
+            echo -e "\e[1m\e[95mDissociate\e[0m the cluster resource \e[1m$rn\e[0m from the cluster \e[1m$cn\e[0m"
         else
-            echo -e "\e[1m\e[35mNothing to do\e[0m because the cluster resource \e[1m$rn\e[0m is not present in cluster \e[1m$cn\e[0m"
+            echo -e "\e[1mNothing to do\e[0m because the cluster resource \e[1m$rn\e[0m is not present in cluster \e[1m$cn\e[0m"
         fi
         cd $clusterConfDir &>/dev/null
         git add . &>/dev/null
@@ -379,8 +379,9 @@ function doResourceEnable {
     local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
     local IsDeployed=false
     if [[ ! -r $clusterConfOCPInstallFile ]]; then
-        echo -e "\e[1m\e[35mNo cluster\e[0m config found at \e[1m$clusterConfOCPInstallFile\e[0m for enabling the \e[1m$rn\e[0m cluster resources"
+        echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterConfOCPInstallFile\e[0m for enabling the \e[1m$rn\e[0m cluster resources"
     else
+        echo -e "\e[1m\e[96mEnable\e[0m the cluster resource \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
         doResourceAssociate $rn $cn
         if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]] && [[ -r $clusterConfDir/deployed ]]
         then
@@ -427,6 +428,7 @@ function doResourceDisable {
         then
             IsDeployed=true
         fi
+        echo -e "\e[1m\e[95mDisable\e[0m the cluster resource \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
         if [[ "$IsDeployed" == "true" ]]
         then
             applyClusterResource "delete" $cn $rn
