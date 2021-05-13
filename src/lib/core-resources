@@ -218,6 +218,8 @@ function doResourceInfo {
     echo -e "\e[1m\e[34mInfo\e[0m about the cluster resource \e[1m$rn\e[0m"
     local resourceDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
     local resourceDirShared=$SXCM_RESOURCES_PATH
+    local LIST=$(listClusterConfigs)
+    local COUNT=$(echo $LIST | wc -w)
     if [[ -r $resourceDirLocal/$rn.yml || -d $resourceDirLocal/$rn ]]; then
         if [[ -r $resourceDirLocal/$rn.yml ]]; then
             echo "format     :  yaml"
@@ -248,7 +250,27 @@ function doResourceInfo {
         fi
     else
         echo -e "\e[1m\e[31mCould not read\e[0m file \e[1m$rn.yml\e[0m in $resourceDirLocal or $resourceDirShared"
+        exit 1
     fi
+    if [[ $COUNT -gt 0 ]]; then
+        for cluster in $LIST
+        do
+            local resourceIsFoundInOCPInstall="false"
+            for resource in $(extractOCPInstallResourceList $(getOCPInstallFileForCluster $cluster)); do
+                if [[ "$resource" == "$rn" ]]; then
+                    resourceIsFoundInOCPInstall="true"
+                fi
+            done
+            if [[ "$resourceIsFoundInOCPInstall" == "true" ]]; then
+                echo -e "- \e[96menabled\e[0m  in cluster \e[1m$cluster\e[0m"
+            else
+                echo -e "- \e[95mdisabled\e[0m in cluster \e[1m$cluster\e[0m"
+            fi
+        done
+    fi
+    exit
+
+
 }
 
 # associate cluster resource configuration
