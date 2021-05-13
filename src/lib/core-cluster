@@ -998,12 +998,19 @@ function menuClusterCreate {
 
 sxcm init sub-command for initialize a sxcm managed cluster stored into the managed cluster stack
 
-Usage:
-sxcm init NAME
+# Usage
 
-Examples:
-# Initialize a cluster named mycluster
+[user@localhost]$ sxcm init CLUSTERNAME [PROFILE]
+
+
+# Examples
+```
+# Initialize a cluster named mycluster using the default profile
 sxcm init mycluster
+# Initialize a cluster named mycluster using the micro profile
+sxcm init mycluster micro
+# If you want to have a list of availables cluster profiles, you can run :
+sxcm profiles
 
 EOF
     elif [[ -z "$2" || "$2" == "" ]]; then
@@ -1012,19 +1019,19 @@ EOF
 
 sxcm create sub-command for creating a sxcm managed cluster by adding a new cluster configuration to the managed cluster stack
 
-Usage:
-sxcm create NAME PROFILE
+# Usage
 
-Examples:
-# Create a cluster named mycluster using the default profile
+[user@localhost]$ sxcm create CLUSTERNAME [PROFILE]
+
+
+# Examples
+```
+# Initialize a cluster named mycluster using the default profile
 sxcm create mycluster
-
-# Create a cluster named mycluster using the small profile
-sxcm create mycluster small
-
-If you want to have a list of availables cluster profiles,
-you can run :
-$ sxcm profiles
+Initialize a cluster named mycluster using the micro profile
+sxcm create mycluster micro
+# If you want to have a list of availables cluster profiles, you can run :
+sxcm profiles
 
 EOF
     else
@@ -1041,10 +1048,13 @@ function menuClusterImport {
 sxcm import sub-command for importing a sxcm managed cluster. It will create a local cluster configuration 
 based on a remote cluster repository
 
-Usage:
-sxcm import NAME [BRANCH]
+# Usage
 
-Examples:
+[user@localhost]$ sxcm import CLUSTERNAME [BRANCH]
+
+
+# Examples
+```
 # Import the cluster named mycluster using the cluster git repository configuration
 sxcm import mycluster
 # Import the cluster named mycluster using the myclusterbranch branch stored into the cluster git repository
