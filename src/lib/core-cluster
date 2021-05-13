@@ -1156,18 +1156,18 @@ function menuClusterConnect {
 # main menu for the cluster sub-command
 function menuCluster {
     case $1 in
-        create|init)    menuClusterCreate ${1} ${2} ${3};;
-        info)           menuClusterInfo ${2};;
-        edit)           menuClusterEdit ${2};;
-        update)         menuClusterUpdate ${2};;
-        delete)         menuClusterDelete ${2};;
-        list)           menuClusterList;;
-        current|switch) menuClusterCurrent ${2};;
-        deploy)         menuClusterDeploy ${2};;
-        destroy)        menuClusterDestroy ${2};;
-        connect|login)  menuClusterConnect ${2};;
-        import)         menuClusterImport ${2} ${3};;
-        export)         menuClusterExport ${2};;
+        create|init)    menuClusterCreate ${1} ${2} ${3} ${4};;
+        info)           menuClusterInfo ${2} ${3};;
+        edit)           menuClusterEdit ${2} ${3};;
+        update)         menuClusterUpdate ${2} ${3};;
+        delete)         menuClusterDelete ${2} ${3};;
+        list)           menuClusterList ${2};;
+        current|switch) menuClusterCurrent ${2} ${3};;
+        deploy)         menuClusterDeploy ${2} ${3};;
+        destroy)        menuClusterDestroy ${2} ${3};;
+        connect|login)  menuClusterConnect ${2} ${3};;
+        import)         menuClusterImport ${2} ${3} ${4};;
+        export)         menuClusterExport ${2} ${3};;
         *)              menuUsage;;
     esac
 }

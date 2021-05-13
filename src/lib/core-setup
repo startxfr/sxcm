@@ -134,50 +134,6 @@ function doSetupAWSCredentials {
     fi
 }
 
-
-# menu switch for login command
-function menuLogin {
-    reconnecta=true
-    local an=$1
-    local apw=$2
-    echo -e "Recording your \e[34m$SXCM_CLUSTER_NAME\e[0m \e[32madmin\e[0m user credentials"
-    if [[ "$an" == "" ]]; then
-        echo -e "Set your \e[34m$SXCM_CLUSTER_NAME\e[0m \e[32musername\e[0m"
-        echo -en "Username : "
-        read an
-    fi
-    if [[ "$apw" == "" ]]; then
-        echo -e "Set your \e[34m$SXCM_CLUSTER_NAME\e[0m \e[32mpassword\e[0m"
-        echo -en "Password : "
-        read -s apw
-    fi
-    echo -e ""
-    if [[ $reconnecta == true ]]; then
-        if [[ "$an" != "" ]]; then
-            echo -e "Switching to admin \e[1m$an\e[0m"
-        fi
-        if [[ "$apw" != "" ]]; then
-            echo -e "Change \e[1m$an\e[0m password"
-        fi
-        if [[ "$an" != "" ]]; then
-            oc login --insecure-skip-tls-verify -u $an -p "$apw" $SXCM_CLUSTER_URL
-        else
-            oc login --insecure-skip-tls-verify $SXCM_CLUSTER_URL
-        fi
-        if [[ "$?" != 0 ]]; then
-            echo -e "\e[1m\e[31mCould not login\e[0m to \e[1m$SXCM_CLUSTER_NAME\e[0m with user \e[1m$an\e[0m"
-            echo -e "Log to openshift cluster first 'oc login --insecure-skip-tls-verify -u $an -p <pwd> $SXCM_CLUSTER_URL'"
-            echo -e "try to run \e[2msxcm setup login\e[0m"
-        else
-            echo -e "Logged to \e[1m$SXCM_CLUSTER_NAME\e[0m with user \e[1m$an\e[0m (capture token)"
-            tokena=`oc whoami -t`
-            appendClusterConf SXCM_CLUSTER_ADMIN_TOKEN $tokena
-        fi
-    fi
-    echo -e "You can now run \e[2msxcm connect\e[0m or use the cluster with \e[2moc get projects\e[0m"
-    exit 0;
-}
-
 # menu switch for usage command
 function doSetupUsage {
     menuHeadArt
@@ -225,15 +181,10 @@ function menuSetup {
             doSetupAWSCredentials $3 $4 $5;
             echo -e "You can now run \e[2msxcm setup login\e[0m"
         ;;
-        login|-l)
-            menuLogin $3 $4;
-            echo -e "You can now run \e[2msxcm create\e[0m or \e[2msxcm import\e[0m"
-        ;;
         all|"")
             doSetupRedhat;
             doSetupGit;
             doSetupAWSCredentials;
-            menuLogin;
             echo -e "You can now run \e[2msxcm environment create\e[0m"
         ;;
         *)

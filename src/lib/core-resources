@@ -31,8 +31,7 @@ function doListResourcesAbstract {
     if [[ $ECHOTITLE == "true" ]]; then
         echo -e "\e[33mList\e[0m \e[1m$COUNT\e[0m availables \e[0m$TITLE\e[0m cluster resources"
     fi
-    for resource in "${LISTOutput[@]}"
-    do
+    for resource in "${LISTOutput[@]}"; do
         filepath=$SXCM_RESOURCES_PATH/$resource
         filepathlocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
         type=none
@@ -96,8 +95,7 @@ function listResources {
     local LIST=$(ls $path)
     local COUNT=$(echo $LIST | wc -w)
     if [[ $COUNT -gt 0 ]]; then
-        for resource in $LIST
-        do
+        for resource in $LIST; do
             foo=${resource#"$path/"}
             foo=${foo%".yml"}
             echo "${foo}"
@@ -125,7 +123,6 @@ function extractResourceTimeout {
 
 ##################
 
-
 # create cluster resource configuration
 function doResourceCreate {
     local rn=$1
@@ -146,14 +143,14 @@ function doResourceCreate {
         echo -en "  Do you want to reset \e[1m$rn\e[0m cluster resource [y/N] : "
         read removeConfig
         if [[ "$removeConfig" == "y" ]]; then
-            rm -f $resourceDirLocal/$rn.yml &> /dev/null
+            rm -f $resourceDirLocal/$rn.yml &>/dev/null
             echo -e "\e[1m\e[35mReset\e[0m cluster resource \e[1m$rn\e[0m"
         else
-            exit;
+            exit
         fi
     fi
     if [[ -r "$sourceFile" ]]; then
-        cat "$sourceFile" > $resourceDirLocal/$rn.yml
+        cat "$sourceFile" >$resourceDirLocal/$rn.yml
         echo -e "\e[1m\e[32mCreated\e[0m cluster resource \e[1m$rn\e[0m"
     else
         echo -e "\e[1m\e[35mCould not read\e[0m file \e[1m$sourceFile\e[0m"
@@ -216,28 +213,28 @@ function doResourceInfo {
     if [[ -r $resourceDirLocal/$rn.yml || -d $resourceDirLocal/$rn ]]; then
         if [[ -r $resourceDirLocal/$rn.yml ]]; then
             echo "format     :  yaml"
-            echo "kind       :  local" 
-            echo "location   :  $resourceDirLocal/$rn.yml" 
+            echo "kind       :  local"
+            echo "location   :  $resourceDirLocal/$rn.yml"
             echo "title      : " $(extractResourceTitle $resourceDirLocal/$rn.yml)
-            echo "description: " $(extractResourceDescription $resourceDirLocal/$rn.yml) 
+            echo "description: " $(extractResourceDescription $resourceDirLocal/$rn.yml)
         else
-            echo "format     :  directory" 
-            echo "kind       :  local" 
-            echo "location   :  $resourceDirLocal/$rn" 
+            echo "format     :  directory"
+            echo "kind       :  local"
+            echo "location   :  $resourceDirLocal/$rn"
             echo "title      : " $(extractResourceTitle $resourceDirLocal/$rn)
             echo "description: " $(extractResourceDescription $resourceDirLocal/$rn)
         fi
     elif [[ -r $resourceDirShared/$rn.yml || -d $resourceDirShared/$rn ]]; then
         if [[ -r $resourceDirShared/$rn.yml ]]; then
             echo "format     :  yaml"
-            echo "kind       :  shared" 
-            echo "location   :  $resourceDirShared/$rn.yml" 
+            echo "kind       :  shared"
+            echo "location   :  $resourceDirShared/$rn.yml"
             echo "title      : " $(extractResourceTitle $resourceDirShared/$rn.yml)
-            echo "description: " $(extractResourceDescription $resourceDirShared/$rn.yml) 
+            echo "description: " $(extractResourceDescription $resourceDirShared/$rn.yml)
         else
-            echo "format     :  directory" 
-            echo "kind       :  shared" 
-            echo "location   :  $resourceDirShared/$rn" 
+            echo "format     :  directory"
+            echo "kind       :  shared"
+            echo "location   :  $resourceDirShared/$rn"
             echo "title      : " $(extractResourceTitle $resourceDirShared/$rn)
             echo "description: " $(extractResourceDescription $resourceDirShared/$rn)
         fi
@@ -258,7 +255,7 @@ function doResourceAssociate {
         fi
     fi
     if [[ $cn == '' ]]; then
-        cn=`getActiveCluster`
+        cn=$(getActiveCluster)
     fi
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
@@ -266,30 +263,27 @@ function doResourceAssociate {
     local resourceIsFoundInResourceDir="false"
     local resourceNewResourceListForOCPInstall=""
     local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
-    if [[ ! -r $clusterConfOCPInstallFile ]]
-    then
+    if [[ ! -r $clusterConfOCPInstallFile ]]; then
         echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
-    else 
-        for resource in $(extractOCPInstallResourceList $clusterConfOCPInstallFile)
-        do
+    else
+        for resource in $(extractOCPInstallResourceList $clusterConfOCPInstallFile); do
             if [[ "$resource" == "$rn" ]]; then
                 resourceIsFoundInOCPInstall="true"
-            fi 
+            fi
             resourceNewResourceListForOCPInstall="$resourceNewResourceListForOCPInstall$resource,"
         done
-        for resource in $(listResourcesCluster $cn)
-        do
+        for resource in $(listResourcesCluster $cn); do
             if [[ "$resource" == "$rn" ]]; then
                 resourceIsFoundInResourceDir="true"
-            fi 
+            fi
         done
         if [[ "$resourceIsFoundInOCPInstall" == "true" ]]; then
             echo -e "\e[1m\e[35mCould not activate\e[0m cluster resource \e[1m$rn\e[0m to cluster \e[1m$cn\e[0m because this resource already exist"
         else
             resourceNewResourceListForOCPInstall="$resourceNewResourceListForOCPInstall$rn"
-            sed -i "/    clusterconfig/c\    clusterconfig: $resourceNewResourceListForOCPInstall" $clusterConfOCPInstallFile 
+            sed -i "/    clusterconfig/c\    clusterconfig: $resourceNewResourceListForOCPInstall" $clusterConfOCPInstallFile
             echo -e "\e[1m\e[34mAssociate\e[0m the cluster resource \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
-        fi 
+        fi
         if [[ "$resourceIsFoundInResourceDir" == "false" ]]; then
             local resourceDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
             local resourceDirShared=$SXCM_RESOURCES_PATH
@@ -303,19 +297,19 @@ function doResourceAssociate {
                 fi
             elif [[ -r $resourceDirShared/$rn.yml || -d $resourceDirShared/$rn ]]; then
                 if [[ -r $resourceDirShared/$rn.yml ]]; then
-                    cp $resourceDirShared/$rn.yml $clusterResourceDir/$rn.yml  &>/dev/null
+                    cp $resourceDirShared/$rn.yml $clusterResourceDir/$rn.yml &>/dev/null
                     echo -e "\e[1m\e[32mCopy\e[0m \e[1mshared\e[0m cluster resource \e[1m$rn\e[0m (yaml) to cluster \e[1m$cn\e[0m"
                 else
                     cp -r $resourceDirShared/$rn $clusterResourceDir/$rn &>/dev/null
                     echo -e "\e[1m\e[32mCopy\e[0m \e[1mshared\e[0m cluster resource \e[1m$rn\e[0m (directory) to cluster \e[1m$cn\e[0m"
                 fi
             fi
-        fi 
-        cd $clusterConfDir &> /dev/null
-        git add . &> /dev/null
-        git commit -am "[$cn] Associate the $rn cluster resource to the $cn cluster" &> /dev/null
+        fi
+        cd $clusterConfDir &>/dev/null
+        git add . &>/dev/null
+        git commit -am "[$cn] Associate the $rn cluster resource to the $cn cluster" &>/dev/null
         git push origin $cn
-        cd - &> /dev/null
+        cd - &>/dev/null
     fi
 }
 
@@ -331,40 +325,37 @@ function doResourceDissociate {
         fi
     fi
     if [[ $cn == '' ]]; then
-        cn=`getActiveCluster`
+        cn=$(getActiveCluster)
     fi
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
     local resourceIsFoundInOCPInstall="false"
     local resourceNewResourceListForOCPInstall=""
     local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
-    if [[ ! -r $clusterConfOCPInstallFile ]]
-    then
+    if [[ ! -r $clusterConfOCPInstallFile ]]; then
         echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
-    else 
-        for resource in $(extractOCPInstallResourceList $clusterConfOCPInstallFile)
-        do
+    else
+        for resource in $(extractOCPInstallResourceList $clusterConfOCPInstallFile); do
             if [[ "$resource" == "$rn" ]]; then
                 resourceIsFoundInOCPInstall="true"
-            else 
+            else
                 resourceNewResourceListForOCPInstall="$resourceNewResourceListForOCPInstall$resource,"
-            fi 
+            fi
         done
         if [[ "$resourceIsFoundInOCPInstall" == "true" ]]; then
             resourceNewResourceListForOCPInstall="${resourceNewResourceListForOCPInstall::-1}"
-            sed -i "/    clusterconfig/c\    clusterconfig: $resourceNewResourceListForOCPInstall" $clusterConfOCPInstallFile 
+            sed -i "/    clusterconfig/c\    clusterconfig: $resourceNewResourceListForOCPInstall" $clusterConfOCPInstallFile
             echo -e "\e[1m\e[34mDissociate\e[0m the cluster resource \e[1m$rn\e[0m from the cluster \e[1m$cn\e[0m"
         else
             echo -e "\e[1m\e[35mNothing to do\e[0m because the cluster resource \e[1m$rn\e[0m is not present in cluster \e[1m$cn\e[0m"
         fi
-        cd $clusterConfDir &> /dev/null
-        git add . &> /dev/null
-        git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &> /dev/null
+        cd $clusterConfDir &>/dev/null
+        git add . &>/dev/null
+        git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &>/dev/null
         git push origin $cn
-        cd - &> /dev/null
+        cd - &>/dev/null
     fi
 }
-
 
 # enable cluster resource configuration
 function doResourceEnable {
@@ -378,7 +369,7 @@ function doResourceEnable {
         fi
     fi
     if [[ $cn == '' ]]; then
-        cn=`getActiveCluster`
+        cn=$(getActiveCluster)
     fi
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
@@ -386,17 +377,16 @@ function doResourceEnable {
     local resourceIsFoundInResourceDir="false"
     local resourceNewResourceListForOCPInstall=""
     local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
-    if [[ ! -r $clusterConfOCPInstallFile ]]
-    then
+    if [[ ! -r $clusterConfOCPInstallFile ]]; then
         echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
-    else 
-        doResourceAssociate $rn $cn 
+    else
+        doResourceAssociate $rn $cn
         applyClusterResource "update" $cn $rn
-        cd $clusterConfDir &> /dev/null
-        git add . &> /dev/null
-        git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &> /dev/null
+        cd $clusterConfDir &>/dev/null
+        git add . &>/dev/null
+        git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &>/dev/null
         git push origin $cn
-        cd - &> /dev/null
+        cd - &>/dev/null
     fi
 }
 
@@ -412,24 +402,23 @@ function doResourceDisable {
         fi
     fi
     if [[ $cn == '' ]]; then
-        cn=`getActiveCluster`
+        cn=$(getActiveCluster)
     fi
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
     local resourceIsFoundInOCPInstall="false"
     local resourceNewResourceListForOCPInstall=""
     local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
-    if [[ ! -r $clusterConfOCPInstallFile ]]
-    then
+    if [[ ! -r $clusterConfOCPInstallFile ]]; then
         echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
-    else 
+    else
         applyClusterResource "delete" $cn $rn
-        doResourceDissociate $rn $cn 
-        cd $clusterConfDir &> /dev/null
-        git add . &> /dev/null
-        git commit -am "[$cn] Disable the $rn cluster resource from the $cn cluster" &> /dev/null
+        doResourceDissociate $rn $cn
+        cd $clusterConfDir &>/dev/null
+        git add . &>/dev/null
+        git commit -am "[$cn] Disable the $rn cluster resource from the $cn cluster" &>/dev/null
         git push origin $cn
-        cd - &> /dev/null
+        cd - &>/dev/null
     fi
 }
 
@@ -437,9 +426,10 @@ function doResourceDisable {
 
 # sub-menu for create command
 function menuResourceCreate {
-    if [[ "$1" == ""  || "$2" == "" ]]; then
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" || "$2" == "" ]]; then
         menuHeadArt
-            cat <<EOF
+        cat <<EOF
 
 sxcm resource create sub-command to create a new cluster resource into the local cluster resource stack
 
@@ -449,10 +439,9 @@ sxcm resource create sub-command to create a new cluster resource into the local
 
 
 # Examples
-```
+
 # Create a cluster resource named mycluster with the content from the ./myresource.yml local file
 sxcm resource create myresource ./myresource.yml
-```
 
 EOF
     else
@@ -462,9 +451,10 @@ EOF
 
 # sub-menu for info command
 function menuResourceInfo {
-    if [[ "$1" == "" ]]; then
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" ]]; then
         menuHeadArt
-            cat <<EOF
+        cat <<EOF
 
 sxcm resource info sub-command to read detail from a cluster resource stored into the local cluster resource stack
 
@@ -474,10 +464,9 @@ sxcm resource info sub-command to read detail from a cluster resource stored int
 
 
 # Examples
-```
+
 # Read a cluster resource info from the local cluster resource stack
 sxcm resource info myresource
-```
 
 EOF
     else
@@ -487,9 +476,10 @@ EOF
 
 # sub-menu for edit command
 function menuResourceEdit {
-    if [[ "$1" == "" ]]; then
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" ]]; then
         menuHeadArt
-            cat <<EOF
+        cat <<EOF
 
 sxcm resource edit sub-command to change content of a cluster resource stored into the local cluster resource stack
 
@@ -499,10 +489,9 @@ sxcm resource edit sub-command to change content of a cluster resource stored in
 
 
 # Examples
-```
+
 # Start editor on mycluster cluster resource and record change into the local cluster resource stack
 sxcm resource edit myresource
-```
 
 EOF
     else
@@ -512,9 +501,10 @@ EOF
 
 # sub-menu for delete command
 function menuResourceDelete {
-    if [[ "$1" == "" ]]; then
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" ]]; then
         menuHeadArt
-            cat <<EOF
+        cat <<EOF
 
 sxcm resource delete sub-command to change content of a cluster resource stored into the local cluster resource stack
 
@@ -524,10 +514,9 @@ sxcm resource delete sub-command to change content of a cluster resource stored 
 
 
 # Examples
-```
+
 # Remove the mycluster cluster resource from the local cluster resource stack
 sxcm resource delete myresource
-```
 
 EOF
     else
@@ -537,9 +526,10 @@ EOF
 
 # sub-menu for associate command
 function menuResourceAssociate {
-    if [[ "$1" == "" ]]; then
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" || "$2" == "" ]]; then
         menuHeadArt
-            cat <<EOF
+        cat <<EOF
 
 sxcm resource associate sub-command to add a cluster resource into a cluster configuration
 
@@ -549,12 +539,11 @@ sxcm resource associate sub-command to add a cluster resource into a cluster con
 
 
 # Examples
-```
+
 # Associate the myresource cluster resource (local or shared) with the currently active cluster
 sxcm resource associate myresource
 # Associate the myresource cluster resource (local or shared) with the mycluster cluster
 sxcm resource associate myresource mycluster
-```
 
 EOF
     else
@@ -562,12 +551,12 @@ EOF
     fi
 }
 
-
 # sub-menu for dissociate command
 function menuResourceDissociate {
-    if [[ "$1" == "" ]]; then
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" || "$2" == "" ]]; then
         menuHeadArt
-            cat <<EOF
+        cat <<EOF
 
 sxcm resource dissociate sub-command to remove a cluster resource into a cluster configuration
 
@@ -577,12 +566,11 @@ sxcm resource dissociate sub-command to remove a cluster resource into a cluster
 
 
 # Examples
-```
+
 # Dissociate the myresource cluster resource (local or shared) with the currently active cluster
 sxcm resource dissociate myresource
 # Dissociate the myresource cluster resource (local or shared) with the mycluster cluster
 sxcm resource dissociate myresource mycluster
-```
 
 EOF
     else
@@ -590,12 +578,12 @@ EOF
     fi
 }
 
-
 # sub-menu for enable command
 function menuResourceEnable {
-    if [[ "$1" == "" ]]; then
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" || "$2" == "" ]]; then
         menuHeadArt
-            cat <<EOF
+        cat <<EOF
 
 sxcm resource enable sub-command to add a cluster resource into a cluster configuration and the running cluster
 
@@ -605,12 +593,12 @@ sxcm resource enable sub-command to add a cluster resource into a cluster config
 
 
 # Examples
-```
+
 # Enable the myresource cluster resource (local or shared) with the currently active cluster
 sxcm resource enable myresource
 # Enable the myresource cluster resource (local or shared) with the mycluster cluster
 sxcm resource enable myresource mycluster
-```
+
 
 EOF
     else
@@ -618,12 +606,12 @@ EOF
     fi
 }
 
-
 # sub-menu for disable command
 function menuResourceDisable {
-    if [[ "$1" == "" ]]; then
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" || "$2" == "" ]]; then
         menuHeadArt
-            cat <<EOF
+        cat <<EOF
 
 sxcm resource disable sub-command to remove a cluster resource into a cluster configuration and the running cluster
 
@@ -633,12 +621,12 @@ sxcm resource disable sub-command to remove a cluster resource into a cluster co
 
 
 # Examples
-```
+
 # Disable the myresource cluster resource (local or shared) with the currently active cluster
 sxcm resource disable myresource
 # Disable the myresource cluster resource (local or shared) with the mycluster cluster
 sxcm resource disable myresource mycluster
-```
+
 
 EOF
     else
@@ -649,7 +637,7 @@ EOF
 # menu switch for resource usage command
 function menuResourceUsage {
     menuHeadArt
-cat <<EOF
+    cat <<EOF
 
 This client helps you manage cluster resources availables and their association with configured clusters
 
@@ -677,7 +665,7 @@ Available actions are : list, create, edit, info, enable, disable, associate, di
 
 # Examples
 
-  sxcm resource list                               # Alias of `sxcm resources`
+  sxcm resource list                               # Alias of 'sxcm resources'
   sxcm resource create myresource myresource.yml   # Add the myresource cluster resource to the  local cluster resource stack based on the content of the myresource.yml file
   sxcm resource edit myresource                    # Edit the myresource cluster resource stored into the local cluster resource stack
   sxcm resource info myresource                    # Display info about the myresource cluster resource stored into the local cluster resource stack
@@ -692,25 +680,32 @@ Available actions are : list, create, edit, info, enable, disable, associate, di
   sxcm resource disable myresource mycluster       # Remove the myresource cluster resource from the mycluster cluster resource list and apply it to the running cluster
 
 EOF
+
+    exit
 }
 
 # sub-menu for resources command
 function menuResources {
-    doListResources
+    isPametersContainHelpers $1 $2
+    if [[ $? == "0" || "$1" != "" || "$2" != "" ]]; then
+        menuResourceUsage
+    else
+        doListResources
+    fi
 }
 
 # main menu for the cluster sub-command
 function menuResource {
     case $1 in
-        create)        menuResourceCreate  ${2} ${3};;
-        info)          menuResourceInfo ${2};;
-        edit)          menuResourceEdit ${2};;
-        delete)        menuResourceDelete ${2};;
-        list)          menuResources;;
-        associate)     menuResourceAssociate ${2} ${3};;
-        dissociate)    menuResourceDissociate ${2} ${3};;
-        enable)        menuResourceEnable ${2} ${3};;
-        disable)       menuResourceDisable ${2} ${3};;
-        *)             menuResourceUsage;;
+    create) menuResourceCreate ${2} ${3} ${4} ;;
+    info) menuResourceInfo ${2} ${3} ${4} ;;
+    edit) menuResourceEdit ${2} ${3} ${4} ;;
+    delete) menuResourceDelete ${2} ${3} ${4} ;;
+    list) menuResources ${2} ${3} ${4} ;;
+    associate) menuResourceAssociate ${2} ${3} ${4} ;;
+    dissociate) menuResourceDissociate ${2} ${3} ${4} ;;
+    enable) menuResourceEnable ${2} ${3} ${4} ;;
+    disable) menuResourceDisable ${2} ${3} ${4} ;;
+    *) menuResourceUsage ;;
     esac
 }

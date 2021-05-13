@@ -3,18 +3,18 @@
 # Check if config file exist
 function CheckConfigExist {
     if [[ -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_FILE ]]; then
-        return 0;
+        return 0
     else
-        return 1;
+        return 1
     fi
 }
 
 # Check if cluster config exist
 function CheckConfigClusterExist {
     if [[ -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$1/$SXCM_USER_CONF_FILE ]]; then
-        return 0;
+        return 0
     else
-        return 1;
+        return 1
     fi
 }
 
@@ -24,10 +24,10 @@ function CheckConfigOrCreate {
         echo -e "\e[36mUsing\e[0m user configuration file at $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_FILE"
     else
         echo -e "\e[32mCreating\e[0m user configuration file at $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_FILE"
-        mkdir -p $SXCM_USER_CONF_DIR &> /dev/null
+        mkdir -p $SXCM_USER_CONF_DIR &>/dev/null
         touch $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_FILE
-        mkdir -p $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER &> /dev/null
-        mkdir -p $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES &> /dev/null
+        mkdir -p $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER &>/dev/null
+        mkdir -p $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES &>/dev/null
     fi
 }
 
@@ -44,7 +44,7 @@ function LoadConfig {
 
 # append key to conf
 function appendConf {
-    echo "$1=$2" >> $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_FILE
+    echo "$1=$2" >>$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_FILE
     export $1=$2
 }
 
@@ -55,13 +55,13 @@ function reloadConf {
 
 # append key to cluster conf
 function appendClusterConf {
-    local clusterName=`getActiveCluster`
+    local clusterName=$(getActiveCluster)
     appendIndividualClusterConf $clusterName $1 $2
 }
 
 # reload cluster conf file
 function reloadClusterConf {
-    local clusterName=`getActiveCluster`
+    local clusterName=$(getActiveCluster)
     reloadIndividualClusterConf $clusterName
 }
 
@@ -69,10 +69,9 @@ function reloadClusterConf {
 function temporize {
     x=$1
     echo "temporize during ${x}sec"
-    while [ $x -gt 0 ]
-    do
+    while [ $x -gt 0 ]; do
         sleep $2
-        x=$(( $x - $2 ))
+        x=$(($x - $2))
         echo "wait for ${x}sec..."
     done
 }
@@ -80,10 +79,10 @@ function temporize {
 # append key to individual cluster conf
 function appendIndividualClusterConf {
     if ! CheckConfigClusterExist $1; then
-        mkdir -p $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$1 &> /dev/null
-        touch $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$1/$SXCM_USER_CONF_FILE &> /dev/null
+        mkdir -p $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$1 &>/dev/null
+        touch $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$1/$SXCM_USER_CONF_FILE &>/dev/null
     fi
-    echo "$2=$3" >> $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$1/$SXCM_USER_CONF_FILE
+    echo "$2=$3" >>$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$1/$SXCM_USER_CONF_FILE
     export $2=$3
 }
 
@@ -98,7 +97,7 @@ function reloadIndividualClusterConf {
 
 # load active cluster conf file
 function loadActiveClusterConf {
-    reloadIndividualClusterConf `getActiveCluster`
+    reloadIndividualClusterConf $(getActiveCluster)
 }
 
 # get active cluster configuration
@@ -109,11 +108,9 @@ function getActiveCluster {
 # set active cluster configuration
 function setActiveCluster {
     local NAME=${1,,}
-    if [[ "" != $NAME ]]
-    then
+    if [[ "" != $NAME ]]; then
         local LIST=$(listClusterConfigs)
-        for cluster in $LIST
-        do
+        for cluster in $LIST; do
             if [[ $cluster == $NAME ]]; then
                 appendConf SXCM_CLUSTER_ACTIVE $NAME
                 export SXCM_CLUSTER_ACTIVE=$NAME
@@ -121,15 +118,29 @@ function setActiveCluster {
                 return 0
             fi
         done
-    else 
-       echo -e "\e[31mWarning\e[0m could not set active cluster with empty name"
+    else
+        echo -e "\e[31mWarning\e[0m could not set active cluster with empty name"
+    fi
+}
+
+# Check if cluster config exist
+function isPametersContainHelpers {
+    if [[ "$1" == "help" || "$1" == "-h" || "$1" == "--help" || \
+        "$2" == "help" || "$2" == "-h" || "$2" == "--help" || \
+        "$3" == "help" || "$3" == "-h" || "$3" == "--help" || \
+        "$4" == "help" || "$4" == "-h" || "$4" == "--help" || \
+        "$5" == "help" || "$5" == "-h" || "$5" == "--help" || \
+        "$6" == "help" || "$6" == "-h" || "$6" == "--help" ]]; then
+        return 0
+    else
+        return 1
     fi
 }
 
 # menu switch for usage command
 function menuUsage {
     menuHeadArt
-cat <<EOF
+    cat <<EOF
 
 This client helps you configure and deploy multiple Openshift cluster under a AWS environment.
 
@@ -172,6 +183,11 @@ Available actions are : list, create, info, update, delete, profiles, current, s
   - resource enable RESOURCENAME [CLUSTERNAME]       Add a cluster resource into a cluster resource list, record, apply to running cluster and record it (default is active cluster)
   - resource disable RESOURCENAME [CLUSTERNAME]      Remove a cluster resource from the cluster, record it, remove the cluster resource list and record it (default is active cluster)
 
+## Generic command :
+  - version                                          Get the informations about the sxcm configuration, and optionaly currently active remote cluster (if active cluster is deployed).
+
+## Common parameters :
+  - --help / -h                                      Get the helper information about the given action or command
 
 # Examples
 
@@ -188,7 +204,7 @@ Available actions are : list, create, info, update, delete, profiles, current, s
   sxcm delete                                      # Delete the my-example cluster configuration (default is current cluster)
   sxcm current                                     # Return informations about the current cluster
   sxcm resources                                   # List available cluster profiles
-  sxcm resource list                               # Alias of `sxcm resources`
+  sxcm resource list                               # Alias of 'sxcm resources'
   sxcm resource create myresource myresource.yml   # Add the myresource cluster resource to the  local cluster resource stack based on the content of the myresource.yml file
   sxcm resource edit myresource                    # Edit the myresource cluster resource stored into the local cluster resource stack
   sxcm resource info myresource                    # Display info about the myresource cluster resource stored into the local cluster resource stack
@@ -205,8 +221,7 @@ Available actions are : list, create, info, update, delete, profiles, current, s
 EOF
 }
 
-
 # menu display AsciiArt
 function menuHeadArt {
-cat $SXCM_PATH/header.txt
+    cat $SXCM_PATH/header.txt
 }
