@@ -295,23 +295,22 @@ function doResourceAssociate {
             local resourceDirShared=$SXCM_RESOURCES_PATH
             if [[ -r $resourceDirLocal/$rn.yml || -d $resourceDirLocal/$rn ]]; then
                 if [[ -r $resourceDirLocal/$rn.yml ]]; then
-                    cp $resourceDirLocal/$rn.yml $clusterResourceDir/$rn.yml &> /dev/null
+                    cp $resourceDirLocal/$rn.yml $clusterResourceDir/$rn.yml &>/dev/null
                     echo -e "\e[1m\e[32mCopy\e[0m \e[1mlocal\e[0m cluster resource \e[1m$rn\e[0m (yaml) to cluster \e[1m$cn\e[0m"
                 else
-                    cp -r $resourceDirLocal/$rn $clusterResourceDir/$rn &> /dev/null
+                    cp -r $resourceDirLocal/$rn $clusterResourceDir/$rn &>/dev/null
                     echo -e "\e[1m\e[32mCopy\e[0m \e[1mlocal\e[0m cluster resource \e[1m$rn\e[0m (directory) to cluster \e[1m$cn\e[0m"
                 fi
             elif [[ -r $resourceDirShared/$rn.yml || -d $resourceDirShared/$rn ]]; then
                 if [[ -r $resourceDirShared/$rn.yml ]]; then
-                    cp $resourceDirShared/$rn.yml $resourceDirShared/$rn.yml &> /dev/null
+                    cp $resourceDirShared/$rn.yml $clusterResourceDir/$rn.yml  &>/dev/null
                     echo -e "\e[1m\e[32mCopy\e[0m \e[1mshared\e[0m cluster resource \e[1m$rn\e[0m (yaml) to cluster \e[1m$cn\e[0m"
                 else
-                    cp -r $resourceDirShared/$rn $clusterResourceDir/$rn &> /dev/null
+                    cp -r $resourceDirShared/$rn $clusterResourceDir/$rn &>/dev/null
                     echo -e "\e[1m\e[32mCopy\e[0m \e[1mshared\e[0m cluster resource \e[1m$rn\e[0m (directory) to cluster \e[1m$cn\e[0m"
                 fi
             fi
         fi 
-        # git add all
         cd $clusterConfDir &> /dev/null
         git add . &> /dev/null
         git commit -am "[$cn] Associate the $rn cluster resource to the $cn cluster" &> /dev/null
@@ -358,7 +357,6 @@ function doResourceDissociate {
         else
             echo -e "\e[1m\e[35mNothing to do\e[0m because the cluster resource \e[1m$rn\e[0m is not present in cluster \e[1m$cn\e[0m"
         fi
-        # git add all
         cd $clusterConfDir &> /dev/null
         git add . &> /dev/null
         git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &> /dev/null
@@ -367,6 +365,73 @@ function doResourceDissociate {
     fi
 }
 
+
+# enable cluster resource configuration
+function doResourceEnable {
+    local rn=$1
+    local cn=$2
+    if [[ "$rn" == "" ]]; then
+        echo -en "Resource name [myresource] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="myresource"
+        fi
+    fi
+    if [[ $cn == '' ]]; then
+        cn=`getActiveCluster`
+    fi
+    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
+    local resourceIsFoundInOCPInstall="false"
+    local resourceIsFoundInResourceDir="false"
+    local resourceNewResourceListForOCPInstall=""
+    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    if [[ ! -r $clusterConfOCPInstallFile ]]
+    then
+        echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
+    else 
+        doResourceAssociate $rn $cn 
+        applyClusterResource "update" $cn $rn
+        cd $clusterConfDir &> /dev/null
+        git add . &> /dev/null
+        git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &> /dev/null
+        git push origin $cn
+        cd - &> /dev/null
+    fi
+}
+
+# disable cluster resource configuration
+function doResourceDisable {
+    local rn=$1
+    local cn=$2
+    if [[ "$rn" == "" ]]; then
+        echo -en "Resource name [myresource] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="myresource"
+        fi
+    fi
+    if [[ $cn == '' ]]; then
+        cn=`getActiveCluster`
+    fi
+    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
+    local resourceIsFoundInOCPInstall="false"
+    local resourceNewResourceListForOCPInstall=""
+    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    if [[ ! -r $clusterConfOCPInstallFile ]]
+    then
+        echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
+    else 
+        applyClusterResource "delete" $cn $rn
+        doResourceDissociate $rn $cn 
+        cd $clusterConfDir &> /dev/null
+        git add . &> /dev/null
+        git commit -am "[$cn] Disable the $rn cluster resource from the $cn cluster" &> /dev/null
+        git push origin $cn
+        cd - &> /dev/null
+    fi
+}
 
 ###################
 
@@ -501,6 +566,53 @@ EOF
     fi
 }
 
+
+# sub-menu for enable command
+function menuResourceEnable {
+    if [[ "$1" == "" ]]; then
+        menuHeadArt
+            cat <<EOF
+
+sxcm resource enable sub-command to add a cluster resource into a cluster configuration and the running cluster
+
+Usage:
+sxcm resource enable NAME [CLUSTER]
+
+Examples:
+# Enable the myresource cluster resource (local or shared) with the currently active cluster
+sxcm resource enable myresource
+# Enable the myresource cluster resource (local or shared) with the mycluster cluster
+sxcm resource enable myresource mycluster
+
+EOF
+    else
+        doResourceEnable $1 $2
+    fi
+}
+
+
+# sub-menu for disable command
+function menuResourceDisable {
+    if [[ "$1" == "" ]]; then
+        menuHeadArt
+            cat <<EOF
+
+sxcm resource disable sub-command to remove a cluster resource into a cluster configuration and the running cluster
+
+Usage:
+sxcm resource disable NAME [CLUSTER]
+
+Examples:
+# Disable the myresource cluster resource (local or shared) with the currently active cluster
+sxcm resource disable myresource
+# Disable the myresource cluster resource (local or shared) with the mycluster cluster
+sxcm resource disable myresource mycluster
+
+EOF
+    else
+        doResourceDisable $1 $2
+    fi
+}
 
 # menu switch for resource usage command
 function menuResourceUsage {
