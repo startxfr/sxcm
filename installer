@@ -31,4 +31,3 @@ mv src $SXCM_PATH
 cd - &> /dev/null
 rm -rf /tmp/sxcm-$SXCM_VERSION /tmp/$SXCM_VERSION.zip &> /dev/null
 echo "sxcm is now installed"
-
