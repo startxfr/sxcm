@@ -141,5 +141,3 @@ _sxcm_all()
 }
 
 complete -F _sxcm_all sxcm
-
-
