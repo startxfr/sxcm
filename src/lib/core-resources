@@ -284,7 +284,7 @@ function doResourceAssociate {
             fi 
         done
         if [[ "$resourceIsFoundInOCPInstall" == "true" ]]; then
-            echo -e "\e[1m\e[35mCould not activate\e[0m cluster resource \e[1m$rn\e[0m to cluster \e[1m$rn\e[0m because this resource already exist"
+            echo -e "\e[1m\e[35mCould not activate\e[0m cluster resource \e[1m$rn\e[0m to cluster \e[1m$cn\e[0m because this resource already exist"
         else
             resourceNewResourceListForOCPInstall="$resourceNewResourceListForOCPInstall$rn"
             sed -i "/    clusterconfig/c\    clusterconfig: $resourceNewResourceListForOCPInstall" $clusterConfOCPInstallFile 
@@ -315,6 +315,53 @@ function doResourceAssociate {
         cd $clusterConfDir &> /dev/null
         git add . &> /dev/null
         git commit -am "[$cn] Associate the $rn cluster resource to the $cn cluster" &> /dev/null
+        git push origin $cn
+        cd - &> /dev/null
+    fi
+}
+
+# dissociate cluster resource configuration
+function doResourceDissociate {
+    local rn=$1
+    local cn=$2
+    if [[ "$rn" == "" ]]; then
+        echo -en "Resource name [myresource] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="myresource"
+        fi
+    fi
+    if [[ $cn == '' ]]; then
+        cn=`getActiveCluster`
+    fi
+    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
+    local resourceIsFoundInOCPInstall="false"
+    local resourceNewResourceListForOCPInstall=""
+    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    if [[ ! -r $clusterConfOCPInstallFile ]]
+    then
+        echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
+    else 
+        for resource in $(extractOCPInstallResourceList $clusterConfOCPInstallFile)
+        do
+            if [[ "$resource" == "$rn" ]]; then
+                resourceIsFoundInOCPInstall="true"
+            else 
+                resourceNewResourceListForOCPInstall="$resourceNewResourceListForOCPInstall$resource,"
+            fi 
+        done
+        if [[ "$resourceIsFoundInOCPInstall" == "true" ]]; then
+            resourceNewResourceListForOCPInstall="${resourceNewResourceListForOCPInstall::-1}"
+            sed -i "/    clusterconfig/c\    clusterconfig: $resourceNewResourceListForOCPInstall" $clusterConfOCPInstallFile 
+            echo -e "\e[1m\e[34mDissociate\e[0m the cluster resource \e[1m$rn\e[0m from the cluster \e[1m$cn\e[0m"
+        else
+            echo -e "\e[1m\e[35mNothing to do\e[0m because the cluster resource \e[1m$rn\e[0m is not present in cluster \e[1m$cn\e[0m"
+        fi
+        # git add all
+        cd $clusterConfDir &> /dev/null
+        git add . &> /dev/null
+        git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &> /dev/null
         git push origin $cn
         cd - &> /dev/null
     fi
@@ -413,7 +460,7 @@ function menuResourceAssociate {
         menuHeadArt
             cat <<EOF
 
-sxcm resource associate sub-command to change content of a cluster resource stored into the local cluster resource stack
+sxcm resource associate sub-command to add a cluster resource into a cluster configuration
 
 Usage:
 sxcm resource associate NAME [CLUSTER]
@@ -427,6 +474,30 @@ sxcm resource associate myresource mycluster
 EOF
     else
         doResourceAssociate $1 $2
+    fi
+}
+
+
+# sub-menu for dissociate command
+function menuResourceDissociate {
+    if [[ "$1" == "" ]]; then
+        menuHeadArt
+            cat <<EOF
+
+sxcm resource dissociate sub-command to remove a cluster resource into a cluster configuration
+
+Usage:
+sxcm resource dissociate NAME [CLUSTER]
+
+Examples:
+# Dissociate the myresource cluster resource (local or shared) with the currently active cluster
+sxcm resource dissociate myresource
+# Dissociate the myresource cluster resource (local or shared) with the mycluster cluster
+sxcm resource dissociate myresource mycluster
+
+EOF
+    else
+        doResourceDissociate $1 $2
     fi
 }
 
@@ -487,10 +558,10 @@ function menuResource {
         edit)          menuResourceEdit ${2};;
         delete)        menuResourceDelete ${2};;
         list)          menuResources;;
-        associate)     menuResourceAssociate ${2};;
-        dissociate)    menuResourceDissociate ${2};;
-        enable)        menuResourceEnable ${2};;
-        disable)       menuResourceDisable ${2};;
+        associate)     menuResourceAssociate ${2} ${3};;
+        dissociate)    menuResourceDissociate ${2} ${3};;
+        enable)        menuResourceEnable ${2} ${3};;
+        disable)       menuResourceDisable ${2} ${3};;
         *)             menuResourceUsage;;
     esac
 }
