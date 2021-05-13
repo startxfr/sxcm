@@ -377,16 +377,26 @@ function doResourceEnable {
     local resourceIsFoundInResourceDir="false"
     local resourceNewResourceListForOCPInstall=""
     local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    local IsDeployed=false
     if [[ ! -r $clusterConfOCPInstallFile ]]; then
-        echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
+        echo -e "\e[1m\e[35mNo cluster\e[0m config found at \e[1m$clusterConfOCPInstallFile\e[0m for enabling the \e[1m$rn\e[0m cluster resources"
     else
         doResourceAssociate $rn $cn
-        applyClusterResource "update" $cn $rn
-        cd $clusterConfDir &>/dev/null
-        git add . &>/dev/null
-        git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &>/dev/null
-        git push origin $cn
-        cd - &>/dev/null
+        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]] && [[ -r $clusterConfDir/deployed ]]
+        then
+            IsDeployed=true
+        fi
+        if [[ "$IsDeployed" == "true" ]]
+        then
+            applyClusterResource "update" $cn $rn
+            cd $clusterConfDir &>/dev/null
+            git add . &>/dev/null
+            git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &>/dev/null
+            git push origin $cn
+            cd - &>/dev/null
+        else
+            echo -e "Could not \e[1menable $rn\e[0m cluster resource on cluster \e[1m$cn\e[0m because cluster is \e[1m\e[35mnot deployed\e[0m"
+        fi
     fi
 }
 
@@ -409,10 +419,20 @@ function doResourceDisable {
     local resourceIsFoundInOCPInstall="false"
     local resourceNewResourceListForOCPInstall=""
     local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    local IsDeployed=false
     if [[ ! -r $clusterConfOCPInstallFile ]]; then
         echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
     else
-        applyClusterResource "delete" $cn $rn
+        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]] && [[ -r $clusterConfDir/deployed ]]
+        then
+            IsDeployed=true
+        fi
+        if [[ "$IsDeployed" == "true" ]]
+        then
+            applyClusterResource "delete" $cn $rn
+        else
+            echo -e "Could not \e[1mdisable $rn\e[0m cluster resource on cluster \e[1m$cn\e[0m because cluster is \e[1m\e[35mnot deployed\e[0m"
+        fi
         doResourceDissociate $rn $cn
         cd $clusterConfDir &>/dev/null
         git add . &>/dev/null
@@ -527,7 +547,7 @@ EOF
 # sub-menu for associate command
 function menuResourceAssociate {
     isPametersContainHelpers $1 $2 $3 $4
-    if [[ $? == "0" || "$1" == "" || "$2" == "" ]]; then
+    if [[ $? == "0" || "$1" == "" ]]; then
         menuHeadArt
         cat <<EOF
 
@@ -554,7 +574,7 @@ EOF
 # sub-menu for dissociate command
 function menuResourceDissociate {
     isPametersContainHelpers $1 $2 $3 $4
-    if [[ $? == "0" || "$1" == "" || "$2" == "" ]]; then
+    if [[ $? == "0" || "$1" == "" ]]; then
         menuHeadArt
         cat <<EOF
 
@@ -581,7 +601,7 @@ EOF
 # sub-menu for enable command
 function menuResourceEnable {
     isPametersContainHelpers $1 $2 $3 $4
-    if [[ $? == "0" || "$1" == "" || "$2" == "" ]]; then
+    if [[ $? == "0" || "$1" == "" ]]; then
         menuHeadArt
         cat <<EOF
 
@@ -609,7 +629,7 @@ EOF
 # sub-menu for disable command
 function menuResourceDisable {
     isPametersContainHelpers $1 $2 $3 $4
-    if [[ $? == "0" || "$1" == "" || "$2" == "" ]]; then
+    if [[ $? == "0" || "$1" == "" ]]; then
         menuHeadArt
         cat <<EOF
 
