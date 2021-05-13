@@ -149,9 +149,17 @@ function doResourceCreate {
             exit
         fi
     fi
-    if [[ -r "$sourceFile" ]]; then
-        cat "$sourceFile" >$resourceDirLocal/$rn.yml
-        echo -e "\e[1m\e[32mCreated\e[0m cluster resource \e[1m$rn\e[0m"
+    if [[ $sourceFile =~ ^http.* ]]; then
+        curl --head --silent --fail $sourceFile &>/dev/null
+        if [[ $? == 0 ]]; then
+            curl -s $sourceFile > $resourceDirLocal/$rn.yml
+        echo -e "\e[1m\e[32mCreated\e[0m cluster resource \e[1m$rn\e[0m from \e[1m$sourceFile\e[0m"
+        else
+            echo -e "\e[1m\e[31mCould not download\e[0m remote \e[1m$sourceFile\e[0m"
+        fi
+    elif [[ -r "$sourceFile" ]]; then
+        cat "$sourceFile" > $resourceDirLocal/$rn.yml
+        echo -e "\e[1m\e[32mCreated\e[0m cluster resource \e[1m$rn\e[0m from \e[1m$sourceFile\e[0m"
     else
         echo -e "\e[1m\e[31mCould not read\e[0m file \e[1m$sourceFile\e[0m"
     fi
