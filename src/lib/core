@@ -111,7 +111,7 @@ function setActiveCluster {
     local NAME=${1,,}
     if [[ "" != $NAME ]]
     then
-        local LIST=$(getClusterConfigurationList)
+        local LIST=$(listClusterConfigs)
         for cluster in $LIST
         do
             if [[ $cluster == $NAME ]]; then

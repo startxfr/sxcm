@@ -13,11 +13,14 @@ function doListResourcesAbstract {
     local LISTRead=()
     local TITLE=shared
     local ECHOTITLE=true
+    local filepath=""
+    local filepathlocal=""
+    local desc=""
     if [[ $1 == "local" ]]; then
-        LIST=$(getResourcesLocal)
+        LIST=$(listResourcesLocal)
         TITLE=local
     else
-        LIST=$(getResourcesDefault)
+        LIST=$(listResourcesDefault)
         TITLE=shared
     fi
     if [[ $2 == "false" ]]; then
@@ -71,24 +74,24 @@ function constructResourcesList {
 }
 
 # get list of default cluster resources
-function getResourcesDefault {
-    echo $(getResources $SXCM_RESOURCES_PATH)
+function listResourcesDefault {
+    echo $(listResources $SXCM_RESOURCES_PATH)
 }
 
 # get list of local cluster resources
-function getResourcesLocal {
-    echo $(getResources $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES)
+function listResourcesLocal {
+    echo $(listResources $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES)
 }
 
 # get list of cluster cluster resources
-function getResourcesCluster {
+function listResourcesCluster {
     local cn=$1
-    local CLUSTER_CONFDIR=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn/$SXCM_USER_CONF_DIR_RESOURCES
-    echo $(getResources $CLUSTER_CONFDIR)
+    local resourceDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn/$SXCM_USER_CONF_DIR_RESOURCES
+    echo $(listResources $resourceDirLocal)
 }
 
 # get list cluster configuration
-function getResources {
+function listResources {
     local path=${1}
     local LIST=$(ls $path)
     local COUNT=$(echo $LIST | wc -w)
@@ -102,16 +105,22 @@ function getResources {
     fi
 }
 
-# read the name of the cluster resource description given with $1
-function getResourceTitle {
+# read the content of the cluster resource title from the given file
+function extractResourceTitle {
     local title=$(grep -A0 -P '^    openshift.io/display-name:' $1 | cut -d: -f2 | sed -r 's/["]+//g')
     echo "$title"
 }
 
-# read the description of the cluster resource description given with $1
-function getResourceDescription {
+# read the content of the cluster resource description from the given file
+function extractResourceDescription {
     local desc=$(grep -A0 -m1 -P '^    description:' $1 | cut -d: -f2 | sed -r 's/["]+//g')
     echo "$desc"
+}
+
+# read the content of the cluster resource timeout from the given file
+function extractResourceTimeout {
+    local CLUSTERTIMEOUT=$(cat $1 | yq .metadata.annotations.sxv4_console_timeout -cr)
+    echo "$CLUSTERTIMEOUT"
 }
 
 ##################
@@ -119,33 +128,33 @@ function getResourceDescription {
 
 # create cluster resource configuration
 function doResourceCreate {
-    local resourceName=$1
+    local rn=$1
     local sourceFile=$2
-    echo -e "\e[1m\e[34mStart\e[0m creation process for cluster resource \e[1m$resourceName\e[0m"
-    if [[ "$resourceName" == "" ]]; then
+    if [[ "$rn" == "" ]]; then
         echo -en "Resource name [myresource] : "
-        read resourceName
-    fi
-    if [[ $resourceName == '' ]]; then
-        resourceName="myresource"
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="myresource"
+        fi
     fi
     if [[ $sourceFile == '' ]]; then
-        sourceFile="./$resourceName.yml"
+        sourceFile="./$rn.yml"
     fi
-    local CLUSTER_CONFDIR=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
-    if [[ -r $CLUSTER_CONFDIR/$resourceName.yml ]]; then
-        echo -en "  Do you want to reset \e[1m$resourceName\e[0m cluster resource [y/N] : "
+    echo -e "\e[1m\e[34mStart\e[0m creation process for cluster resource \e[1m$rn\e[0m"
+    local resourceDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
+    if [[ -r $resourceDirLocal/$rn.yml ]]; then
+        echo -en "  Do you want to reset \e[1m$rn\e[0m cluster resource [y/N] : "
         read removeConfig
         if [[ "$removeConfig" == "y" ]]; then
-            rm -f $CLUSTER_CONFDIR/$resourceName.yml &> /dev/null
-            echo -e "\e[1m\e[35mReset\e[0m cluster resource \e[1m$resourceName\e[0m"
+            rm -f $resourceDirLocal/$rn.yml &> /dev/null
+            echo -e "\e[1m\e[35mReset\e[0m cluster resource \e[1m$rn\e[0m"
         else
             exit;
         fi
     fi
     if [[ -r "$sourceFile" ]]; then
-        cat "$sourceFile" > $CLUSTER_CONFDIR/$resourceName.yml
-        echo -e "\e[1m\e[32mCreated\e[0m cluster resource \e[1m$resourceName\e[0m"
+        cat "$sourceFile" > $resourceDirLocal/$rn.yml
+        echo -e "\e[1m\e[32mCreated\e[0m cluster resource \e[1m$rn\e[0m"
     else
         echo -e "\e[1m\e[35mCould not read\e[0m file \e[1m$sourceFile\e[0m"
     fi
@@ -153,68 +162,161 @@ function doResourceCreate {
 
 # edit cluster resource configuration
 function doResourceEdit {
-    local resourceName=$1
-    echo -e "\e[1m\e[34mEditing\e[0m the cluster resource \e[1m$resourceName\e[0m"
-    if [[ "$resourceName" == "" ]]; then
+    local rn=$1
+    if [[ "$rn" == "" ]]; then
         echo -en "Resource name [myresource] : "
-        read resourceName
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="myresource"
+        fi
     fi
-    if [[ $resourceName == '' ]]; then
-        resourceName="myresource"
-    fi
-    local CLUSTER_CONFDIR=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
-    if [[ -r $CLUSTER_CONFDIR/$resourceName.yml ]]; then
-        vi $CLUSTER_CONFDIR/$resourceName.yml
-        echo -e "\e[1m\e[32mUpdated\e[0m cluster resource \e[1m$resourceName\e[0m"
+    echo -e "\e[1m\e[34mEditing\e[0m the cluster resource \e[1m$rn\e[0m"
+    local resourceDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
+    if [[ -r $resourceDirLocal/$rn.yml ]]; then
+        vi $resourceDirLocal/$rn.yml
+        echo -e "\e[1m\e[32mUpdated\e[0m cluster resource \e[1m$rn\e[0m"
     else
-        echo -e "\e[1m\e[35mCould not read\e[0m file \e[1m$resourceName.yml\e[0m in $CLUSTER_CONFDIR"
+        echo -e "\e[1m\e[35mCould not read\e[0m file \e[1m$rn.yml\e[0m in $resourceDirLocal"
     fi
 }
 
 # delete cluster resource configuration
 function doResourceDelete {
-    local resourceName=$1
-    echo -e "\e[1m\e[34mDeleting\e[0m the cluster resource \e[1m$resourceName\e[0m"
-    if [[ "$resourceName" == "" ]]; then
+    local rn=$1
+    if [[ "$rn" == "" ]]; then
         echo -en "Resource name [myresource] : "
-        read resourceName
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="myresource"
+        fi
     fi
-    if [[ $resourceName == '' ]]; then
-        resourceName="myresource"
-    fi
-    local CLUSTER_CONFDIR=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
-    if [[ -r $CLUSTER_CONFDIR/$resourceName.yml ]]; then
-        rm -f $CLUSTER_CONFDIR/$resourceName.yml
-        echo -e "\e[1m\e[32mDeleted\e[0m cluster resource \e[1m$resourceName\e[0m"
+    echo -e "\e[1m\e[34mDeleting\e[0m the cluster resource \e[1m$rn\e[0m"
+    local resourceDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
+    if [[ -r $resourceDirLocal/$rn.yml ]]; then
+        rm -f $resourceDirLocal/$rn.yml
+        echo -e "\e[1m\e[32mDeleted\e[0m cluster resource \e[1m$rn\e[0m"
     else
-        echo -e "\e[1m\e[35mCould not find\e[0m file \e[1m$resourceName.yml\e[0m in $CLUSTER_CONFDIR"
+        echo -e "\e[1m\e[35mCould not find\e[0m file \e[1m$rn.yml\e[0m in $resourceDirLocal"
     fi
 }
 
 # information cluster resource configuration
 function doResourceInfo {
-    local resourceName=$1
-    echo -e "\e[1m\e[34mInfo\e[0m about the cluster resource \e[1m$resourceName\e[0m"
-    if [[ "$resourceName" == "" ]]; then
+    local rn=$1
+    if [[ "$rn" == "" ]]; then
         echo -en "Resource name [myresource] : "
-        read resourceName
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="myresource"
+        fi
     fi
-    if [[ $resourceName == '' ]]; then
-        resourceName="myresource"
-    fi
-    local CLUSTER_CONFDIR=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
-    if [[ -r $CLUSTER_CONFDIR/$resourceName.yml ]]; then
-        echo "kind       :  local" 
-        echo "location   :  $CLUSTER_CONFDIR/$resourceName.yml" 
-        echo "title      : " $(getResourceTitle $CLUSTER_CONFDIR/$resourceName.yml)
-        echo "description: " $(getResourceDescription $CLUSTER_CONFDIR/$resourceName.yml)
-    elif [[ -r $SXCM_RESOURCES_PATH/$resourceName.yml ]]; then
-        echo "kind       :  shared" 
-        echo "location   :  $SXCM_RESOURCES_PATH/$resourceName.yml" 
-        echo "title      : " $(getResourceTitle $SXCM_RESOURCES_PATH/$resourceName.yml)
-        echo "description: " $(getResourceDescription $SXCM_RESOURCES_PATH/$resourceName.yml)
+    echo -e "\e[1m\e[34mInfo\e[0m about the cluster resource \e[1m$rn\e[0m"
+    local resourceDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
+    local resourceDirShared=$SXCM_RESOURCES_PATH
+    if [[ -r $resourceDirLocal/$rn.yml || -d $resourceDirLocal/$rn ]]; then
+        if [[ -r $resourceDirLocal/$rn.yml ]]; then
+            echo "format     :  yaml"
+            echo "kind       :  local" 
+            echo "location   :  $resourceDirLocal/$rn.yml" 
+            echo "title      : " $(extractResourceTitle $resourceDirLocal/$rn.yml)
+            echo "description: " $(extractResourceDescription $resourceDirLocal/$rn.yml) 
+        else
+            echo "format     :  directory" 
+            echo "kind       :  local" 
+            echo "location   :  $resourceDirLocal/$rn" 
+            echo "title      : " $(extractResourceTitle $resourceDirLocal/$rn)
+            echo "description: " $(extractResourceDescription $resourceDirLocal/$rn)
+        fi
+    elif [[ -r $resourceDirShared/$rn.yml || -d $resourceDirShared/$rn ]]; then
+        if [[ -r $resourceDirShared/$rn.yml ]]; then
+            echo "format     :  yaml"
+            echo "kind       :  shared" 
+            echo "location   :  $resourceDirShared/$rn.yml" 
+            echo "title      : " $(extractResourceTitle $resourceDirShared/$rn.yml)
+            echo "description: " $(extractResourceDescription $resourceDirShared/$rn.yml) 
+        else
+            echo "format     :  directory" 
+            echo "kind       :  shared" 
+            echo "location   :  $resourceDirShared/$rn" 
+            echo "title      : " $(extractResourceTitle $resourceDirShared/$rn)
+            echo "description: " $(extractResourceDescription $resourceDirShared/$rn)
+        fi
     else
-        echo -e "\e[1m\e[35mCould not read\e[0m file \e[1m$resourceName.yml\e[0m in $CLUSTER_CONFDIR"
+        echo -e "\e[1m\e[35mCould not read\e[0m file \e[1m$rn.yml\e[0m in $resourceDirLocal or $resourceDirShared"
+    fi
+}
+
+# associate cluster resource configuration
+function doResourceAssociate {
+    local rn=$1
+    local cn=$2
+    if [[ "$rn" == "" ]]; then
+        echo -en "Resource name [myresource] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="myresource"
+        fi
+    fi
+    if [[ $cn == '' ]]; then
+        cn=`getActiveCluster`
+    fi
+    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
+    local resourceIsFoundInOCPInstall="false"
+    local resourceIsFoundInResourceDir="false"
+    local resourceNewResourceListForOCPInstall=""
+    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    if [[ ! -r $clusterConfOCPInstallFile ]]
+    then
+        echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
+    else 
+        for resource in $(extractOCPInstallResourceList $clusterConfOCPInstallFile)
+        do
+            if [[ "$resource" == "$rn" ]]; then
+                resourceIsFoundInOCPInstall="true"
+            fi 
+            resourceNewResourceListForOCPInstall="$resourceNewResourceListForOCPInstall$resource,"
+        done
+        for resource in $(listResourcesCluster $cn)
+        do
+            if [[ "$resource" == "$rn" ]]; then
+                resourceIsFoundInResourceDir="true"
+            fi 
+        done
+        if [[ "$resourceIsFoundInOCPInstall" == "true" ]]; then
+            echo -e "\e[1m\e[35mCould not activate\e[0m cluster resource \e[1m$rn\e[0m to cluster \e[1m$rn\e[0m because this resource already exist"
+        else
+            resourceNewResourceListForOCPInstall="$resourceNewResourceListForOCPInstall$rn"
+            sed -i "/    clusterconfig/c\    clusterconfig: $resourceNewResourceListForOCPInstall" $clusterConfOCPInstallFile 
+            echo -e "\e[1m\e[34mAssociate\e[0m the cluster resource \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
+        fi 
+        if [[ "$resourceIsFoundInResourceDir" == "false" ]]; then
+            local resourceDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
+            local resourceDirShared=$SXCM_RESOURCES_PATH
+            if [[ -r $resourceDirLocal/$rn.yml || -d $resourceDirLocal/$rn ]]; then
+                if [[ -r $resourceDirLocal/$rn.yml ]]; then
+                    cp $resourceDirLocal/$rn.yml $clusterResourceDir/$rn.yml &> /dev/null
+                    echo -e "\e[1m\e[32mCopy\e[0m \e[1mlocal\e[0m cluster resource \e[1m$rn\e[0m (yaml) to cluster \e[1m$cn\e[0m"
+                else
+                    cp -r $resourceDirLocal/$rn $clusterResourceDir/$rn &> /dev/null
+                    echo -e "\e[1m\e[32mCopy\e[0m \e[1mlocal\e[0m cluster resource \e[1m$rn\e[0m (directory) to cluster \e[1m$cn\e[0m"
+                fi
+            elif [[ -r $resourceDirShared/$rn.yml || -d $resourceDirShared/$rn ]]; then
+                if [[ -r $resourceDirShared/$rn.yml ]]; then
+                    cp $resourceDirShared/$rn.yml $resourceDirShared/$rn.yml &> /dev/null
+                    echo -e "\e[1m\e[32mCopy\e[0m \e[1mshared\e[0m cluster resource \e[1m$rn\e[0m (yaml) to cluster \e[1m$cn\e[0m"
+                else
+                    cp -r $resourceDirShared/$rn $clusterResourceDir/$rn &> /dev/null
+                    echo -e "\e[1m\e[32mCopy\e[0m \e[1mshared\e[0m cluster resource \e[1m$rn\e[0m (directory) to cluster \e[1m$cn\e[0m"
+                fi
+            fi
+        fi 
+        # git add all
+        cd $clusterConfDir &> /dev/null
+        git add . &> /dev/null
+        git commit -am "[$cn] Associate the $rn cluster resource to the $cn cluster" &> /dev/null
+        git push origin $cn
+        cd - &> /dev/null
     fi
 }
 
@@ -302,6 +404,29 @@ sxcm resource delete myresource
 EOF
     else
         doResourceDelete $1 $2
+    fi
+}
+
+# sub-menu for associate command
+function menuResourceAssociate {
+    if [[ "$1" == "" ]]; then
+        menuHeadArt
+            cat <<EOF
+
+sxcm resource associate sub-command to change content of a cluster resource stored into the local cluster resource stack
+
+Usage:
+sxcm resource associate NAME [CLUSTER]
+
+Examples:
+# Associate the myresource cluster resource (local or shared) with the currently active cluster
+sxcm resource associate myresource
+# Associate the myresource cluster resource (local or shared) with the mycluster cluster
+sxcm resource associate myresource mycluster
+
+EOF
+    else
+        doResourceAssociate $1 $2
     fi
 }
 

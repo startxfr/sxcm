@@ -15,7 +15,7 @@ function doListProfiles {
         for j in "${!LISTRead[@]}"; do
             local profile=${LISTRead[j]}
             if [[ ${orderedProfiles[i]} = $profile ]]; then
-                desc=$(getClusterDescriptionTab $SXCM_PROFILES_PATH/install-config-$profile.yml)
+                desc=$(extractOCPInstallDescriptionTab $SXCM_PROFILES_PATH/install-config-$profile.yml)
                 printf "\e[1m%-14s\e[0m %s\n" $profile "$desc"
                 desc=""
                 unset 'LIST[j]'
@@ -24,7 +24,7 @@ function doListProfiles {
     done
     for profile in "${LIST[@]}"
     do
-        desc=$(getClusterDescriptionTab $SXCM_PROFILES_PATH/install-config-$profile.yml)
+        desc=$(extractOCPInstallDescriptionTab $SXCM_PROFILES_PATH/install-config-$profile.yml)
         printf "\e[1m%-14s\e[0m %s\n" $profile "$desc"
         desc=""
     done

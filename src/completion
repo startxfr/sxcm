@@ -33,23 +33,23 @@ _sxcm_all()
             "${COMP_WORDS[1]}" == "current" ||
             "${COMP_WORDS[1]}" == "export" ]] && [[ "${COMP_CWORD}" == "2" ]]
     then
-        available2=$(getClusterConfigurationList)
+        available2=$(listClusterConfigs)
     elif [[ "${COMP_WORDS[1]}" == "resource" ]] && [[ "${COMP_CWORD}" == "2" || "${COMP_CWORD}" == "3" ]]
     then
         if  [[ "${COMP_WORDS[2]}" == "edit" ]] && [[ "${COMP_CWORD}" == "3" ]]
         then
-            available2=$(getResourcesLocal)
+            available2=$(listResourcesLocal)
         elif  [[ "${COMP_WORDS[2]}" == "info" ||
                 "${COMP_WORDS[2]}" == "associate"  ||
                 "${COMP_WORDS[2]}" == "dissociate"  ||
                 "${COMP_WORDS[2]}" == "enable"  ||
                 "${COMP_WORDS[2]}" == "disable" ]] && [[ "${COMP_CWORD}" == "3" ]]
         then
-            available2="$(getResourcesLocal) $(getResourcesDefault)"
+            available2="$(listResourcesLocal) $(listResourcesDefault)"
         elif  [[ "${COMP_WORDS[2]}" == "delete" ||
                 "${COMP_WORDS[2]}" == "edit" ]] && [[ "${COMP_CWORD}" == "3" ]]
         then
-            available2=$(getResourcesLocal)
+            available2=$(listResourcesLocal)
         elif  [[ "${COMP_CWORD}" == "3" ]] && [[ "${COMP_WORDS[2]}" == "create" ]]
         then
             available2="myresource"
@@ -70,7 +70,7 @@ _sxcm_all()
             "${COMP_WORDS[1]}" == "current" ||
             "${COMP_WORDS[1]}" == "export" ]] && [[ "${COMP_CWORD}" == "2" ]]
     then
-        available2=$(getClusterConfigurationList)
+        available2=$(listClusterConfigs)
     elif [[ "${COMP_WORDS[1]}" == "list" ||
             "${COMP_WORDS[1]}" == "profiles" ||
             "${COMP_WORDS[1]}" == "version" ||
