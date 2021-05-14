@@ -4,16 +4,16 @@ metadata:
   name: sxv4-cluster-storage-template
   annotations:
     openshift.io/display-name: STARTX cluster Storage (admin)
-    description: Deploy cluster-wide resources to enable dynamic-provisionned storage according to sxv4-console definitions
+    description: Deploy cluster-wide resources to enable dynamic-provisionned storage according to sxcm definitions
     iconClass: icon-openshift
     tags: startx,cluster,config,admin,storage,storageclass
     openshift.io/provider-display-name: STARTX
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     sxv4_console_timeout: "5"
   labels:
     template: sxv4-cluster-storage-template
     app.kubernetes.io/name: "sxv4-cluster-storage-template"
-    app.kubernetes.io/managed-by: sxv4-console
+    app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide persistents storage capacities are provisionned.
 
@@ -22,7 +22,7 @@ message: |-
   Storage classes   : 6
 labels:
   template: sxv4-cluster-storage-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects: 
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
@@ -38,7 +38,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-storage"
     annotations: &basic_annotations
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io

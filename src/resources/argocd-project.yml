@@ -4,16 +4,16 @@ metadata:
   name: sxv4-cluster-argocd-template
   annotations:
     openshift.io/display-name: STARTX ArgoCD (gitops)
-    description: Deploy ArgoCD gitops environment to sxv4-console definitions
+    description: Deploy ArgoCD gitops environment to sxcm definitions
     iconClass: icon-openshift
     tags: startx,cluster,config,admin,argocd,gitops
     openshift.io/provider-display-name: STARTX
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     sxv4_console_timeout: "20"
   labels:
     template: sxv4-cluster-argocd-template
     app.kubernetes.io/name: "sxv4-cluster-argocd-template"
-    app.kubernetes.io/managed-by: sxv4-console
+    app.kubernetes.io/managed-by: sxcm
 message: |-
   Your ArgoCD gitops project is now configured
 
@@ -22,7 +22,7 @@ message: |-
   Operator          : red-hat-argocd.v3.3.2-20200903
 labels:
   template: sxv4-cluster-argocd-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: Project
     apiVersion: project.openshift.io/v1
@@ -39,7 +39,7 @@ objects:
       annotations:
         openshift.io/description: "STARTX ArgoCD control plane"
         openshift.io/display-name: "Startx ARGOCD"
-        openshift.io/requester: sxv4-console
+        openshift.io/requester: sxcm
   - kind: ResourceQuota
     apiVersion: v1
     metadata:
@@ -49,7 +49,7 @@ objects:
         <<: *basic_labels
         app.kubernetes.io/name: "${ARGOCD_NS}-quotas"
       annotations: &basic_annotations
-        openshift.io/generated-by: sxv4-console
+        openshift.io/generated-by: sxcm
     spec:
       hard:
         limits.cpu: "12000m"

@@ -4,16 +4,16 @@ metadata:
   name: sxv4-cluster-kubevirt-template
   annotations:
     openshift.io/display-name: STARTX cluster KubeVirt (admin)
-    description: Deploy cluster-wide resources to enable KubeVirt support according to sxv4-console definitions
+    description: Deploy cluster-wide resources to enable KubeVirt support according to sxcm definitions
     iconClass: icon-openshift
     tags: startx,cluster,config,admin,kubevirt
     openshift.io/provider-display-name: STARTX
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     sxv4_console_timeout: "40"
   labels:
     template: sxv4-cluster-kubevirt-template
     app.kubernetes.io/name: "sxv4-cluster-kubevirt-template"
-    app.kubernetes.io/managed-by: sxv4-console
+    app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide KubeVirt support is now enabled. Pay attention to hardware requirements before attempting to run VMs.
 
@@ -22,7 +22,7 @@ message: |-
   Operator          : kubevirt-hyperconverged-operator.v2.3.0
 labels:
   template: sxv4-cluster-kubevirt-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
@@ -38,7 +38,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-kubevirt"
     annotations: &basic_annotations
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -71,7 +71,7 @@ objects:
           - name: project.enabled
             value: "true"
           - name: project.project.requester
-            value: "sxv4-console"
+            value: "sxcm"
           - name: operator.enabled
             value: "false"
           - name: hyperconvergedCluster.enabled
@@ -105,7 +105,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-kubevirt"
     annotations:
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -176,7 +176,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-kubevirt"
     annotations:
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io

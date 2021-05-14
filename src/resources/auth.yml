@@ -4,16 +4,16 @@ metadata:
   name: sxv4-cluster-auth-template
   annotations:
     openshift.io/display-name: STARTX cluster Auth (admin)
-    description: Deploy cluster-wide resources to configure authentification backend according to sxv4-console definitions
+    description: Deploy cluster-wide resources to configure authentification backend according to sxcm definitions
     iconClass: icon-openshift
     tags: startx,cluster,config,admin,auth
     openshift.io/provider-display-name: STARTX
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     sxv4_console_timeout: "5"
   labels:
     template: sxv4-cluster-auth-template
     app.kubernetes.io/name: "sxv4-cluster-auth-template"
-    app.kubernetes.io/managed-by: sxv4-console
+    app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster authentification backend configuration is done
 
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
 labels:
   template: sxv4-cluster-auth-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
@@ -37,7 +37,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-auth"
     annotations: &basic_annotations
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io

@@ -4,16 +4,16 @@ metadata:
   name: sxv4-cluster-infra-template
   annotations:
     openshift.io/display-name: STARTX cluster Infra (admin)
-    description: Deploy cluster-wide resources to configure cluster infrastructure according to sxv4-console definitions
+    description: Deploy cluster-wide resources to configure cluster infrastructure according to sxcm definitions
     iconClass: icon-openshift
     tags: startx,cluster,config,admin,infra
     openshift.io/provider-display-name: STARTX
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     sxv4_console_timeout: "10"
   labels:
     template: sxv4-cluster-infra-template
     app.kubernetes.io/name: "sxv4-cluster-infra-template"
-    app.kubernetes.io/managed-by: sxv4-console
+    app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster configuration is now ready
 
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
 labels:
   template: sxv4-cluster-infra-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
@@ -37,7 +37,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-infra-config"
     annotations: 
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -120,7 +120,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-infra-elastic"
     annotations: 
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -202,7 +202,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-infra-operator"
     annotations: 
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
