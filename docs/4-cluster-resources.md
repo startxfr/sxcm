@@ -2,8 +2,8 @@
 
 ## Read commands
 
-This group of command are readonly command available for micro and macro information of the cluster
-resources installed into your environment.
+This group of command are **readonly** command available for micro and macro information of the cluster
+resources installed into your environment (**shared or personnal**)
 
 ### List availables
 
@@ -22,8 +22,9 @@ sxcm resource list
 
 ### Read information
 
-Get information about a cluster resource. Could be a resource stored into the sxcm cluster resource stack, 
-or the personal cluster resource stack.
+Get **information** about a **cluster resource**. 
+
+Could be a resource stored into the sxcm cluster resource stack, or the personal cluster resource stack.
 
 | Param          | mandatory | Content                            |
 | -------------- | --------- | ---------------------------------- |
@@ -37,14 +38,17 @@ sxcm resource info myresource
 
 ## Write commands
 
-This group of command have impat on the personal cluster resource stack and resource stored into this
+This group of command have **impact** on the **personal** cluster resource **stack** and resource stored into this
 directory. Shared cluster resource are not manage using this group of command.
 
 ### Create
 
-Add a new cluster resource to the local cluster resource stack. The file could be local,
-or remote and should be a single yaml file. This file file will be copied into the personal cluster resource stack
-with a name coresponding to the choosed one. Fail if name already exist or if file could not be found.
+Add a **new cluster resource** to the **local** cluster resource **stack**.
+
+The **file** could be **local**, or **remote** and should be a single yaml file. This file will be copied into the
+**personal** cluster resource **stack** with a name coresponding to the choosed one.
+
+Fail if name already exist or if file could not be found.
 
 | Param          | mandatory | Content                                                                        |
 | -------------- | --------- | ------------------------------------------------------------------------------ |
@@ -61,8 +65,10 @@ sxcm resource create myresource http://example.com/myresource.yml
 
 ### Edit
 
-Edit a cluster resource and commit change to the remote gitops repository. Be carefull when editing a deployed cluster as
-several fields (network, labels, sshkeys, instance type) are readonly. Use this command prior to deploying the cluster.
+**Edit** a cluster resource and **commit change** to the remote **gitops repository**.
+
+Be carefull when editing a deployed cluster as several fields (network, labels, sshkeys, instance type)
+are readonly. Use this command prior to deploying the cluster.
 
 | Param          | mandatory | Content                          |
 | -------------- | --------- | -------------------------------- |
@@ -76,7 +82,7 @@ sxcm resource edit myresource
 
 ### Delete
 
-Remove a cluster resource from the local cluster resource stack. If cluster is deployed, you should destroy it first.
+**Remove** a cluster resource from the **local** cluster resource **stack**. If cluster is deployed, you should destroy it first.
 
 | Param          | mandatory | Content                            |
 | -------------- | --------- | ---------------------------------- |
@@ -90,15 +96,15 @@ sxcm resource delete myresource
 
 ## Cluster interaction commands
 
-This group of command have impat on the cluster instances and resource stored into this
-object. According to your cluster state (deployed or not), some command may be more usefull.
+This group of command have impat on the cluster instances and resource stored into it.
+According to your cluster state (deployed or not), some command may be more usefull.
 
 ### Associate / Dissociate
 
-Add or remove a cluster resource into a cluster resource list and push it to gitops repository. If no cluster name is
+**Add or remove** a **cluster resource** into a cluster resource list and **push it** to gitops repository. If no cluster name is
 given, the currently active cluster will be used.
 
-This command is mostly intended to use when your cluster is not deployed. If your cluster is deployed, no change will
+This command is mostly intended to use when your cluster **is not deployed**. If your cluster is deployed, no change will
 happen into the running cluster, change will be performed when
 
 - deploy the defined cluster `sxcm deploy mycluster`
@@ -120,12 +126,10 @@ sxcm resource dissociate myresource mycluster
 
 ### Enable / Disable
 
-Add or remove a cluster resource into a cluster resource list, record, apply to running cluster and record it (default is active cluster)
-
-Add or remove a cluster resource into a cluster resource list, apply it into a deployed cluster and push it to gitops repository.
+**Add or remove** a **cluster resource** into a cluster resource list, **apply it** into a deployed cluster and **push it** to gitops repository.
 If no cluster name is given, the currently active cluster will be used.
 
-This command is mostly intended to use when your cluster is deployed. If your cluster is not deployed, change will be performed when
+This command is mostly intended to use when your cluster **is deployed**. If your cluster is not deployed, change will be performed when
 you will deploy the defined cluster using `sxcm deploy mycluster` command.
 
 | Param          | mandatory | Content                                                                         |
