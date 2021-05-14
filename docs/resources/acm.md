@@ -1,6 +1,6 @@
-# acm
+# Advanced Cluster-Management
 
-Deploy cluster-wide resources to enable ACM support for multi-cluster management
+Deploy cluster resource enable **ACM** multi-cluster management support.
 
 ## Description
 

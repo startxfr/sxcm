@@ -1,6 +1,6 @@
 # 3scale
 
-Deploy cluster-wide resources to enable 3Scale registry support according to sxcm definitions
+Deploy cluster resource enable **3Scale** API management support.
 
 ## Description
 
