@@ -20,7 +20,7 @@ following command.
 source <(curl -s https://raw.githubusercontent.com/startxfr/sxcm/stable/installer)
 ```
 
-### Setup
+## Client Setup
 
 Command used to configure the sxcm environment. Will be setup one time for new sxcm users.
 
@@ -29,7 +29,7 @@ Command used to configure the sxcm environment. Will be setup one time for new s
 sxcm setup
 ```
 
-#### Gitops repository
+### Gitops repository
 
 Gitops setup is a fundamental step when configuring sxcm enviroment. It allow you to personnalize the
 credentials and backend (gitops) used for cluster management.
@@ -41,7 +41,7 @@ sxcm setup git
 sxcm setup git https://github.com/startxfr/sxcm-cluster-repo-private.git stable username password
 ```
 
-#### Redhat credentials
+### Redhat credentials
 
 Redhat setup is a fundamental step when configuring sxcm enviroment. It allow you to personnalize the
 credentials and backend (redhat) used for cluster management.
@@ -53,7 +53,7 @@ sxcm setup redhat
 sxcm setup redhat username password email pullSecret
 ```
 
-#### Aws credentials
+### Aws credentials
 
 AWS setup is a fundamental step when configuring sxcm enviroment. It allow you to personnalize the
 credentials and backend (AWS) used for cluster management.
@@ -65,7 +65,7 @@ sxcm setup aws
 sxcm setup aws accessId accessKey dcName
 ```
 
-### Test
+## Client test
 
 Check to see if your sxcm environment is properly defined.
 
