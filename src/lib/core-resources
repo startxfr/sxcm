@@ -338,7 +338,7 @@ function doResourceAssociate {
         cd $clusterConfDir &>/dev/null
         git add . &>/dev/null
         git commit -am "[$cn] Associate the $rn cluster resource to the $cn cluster" &>/dev/null
-        git push origin $cn
+        git push origin $cn &> /dev/null
         cd - &>/dev/null
     fi
 }
@@ -382,7 +382,7 @@ function doResourceDissociate {
         cd $clusterConfDir &>/dev/null
         git add . &>/dev/null
         git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &>/dev/null
-        git push origin $cn
+        git push origin $cn &> /dev/null
         cd - &>/dev/null
     fi
 }
@@ -423,7 +423,7 @@ function doResourceEnable {
             cd $clusterConfDir &>/dev/null
             git add . &>/dev/null
             git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &>/dev/null
-            git push origin $cn
+            git push origin $cn &> /dev/null
             cd - &>/dev/null
         else
             echo -e "Could not \e[1menable $rn\e[0m cluster resource on cluster \e[1m$cn\e[0m because cluster is \e[1m\e[35mnot deployed\e[0m"

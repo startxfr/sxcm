@@ -19,7 +19,7 @@ LoadConfig
 if [[ "$1" != "" ]]; then
     case $1 in
         current | switch | list | info | deploy | update | destroy | delete) menuCluster $1 $2 $3 $4 ;;
-        import | export | init | create | edit | connect)                    menuCluster $1 $2 $3 $4 $5 ;;
+        import | export | init | create | edit | connect | clone )           menuCluster $1 $2 $3 $4 $5 ;;
         version | --version | -v)                                            menuResources $1 $2 ;;
         profiles)                                                            menuProfiles $2 ;;
         resources)                                                           menuResources $2 $3;;
