@@ -149,9 +149,17 @@ function doResourceCreate {
             exit
         fi
     fi
-    if [[ -r "$sourceFile" ]]; then
-        cat "$sourceFile" >$resourceDirLocal/$rn.yml
-        echo -e "\e[1m\e[32mCreated\e[0m cluster resource \e[1m$rn\e[0m"
+    if [[ $sourceFile =~ ^http.* ]]; then
+        curl --head --silent --fail $sourceFile &>/dev/null
+        if [[ $? == 0 ]]; then
+            curl -s $sourceFile > $resourceDirLocal/$rn.yml
+        echo -e "\e[1m\e[32mCreated\e[0m cluster resource \e[1m$rn\e[0m from \e[1m$sourceFile\e[0m"
+        else
+            echo -e "\e[1m\e[31mCould not download\e[0m remote \e[1m$sourceFile\e[0m"
+        fi
+    elif [[ -r "$sourceFile" ]]; then
+        cat "$sourceFile" > $resourceDirLocal/$rn.yml
+        echo -e "\e[1m\e[32mCreated\e[0m cluster resource \e[1m$rn\e[0m from \e[1m$sourceFile\e[0m"
     else
         echo -e "\e[1m\e[31mCould not read\e[0m file \e[1m$sourceFile\e[0m"
     fi
@@ -210,6 +218,8 @@ function doResourceInfo {
     echo -e "\e[1m\e[34mInfo\e[0m about the cluster resource \e[1m$rn\e[0m"
     local resourceDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES
     local resourceDirShared=$SXCM_RESOURCES_PATH
+    local LIST=$(listClusterConfigs)
+    local COUNT=$(echo $LIST | wc -w)
     if [[ -r $resourceDirLocal/$rn.yml || -d $resourceDirLocal/$rn ]]; then
         if [[ -r $resourceDirLocal/$rn.yml ]]; then
             echo "format     :  yaml"
@@ -240,7 +250,27 @@ function doResourceInfo {
         fi
     else
         echo -e "\e[1m\e[31mCould not read\e[0m file \e[1m$rn.yml\e[0m in $resourceDirLocal or $resourceDirShared"
+        exit 1
     fi
+    if [[ $COUNT -gt 0 ]]; then
+        for cluster in $LIST
+        do
+            local resourceIsFoundInOCPInstall="false"
+            for resource in $(extractOCPInstallResourceList $(getOCPInstallFileForCluster $cluster)); do
+                if [[ "$resource" == "$rn" ]]; then
+                    resourceIsFoundInOCPInstall="true"
+                fi
+            done
+            if [[ "$resourceIsFoundInOCPInstall" == "true" ]]; then
+                echo -e "- \e[96menabled\e[0m  in cluster \e[1m$cluster\e[0m"
+            else
+                echo -e "- \e[95mdisabled\e[0m in cluster \e[1m$cluster\e[0m"
+            fi
+        done
+    fi
+    exit
+
+
 }
 
 # associate cluster resource configuration
@@ -308,7 +338,7 @@ function doResourceAssociate {
         cd $clusterConfDir &>/dev/null
         git add . &>/dev/null
         git commit -am "[$cn] Associate the $rn cluster resource to the $cn cluster" &>/dev/null
-        git push origin $cn
+        git push origin $cn &> /dev/null
         cd - &>/dev/null
     fi
 }
@@ -352,7 +382,7 @@ function doResourceDissociate {
         cd $clusterConfDir &>/dev/null
         git add . &>/dev/null
         git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &>/dev/null
-        git push origin $cn
+        git push origin $cn &> /dev/null
         cd - &>/dev/null
     fi
 }
@@ -393,7 +423,7 @@ function doResourceEnable {
             cd $clusterConfDir &>/dev/null
             git add . &>/dev/null
             git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &>/dev/null
-            git push origin $cn
+            git push origin $cn &> /dev/null
             cd - &>/dev/null
         else
             echo -e "Could not \e[1menable $rn\e[0m cluster resource on cluster \e[1m$cn\e[0m because cluster is \e[1m\e[35mnot deployed\e[0m"

@@ -264,34 +264,6 @@ parameters:
     displayName: Project version
     description: "Project deployed release"
     value: 3.9.x-dev
-  - name: AWS_ZONE
-    displayName: AWS zone
-    description: AWS availability zone
-    value: "eu-west-3"
-  - name: AWS_ACCESS_ID
-    displayName: AWS access ID
-    description: AWS Access ID used for accessing AWS ressources
-    value: "AKIA3QVVK7346YAAV32Z"
-  - name: AWS_ACCESS_KEY
-    displayName: AWS access Key
-    description: AWS Access Key used for accessing AWS ressources
-    value: "ZiMhYy1WB3qugYDNadKdaiWs5pnM/+vOnmccgPw"
-  - name: AWS_SMTP_ZONE
-    displayName: AWS SMTP zone
-    description: AWS availability zone for SES service
-    value: "eu-west-1"
-  - name: AWS_SMTP_USER
-    displayName: AWS SMTP User
-    description: AWS SMTP user
-    value: "AKIA3QVVK7346YAAV32Z"
-  - name: AWS_SMTP_PASSWORD
-    displayName: AWS SMTP User password
-    description: AWS SMTP password coresponding to the smtp user
-    value: "ZiMhYy1WB3qugYDNadKdaiWs5pnM/+vOnmccgPw"
-  - name: AWS_SMTP_FROM
-    displayName: AWS SMTP sender
-    description: AWS SMTP email of the sender
-    value: "cl@startx.fr"
   - name: CLUSTER_PROFILE
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"

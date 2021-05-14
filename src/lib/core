@@ -160,6 +160,7 @@ Available actions are : list, create, info, update, delete, profiles, current, s
 
 ## Cluster commands actions (local) :
   - create CLUSTERNAME [PROFILE]                     Add a new cluster configuration to the cluster stack
+  - clone CLUSTERNAME [SOURCECLUSTER]                Add a new cluster configuration based from the given source cluster (default is current cluster)
   - edit [CLUSTERNAME]                               Change the cluster configuration (should require destroy one major change)
   - info [CLUSTERNAME]                               Get information about a cluster configuration
   - delete [CLUSTERNAME]                             Remove a cluster configuration from the cluster stack

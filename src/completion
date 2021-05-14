@@ -19,7 +19,7 @@ loadActiveClusterConf
 
 _sxcm_all()
 {
-    local available="list init create edit switch info deploy update destroy delete connect profiles current version setup import export resources resource"
+    local available="list init create edit switch info deploy update destroy delete connect profiles current version setup import export resources resource clone"
     local availableService="list create edit info delete associate dissociate enable disable"
     local available2=" "
     if [[ "${COMP_WORDS[1]}" == "edit" ||
@@ -100,6 +100,17 @@ _sxcm_all()
         elif [[ "${COMP_CWORD}" == "3" ]]
         then
             available2=${SXCM_PROFILES_ORDERED[@]}
+        else
+            available2=""
+        fi
+    elif [[ "${COMP_WORDS[1]}" == "clone" ]]
+    then
+        if [[ "${COMP_CWORD}" == "2" ]]
+        then
+            available2="mycluster"
+        elif [[ "${COMP_CWORD}" == "3" ]]
+        then
+            available2=$(listClusterConfigs)
         else
             available2=""
         fi

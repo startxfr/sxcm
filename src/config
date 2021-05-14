@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Client configuration
-SXCM_VERSION=0.1.2
+SXCM_VERSION=0.1.3
 
 # Manage OKD remote cluster
-SXCM_OCPI_BRANCH=' 4.6.13'
-SXCM_OCPI_RELEASE=' 4.6.13'
+SXCM_OCPI_BRANCH=' 4.7.0'
+SXCM_OCPI_RELEASE=' 4.7.0'
 SXCM_OCPI_PACKAGE="openshift-install-linux-${SXCM_OCPI_RELEASE}.tar.gz"
 SXCM_OCPI_URL="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${SXCM_OCPI_BRANCH}/${SXCM_OCPI_PACKAGE}"
 SXCM_OCPI_TMP='/tmp/ocpi'

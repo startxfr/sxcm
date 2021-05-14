@@ -363,12 +363,6 @@ parameters:
     displayName: AWS SMTP sender
     description: AWS SMTP email of the sender
     value: "cl@startx.fr"
-  - name: RHN_USER
-    displayName: RHN container access user
-    description: Redhat Network access user to the RH container catalog
-  - name: RHN_PASSWORD
-    displayName: RHN container access password
-    description: Redhat Network access password to the Rh container catalog
   - name: CLUSTER_PROFILE
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"

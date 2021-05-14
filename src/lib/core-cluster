@@ -143,11 +143,27 @@ function applyClusterResource {
     then
         CLUSTERTIMEOUT=$(extractResourceTimeout $clusterConfDirResource/$rn.yml)
         echo -e "${UPSERT} \e[1m$rn\e[0m cluster resource in cluster \e[1m$cn\e[0m \e[93m(admin)\e[0m"
-        if [[ "$rn" == "quay" || "$rn" == "3scale" || "$rn" == "argocd-deploy" || "$rn" == "argocd-apps" ]]
+        if [[ 
+              "$rn" == "quay" || 
+              "$rn" == "3scale" || 
+              "$rn" == "argocd-apps" 
+            ]]
         then
             oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
+            -p SCOPE=$SXCM_CLUSTER_SCOPE \
+            -p CLUSTER=$cn \
+            -p ENV=$SXCM_ENV \
+            -p VERSION=$SXCM_VERSION \
+            -p CLUSTER_PROFILE=$clusterProfile \
             -p RHN_USER=$SXCM_RHN_USER \
             -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
+            | $CMD
+        elif [[ 
+              "$rn" == "argocd-deploy" || 
+              "$rn" == "argocd-deploy-small" 
+            ]]
+        then
+            oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
             -p SCOPE=$SXCM_CLUSTER_SCOPE \
             -p CLUSTER=$cn \
             -p ENV=$SXCM_ENV \
@@ -171,6 +187,8 @@ function applyClusterResource {
             -p CLUSTERID=$clusterID \
             -p CLUSTER_REGION=$clusterRegion \
             -p CLUSTER_PROFILE=$clusterProfile \
+            -p RHN_USER=$SXCM_RHN_USER \
+            -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
             | $CMD
         else
             oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
@@ -347,7 +365,7 @@ function doClusterConfigurationCreate {
             rm -rf $clusterConfDir/* $clusterConfDir/.open* &> /dev/null
             git add . &> /dev/null
             git commit -m "[$cn] Reset the $cn cluster" &> /dev/null
-            git push origin $cn
+            git push origin $cn &> /dev/null
             cd - &> /dev/null
             echo -e "\e[31mReset\e[0m cluster \e[1m$cn\e[0m configuration"
         else
@@ -371,7 +389,7 @@ function doClusterConfigurationCreate {
             git checkout $SXCM_GIT_BRANCH_MAIN &> /dev/null
             git branch $cn &> /dev/null
             git checkout $cn &> /dev/null
-            git push origin $cn
+            git push origin $cn &> /dev/null
             echo -e "  \e[32mcreated\e[0m git repository branch \e[1m$cn\e[0m based on \e[1m$SXCM_GIT_BRANCH_MAIN\e[0m branch"
         else
             echo -e "  \e[33mmoved\e[0m to git repository branch \e[1m$cn\e[0m previously created"
@@ -401,7 +419,7 @@ function doClusterConfigurationCreate {
         doClusterConfigurationCreateUpdateResources $cn 
         git add . &> /dev/null
         git commit -am "[$cn] Create the $cn cluster" &> /dev/null
-        git push origin $cn
+        git push origin $cn &> /dev/null
         cd - &> /dev/null
         echo -e "  \e[32mrecorded\e[0m cluster configuration based on \e[1m$PROFILE\e[0m profile"
         setActiveCluster $cn
@@ -442,7 +460,7 @@ function doClusterConfigurationCreate {
                     recordAdminTokenFromCreatedCluster $cn
                     git add . &> /dev/null
                     git commit -m "[$cn] Add new token to the $cn cluster" &> /dev/null
-                    git push origin $cn
+                    git push origin $cn &> /dev/null
                     cd - &> /dev/null
                     exit;
                 fi
@@ -457,7 +475,7 @@ function doClusterConfigurationCreate {
                     rm -f $clusterConfDir/auth &> /dev/null
                     git add . &> /dev/null
                     git commit -m "[$cn] Reset the $cn cluster" &> /dev/null
-                    git push origin $cn
+                    git push origin $cn &> /dev/null
                     cd - &> /dev/null
                     echo -e "  Cluster configuration \e[1m$cn\e[0m \e[35mreset\e[0m "
                 else
@@ -470,7 +488,7 @@ function doClusterConfigurationCreate {
             doClusterConfigurationCreateUpdateResources $cn 
             git add . &> /dev/null
             git commit -m "[$cn] Record the $cn cluster config" &> /dev/null
-            git push origin $cn
+            git push origin $cn &> /dev/null
             cd - &> /dev/null
         fi
     fi
@@ -495,10 +513,10 @@ function doClusterConfigurationImport {
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local gitBranch=$branch
     if [[ -d $clusterConfDir ]]; then
-        echo -e "  Cluster \e[1m$cn\e[0m \e[31mis already managed\e[0m. Could not import \e[1m$cn\e[0m"
+        echo -e "  Cluster \e[1m$cn\e[0m \e[31m is already managed\e[0m. Could not import \e[1m$cn\e[0m"
         exit;
     else
-        echo -e "  Cluster \e[1m$cn\e[0m \e[32mis not managed\e[0m"
+        echo -e "  Cluster \e[1m$cn\e[0m \e[32m is not managed\e[0m"
     fi
     git clone $SXCM_GIT_REPO /tmp/sxcm-repo
     if [[ $? -gt 0 ]]; then
@@ -524,7 +542,7 @@ function doClusterConfigurationImport {
     # doClusterConfigurationCreateUpdateResources $cn 
     # git add . &> /dev/null
     # git commit -m "[$cn] Record the $cn cluster install config in branch $branch" &> /dev/null
-    # git push origin $cn
+    # git push origin $cn &> /dev/null
     # cd - &> /dev/null
     echo -e "  \e[1m\e[36mImport\e[0m of \e[1m$cn\e[0m cluster is \e[34mdone\e[0m"
 }
@@ -553,7 +571,7 @@ function doClusterConfigurationExport {
     cd $clusterConfDir  &> /dev/null
     git add . .* &> /dev/null
     git commit -m "[$cn] Export the $cn cluster state" &> /dev/null
-    git push origin $cn
+    git push origin $cn &> /dev/null
     cd - &> /dev/null
     echo -e "  \e[1m\e[35mExport\e[0m of \e[1m$cn\e[0m cluster is \e[34mdone\e[0m"
 }
@@ -667,7 +685,7 @@ function doClusterConfigurationEdit {
             cd $clusterConfDir  &> /dev/null
             git add . &> /dev/null
             git commit -m "[$cn] Update the $cn cluster definition" &> /dev/null
-            git push origin $cn
+            git push origin $cn &> /dev/null
             cd - &> /dev/null
         else
             echo -e "Cluster configuration named \e[1m$cn\e[0m in $clusterConfDir/install-config.yaml doesn't exist"
@@ -707,7 +725,7 @@ function doClusterConfigurationUpdate {
         cd $clusterConfDir  &> /dev/null
         git add . &> /dev/null
         git commit -m "[$cn] Update the $cn cluster resources" &> /dev/null
-        git push origin $cn
+        git push origin $cn &> /dev/null
         cd - &> /dev/null
     else
         echo -e "Cluster configuration named \e[1m$cn\e[0m is not deployed"
@@ -815,6 +833,56 @@ function doClusterConfigurationList {
     fi
 }
 
+# clone cluster configuration
+function doClusterConfigurationClone {
+    local cn=$1
+    local source=$2
+    rm -rf /tmp/sxcm-repo  &> /dev/null
+    echo -e "\e[1m\e[33mClone\e[0m process for cluster \e[1m$cn\e[0m"
+    if [[ "$cn" == "" ]]; then
+        echo -en "Cluster name [mycluster] : "
+        read cn
+    fi
+    if [[ $cn == '' ]]; then
+        cn="mycluster"
+    fi
+    if [[ $source == '' ]]; then
+        source=$(getActiveCluster)
+    fi
+    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    if [[ -d $clusterConfDir ]]; then
+        echo -e "  Cluster \e[1m$cn\e[0m is \e[31m already managed\e[0m. Could not clone \e[1m$cn\e[0m"
+        exit;
+    else
+        if [[ -d $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$source ]]; then
+            cp -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$source $clusterConfDir
+            cd $clusterConfDir  &> /dev/null
+            git branch $cn &> /dev/null
+            git checkout $cn &> /dev/null
+            if [[ ! -r install-config.yaml && -r install-config.yaml.back ]]
+            then
+                cat install-config.yaml.back > install-config.yaml
+            fi
+            rm -rf install-config.yaml.back .open* auth deployed id* tls *.json &> /dev/null
+            git add . .open* &> /dev/null
+            git commit -m "[$cn] Record the $cn cluster install config cloned from $source" &> /dev/null
+            doClusterConfigurationCreateUpdateResources $cn 
+            git add . &> /dev/null
+            git commit -m "[$cn] Record the $cn cluster install post-config" &> /dev/null
+            git push origin $cn &> /dev/null
+            cd -  &> /dev/null
+        else
+            echo -e "  Cluster \e[1m$source\e[0m \e[32m doesn't exist\e[0m"
+        fi
+    fi
+    
+    # echo -e "  Cluster \e[1m$cn\e[0m is \e[32mcloned\e[0m from \e[1m$gitBranch\e[0m cluster state "
+    cd -  &> /dev/null
+        # cd $clusterConfDir &> /dev/null
+        # cd - &> /dev/null
+    echo -e "  \e[1m\e[33mClone\e[0m of \e[1m$cn\e[0m cluster is \e[34mdone\e[0m"
+}
+
 # change active cluster
 function doClusterDisplayActive {
     local cn=$(getActiveCluster)
@@ -870,7 +938,7 @@ function doClusterDeploy {
         createClusterResources $cn
         git add . &> /dev/null
         git commit -m "[$cn] Configuration day-two of the $cn cluster" &> /dev/null
-        git push origin $cn
+        git push origin $cn &> /dev/null
         cd - &> /dev/null
         echo -e "You can refresh connection by running \e[90;4msxcm connect $cn\e[0m" ;
         echo -e "or destroy this cluster with \e[90;4msxcm destroy $cn\e[0m" ;
@@ -885,11 +953,11 @@ function doClusterDeploy {
         git checkout $cn &> /dev/null
         git add . &> /dev/null
         git commit -m "[$cn] Configuration post-deployment of the $cn cluster" &> /dev/null
-        git push origin $cn
+        git push origin $cn &> /dev/null
         createClusterResources $cn
         git add . &> /dev/null
         git commit -m "[$cn] Configuration day-two of the $cn cluster" &> /dev/null
-        git push origin $cn
+        git push origin $cn &> /dev/null
         cd - &> /dev/null
         echo -e "Cluster \e[1m$cn\e[0m \e[93mdeployed\e[0m"
     fi
@@ -934,7 +1002,7 @@ function doClusterDestroy {
             rm $clusterConfDir/install-config.yaml.back $clusterConfDir/terraform.* $clusterConfDir/meta* $clusterConfDir/deployed &> /dev/null
             git add . &> /dev/null
             git commit -m "[$cn] Record state after post-destruction actions of the $cn cluster" &> /dev/null
-            git push origin $cn
+            git push origin $cn &> /dev/null
             cd - &> /dev/null
             echo -e "Cluster \e[1m$cn\e[0m \e[91mdestroyed\e[0m"
         else
@@ -1151,6 +1219,33 @@ function menuClusterConnect {
     fi
 }
 
+# sub-menu for clone command
+function menuClusterClone {
+    if [[ -z "$1" || "$1" == "" ]]; then
+        menuHeadArt
+            cat <<EOF
+
+sxcm clone sub-command for cloning an sxcm managed cluster. It will create a local cluster configuration 
+based on a copy of a local custer.
+
+# Usage
+
+[user@localhost]$ sxcm clone CLUSTERNAME [CLUSTERSOURCE]
+
+
+# Examples
+```
+# clone the active cluster into a new cluster named mynewcluster
+sxcm clone mynewcluster
+# clone the local cluster mycluster into a new cluster named mynewcluster
+sxcm clone mynewcluster mycluster
+
+EOF
+    else
+        doClusterConfigurationClone $1 $2
+    fi
+}
+
 # main menu for the cluster sub-command
 function menuCluster {
     case $1 in
@@ -1166,6 +1261,7 @@ function menuCluster {
         connect|login)  menuClusterConnect ${2} ${3};;
         import)         menuClusterImport ${2} ${3} ${4};;
         export)         menuClusterExport ${2} ${3};;
+        clone)          menuClusterClone ${2} ${3} ${4};;
         *)              menuUsage;;
     esac
 }
