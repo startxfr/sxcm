@@ -1,5 +1,9 @@
 # Cluster resources
 
+A cluster resource is a group of **service** or **configuration** to apply to deployed clusters. With exception of the argocd-x
+cluster resource, all other cluster resources are based on **openshift template** deploying **argocd application** or
+**bash script** executing oc or kubectl commands.
+
 ## Read commands
 
 This group of command are **readonly** command available for micro and macro information of the cluster
