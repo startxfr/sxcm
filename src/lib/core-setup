@@ -155,12 +155,12 @@ Available actions are :  aws, rhn and git
 
 # Examples
 
-  sxcm setup aws                                    Interactive setup of the aws account
-  sxcm setup aws _accessId_ _accessKey_ _dcName_    Full setup of the aws account
-  sxcm setup rhn                                    Interactive setup of the rhn account
-  sxcm setup rhn _user_ _pwd_ _email_ _pullSecret_  Full setup of the rhn account
   sxcm setup git                                    Interactive setup of the git cluster repository
   sxcm setup git _repo_ _branch_ _user_ _pwd_       Full setup of the git cluster repository
+  sxcm setup rhn                                    Interactive setup of the rhn account
+  sxcm setup rhn _user_ _pwd_ _email_ _pullSecret_  Full setup of the rhn account
+  sxcm setup aws                                    Interactive setup of the aws account
+  sxcm setup aws _accessId_ _accessKey_ _dcName_    Full setup of the aws account
 
 EOF
 }
