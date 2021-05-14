@@ -4,68 +4,51 @@
 
 STARTX Openshift installer for various infrastructure configuration deployed under an AWS account.
 
-## 1. Requirements
+## Purpose
 
-You must follow the [system requirements and client install documentation](1-requirements.md) to get and install the sxcm cli.
+TO DO
 
-## 2. global config
+## Principles
 
-After this basic installation, you can [follow the configuration guide](2-configure.md).
+TO DO
 
-## 3. Cluster creation
+## Architecture
 
-### Import existing undeployed cluster
+TO DO
 
-```bash
-# import the undeployed example
-sxcm import undeployed
-# display information about the cluster 
-sxcm info
-# deploy this cluster
-sxcm deploy
-# connect to this cluster
-sxcm connect
-# display various cluster informations
-oc get project
-oc get nodes
-```
+## Terminology
 
-### Import existing deployed cluster
+### Profile
 
-```bash
-# import the deployed example
-sxcm import deployed
-# display information about the cluster 
-sxcm info
-# deploy this cluster
-sxcm deploy
-# connect to this cluster
-sxcm connect
-# display various cluster informations
-oc get project
-oc get nodes
-```
+TO DO
 
-## 4. Cluster deletion
+### Cluster
 
-### Destruction of cluster
+TO DO
 
-```bash
-# destruction of the the active cluster
-sxcm destroy
-```
+### Infrastructure
 
-### Removal of cluster
+TO DO
 
-```bash
-# Removal of the the active cluster
-sxcm delete
-```
+### Cluster resource
 
-## 5. Release lifecycle
+TO DO
 
-If you want to have move information about the sxcm relese lifecycle, you can read the [release lifecycle](7-developpement.md#release-lifecycle).
+### Gitops repository
 
-## 6. Release history
+TO DO
 
-If you want to have move information about the various sxcm release and their content, you can read the [release history](6-release-history.md).
+### Kubernetes resource
+
+TO DO
+
+### Active cluster
+
+TO DO
+
+## What to do next
+
+- You must follow the [system requirements and client install documentation](1-installation.md) to get and install the sxcm cli.
+- After this basic installation, you can [follow the configuration guide](2-configure.md).
+- If you want to have move information about the sxcm relese lifecycle, you can read the [release lifecycle](6-developpement.md#release-lifecycle).
+- If you want to have move information about the various sxcm release and their content, you can read the [release history](5-release-history.md).

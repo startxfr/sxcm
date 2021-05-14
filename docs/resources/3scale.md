@@ -4,7 +4,7 @@ Deploy cluster-wide resources to enable 3Scale registry support according to sxc
 
 ## Description
 
-|               |                                    |
+| Field         | Content                            |
 | ------------- | ---------------------------------- |
 | **Name**      | STARTX cluster 3Scale              |
 | **tags**      | startx,cluster,config,admin,3scale |
@@ -41,5 +41,5 @@ sxcm resource info 3scale
 
 ## More on resource
 
-You should read the [cluster resource management](../6-resources.md) documentation section to learn the command
+You should read the [cluster resource management](../4-cluster-resources) documentation section to learn the command
 meaning and how to create your own cluster resource service to deliver personalized cluster configuration
