@@ -64,7 +64,7 @@ sxcm delete
 
 ## 5. Release lifecycle
 
-If you want to have move information about the sxcm relese lifecycle, you can read the [release lifecycle](5-release-lifecycle.md).
+If you want to have move information about the sxcm relese lifecycle, you can read the [release lifecycle](7-developpement.md#release-lifecycle).
 
 ## 6. Release history
 

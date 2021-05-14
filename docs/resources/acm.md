@@ -1,42 +1,42 @@
-# 3scale
+# acm
 
-Deploy cluster-wide resources to enable 3Scale registry support according to sxcm definitions
+Deploy cluster-wide resources to enable ACM support for multi-cluster management
 
 ## Description
 
 |               |                                    |
 | ------------- | ---------------------------------- |
-| **Name**      | STARTX cluster 3Scale              |
-| **tags**      | startx,cluster,config,admin,3scale |
+| **Name**      | STARTX Advanced Cluster Management              |
+| **tags**      | startx,cluster,config,admin,acm,multi-cloud,management |
 | **provider**  | STARTX                             |
 | **format**    | openshift template                 |
 | **content**   | 3 ArgoCD application               |
-| **namespace** | startx-3scale                      |
-| **operator**  | red-hat-3scale@0.6.1               |
+| **namespace** | open-cluster-management         |
+| **operator**  | advanced-cluster-management@2.1.2              |
 
 ## Add to a cluster
 
 ```bash
 # Associate this cluster resource to the cluster mycluster (runable resource)
-sxcm resource associate 3scale mycluster
+sxcm resource associate acm mycluster
 # Enable this cluster resource to the cluster mycluster (running resource)
-sxcm resource enable 3scale mycluster
+sxcm resource enable acm mycluster
 ```
 
 ## Remove from a cluster
 
 ```bash
 # Dissociate this cluster resource from the cluster mycluster (removable resource)
-sxcm resource dissociate 3scale mycluster
+sxcm resource dissociate acm mycluster
 # Disable this cluster resource from the cluster mycluster (removed resource)
-sxcm resource disable 3scale mycluster
+sxcm resource disable acm mycluster
 ```
 
 ## Get cluster resource detail
 
 ```bash
 # Read information about the cluster resource version installed into your host (local)
-sxcm resource info 3scale
+sxcm resource info acm
 ```
 
 ## More on resource

@@ -19,7 +19,7 @@ message: |-
 
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
-  Operator          : container-security-operator.v1.0.5,red-hat-3scale.v3.3.0
+  Operator          : red-hat-3scale.v0.6.1
 labels:
   template: sxv4-cluster-3scale-template
   app.kubernetes.io/managed-by: sxcm
