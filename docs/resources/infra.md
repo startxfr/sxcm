@@ -1,4 +1,4 @@
-# infra
+# infrastructure configuration
 
 Deploy cluster resource enable **Infra** for infrastructure configuration.
 

@@ -1,4 +1,4 @@
-# console
+# Console
 
 Deploy cluster resource enable **Console** for console personnalisation.
 

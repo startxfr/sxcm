@@ -1,4 +1,4 @@
-# couchbase
+# Couchbase
 
 Deploy cluster resource enable **Couchbase** for couchbase operator.
 
