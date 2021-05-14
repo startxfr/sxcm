@@ -143,11 +143,27 @@ function applyClusterResource {
     then
         CLUSTERTIMEOUT=$(extractResourceTimeout $clusterConfDirResource/$rn.yml)
         echo -e "${UPSERT} \e[1m$rn\e[0m cluster resource in cluster \e[1m$cn\e[0m \e[93m(admin)\e[0m"
-        if [[ "$rn" == "quay" || "$rn" == "3scale" || "$rn" == "argocd-deploy" || "$rn" == "argocd-apps" ]]
+        if [[ 
+              "$rn" == "quay" || 
+              "$rn" == "3scale" || 
+              "$rn" == "argocd-apps" 
+            ]]
         then
             oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
+            -p SCOPE=$SXCM_CLUSTER_SCOPE \
+            -p CLUSTER=$cn \
+            -p ENV=$SXCM_ENV \
+            -p VERSION=$SXCM_VERSION \
+            -p CLUSTER_PROFILE=$clusterProfile \
             -p RHN_USER=$SXCM_RHN_USER \
             -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
+            | $CMD
+        elif [[ 
+              "$rn" == "argocd-deploy" || 
+              "$rn" == "argocd-deploy-small" 
+            ]]
+        then
+            oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
             -p SCOPE=$SXCM_CLUSTER_SCOPE \
             -p CLUSTER=$cn \
             -p ENV=$SXCM_ENV \
@@ -171,6 +187,8 @@ function applyClusterResource {
             -p CLUSTERID=$clusterID \
             -p CLUSTER_REGION=$clusterRegion \
             -p CLUSTER_PROFILE=$clusterProfile \
+            -p RHN_USER=$SXCM_RHN_USER \
+            -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
             | $CMD
         else
             oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
