@@ -1,4 +1,4 @@
-# Release history
+# SXCM history
 
 ## version 0.2.x (chastang)
 
