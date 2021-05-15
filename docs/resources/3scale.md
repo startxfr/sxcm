@@ -1,6 +1,9 @@
-# Operator 3scale
+# Service 3scale
 
-Deploy cluster resource enable **3Scale** API management support.
+The **3scale** [cluster resource](../../4-cluster-resources) deploy the **3scale operator** and a
+**3scale application** instance that provide a API management support.
+
+This cluster resource is based on the [cluster-3scale helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-3scale) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

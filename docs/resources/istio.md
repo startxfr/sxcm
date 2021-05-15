@@ -1,4 +1,4 @@
-# Operator Istio
+# Service Istio
 
 Deploy cluster resource enable **Istio** for service-mesh support.
 

@@ -1,4 +1,4 @@
-# Operator Logging
+# Service Logging
 
 Deploy cluster resource enable **Logging** for aggregating logging stack.
 

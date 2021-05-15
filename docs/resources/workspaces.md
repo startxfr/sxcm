@@ -1,4 +1,4 @@
-# Operator CodeReady Workspaces
+# Service CodeReady Workspaces
 
 Deploy cluster resource enable **CodeReady Workspaces** for CodeReady Workspaces support.
 

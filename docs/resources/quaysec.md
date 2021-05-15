@@ -1,4 +1,4 @@
-# Operator Quay-vulnerability
+# Service Quay-vulnerability
 
 Deploy cluster resource enable **Quaysec** for Quay vulnerability scanner support.
 

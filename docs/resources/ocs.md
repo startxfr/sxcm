@@ -1,4 +1,4 @@
-# Operator OCS
+# Service OCS
 
 Deploy cluster resource enable **OCS** for converged storage capacities.
 

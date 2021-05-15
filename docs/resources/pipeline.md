@@ -1,4 +1,4 @@
-# Operator Pipeline
+# Service Pipeline
 
 Deploy cluster resource enable **Pipeline** for pipeline support.
 

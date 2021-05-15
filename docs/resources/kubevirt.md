@@ -1,4 +1,4 @@
-# Operator Kubevirt
+# Service Kubevirt
 
 Deploy cluster resource enable **Kubevirt** for virtualisation support.
 

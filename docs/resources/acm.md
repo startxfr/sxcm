@@ -1,6 +1,6 @@
-# Operator Advanced Cluster-Management
+# Service ACM
 
-Deploy cluster resource enable **ACM** multi-cluster management support.
+Deploy cluster resource enable **Advanced Cluster-Management** multi-cluster management support.
 
 ## Description
 

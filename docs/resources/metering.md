@@ -1,4 +1,4 @@
-# Operator Metering
+# Service Metering
 
 Deploy cluster resource enable **Metering** for chargeback reports.
 

@@ -1,4 +1,4 @@
-# Operator KNative
+# Service KNative
 
 Deploy cluster resource enable **KNative** for serverless support.
 
