@@ -4,15 +4,15 @@ Deploy cluster resource enable **KNative** for serverless support.
 
 ## Description
 
-| Field         | Content                                           |
-| ------------- | ------------------------------------------------- |
-| **Name**      | **STARTX cluster KNative**                        |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `knative` |
-| **provider**  | STARTX                                            |
-| **format**    | openshift template                                |
-| **content**   | 3 ArgoCD application                              |
-| **namespace** | openshift-serverless                              |
-| **operator**  | serverless-operator@1.12.0                        |
+| Field         | Content                                       |
+| ------------- | --------------------------------------------- |
+| **Name**      | **STARTX cluster KNative**                    |
+| **tags**      | `startx` `cluster` `config` `admin` `knative` |
+| **provider**  | STARTX                                        |
+| **format**    | openshift template                            |
+| **content**   | 3 ArgoCD application                          |
+| **namespace** | openshift-serverless                          |
+| **operator**  | serverless-operator@1.12.0                    |
 
 ## Add to a cluster
 

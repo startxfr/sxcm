@@ -4,15 +4,15 @@ Deploy cluster resource enable **OCS** for converged storage capacities.
 
 ## Description
 
-| Field         | Content                                                  |
-| ------------- | -------------------------------------------------------- |
-| **Name**      | **STARTX OCS Config**                                    |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `storage`, `ocs` |
-| **provider**  | STARTX                                                   |
-| **format**    | openshift template + script                              |
-| **content**   | 4 ArgoCD application                                     |
-| **namespace** | openshift-storage                                        |
-| **operator**  | ocs-operator@4.6.4                                       |
+| Field         | Content                                             |
+| ------------- | --------------------------------------------------- |
+| **Name**      | **STARTX OCS Config**                               |
+| **tags**      | `startx` `cluster` `config` `admin` `storage` `ocs` |
+| **provider**  | STARTX                                              |
+| **format**    | openshift template + script                         |
+| **content**   | 4 ArgoCD application                                |
+| **namespace** | openshift-storage                                   |
+| **operator**  | ocs-operator@4.6.4                                  |
 
 ## Add to a cluster
 

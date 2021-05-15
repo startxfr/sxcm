@@ -4,15 +4,15 @@ Deploy cluster resource enable **SSO** for KeyCloak deployment.
 
 ## Description
 
-| Field         | Content                                       |
-| ------------- | --------------------------------------------- |
-| **Name**      | **STARTX cluster KeyCloak**                   |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `sso` |
-| **provider**  | STARTX                                        |
-| **format**    | openshift template + script                   |
-| **content**   | 3 ArgoCD application                          |
-| **namespace** | startx-sso                                    |
-| **operator**  | rhsso-operator@7.4.6                          |
+| Field         | Content                                   |
+| ------------- | ----------------------------------------- |
+| **Name**      | **STARTX cluster KeyCloak**               |
+| **tags**      | `startx` `cluster` `config` `admin` `sso` |
+| **provider**  | STARTX                                    |
+| **format**    | openshift template + script               |
+| **content**   | 3 ArgoCD application                      |
+| **namespace** | startx-sso                                |
+| **operator**  | rhsso-operator@7.4.6                      |
 
 ## Add to a cluster
 

@@ -4,15 +4,15 @@ Deploy cluster resource enable **Vault** for deploying Hashicorp Vault service.
 
 ## Description
 
-| Field         | Content                                                |
-| ------------- | ------------------------------------------------------ |
-| **Name**      | **STARTX cluster Vault**                               |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `sec`, `vault` |
-| **provider**  | STARTX                                                 |
-| **format**    | openshift template + script                            |
-| **content**   | 2 ArgoCD application                                   |
-| **namespace** | startx-vault                                           |
-| **operator**  | _none_                                                 |
+| Field         | Content                                           |
+| ------------- | ------------------------------------------------- |
+| **Name**      | **STARTX cluster Vault**                          |
+| **tags**      | `startx` `cluster` `config` `admin` `sec` `vault` |
+| **provider**  | STARTX                                            |
+| **format**    | openshift template + script                       |
+| **content**   | 2 ArgoCD application                              |
+| **namespace** | startx-vault                                      |
+| **operator**  | _none_                                            |
 
 ## Add to a cluster
 

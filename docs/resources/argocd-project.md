@@ -4,15 +4,15 @@ Deploy cluster resource **ArgoCD** continuous-delivery support.
 
 ## Description
 
-| Field         | Content                                                    |
-| ------------- | ---------------------------------------------------------- |
-| **Name**      | **STARTX ArgoCD**                                          |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `argocd`, `gitops` |
-| **provider**  | STARTX                                                     |
-| **format**    | openshift template + script                                |
-| **content**   | 1 Poject + 3 RoleBinding + 1 Subscription                  |
-| **namespace** | startx-argocd                                              |
-| **operator**  | argocd-operator@0.0.14                                     |
+| Field         | Content                                               |
+| ------------- | ----------------------------------------------------- |
+| **Name**      | **STARTX ArgoCD**                                     |
+| **tags**      | `startx` `cluster` `config` `admin` `argocd` `gitops` |
+| **provider**  | STARTX                                                |
+| **format**    | openshift template + script                           |
+| **content**   | 1 Poject + 3 RoleBinding + 1 Subscription             |
+| **namespace** | startx-argocd                                         |
+| **operator**  | argocd-operator@0.0.14                                |
 
 ## Add to a cluster
 

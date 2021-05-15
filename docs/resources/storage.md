@@ -4,15 +4,15 @@ Deploy cluster resource enable **Storage** for configuring dynamic-provisionned 
 
 ## Description
 
-| Field         | Content                                                           |
-| ------------- | ----------------------------------------------------------------- |
-| **Name**      | **STARTX cluster Storage**                                        |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `storage`, `storageclass` |
-| **provider**  | STARTX                                                            |
-| **format**    | openshift template                                                |
-| **content**   | 1 ArgoCD application                                              |
-| **namespace** | _none_                                                            |
-| **operator**  | _none_                                                            |
+| Field         | Content                                                      |
+| ------------- | ------------------------------------------------------------ |
+| **Name**      | **STARTX cluster Storage**                                   |
+| **tags**      | `startx` `cluster` `config` `admin` `storage` `storageclass` |
+| **provider**  | STARTX                                                       |
+| **format**    | openshift template                                           |
+| **content**   | 1 ArgoCD application                                         |
+| **namespace** | _none_                                                       |
+| **operator**  | _none_                                                       |
 
 ## Add to a cluster
 

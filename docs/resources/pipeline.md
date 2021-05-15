@@ -4,15 +4,15 @@ Deploy cluster resource enable **Pipeline** for pipeline support.
 
 ## Description
 
-| Field         | Content                                                    |
-| ------------- | ---------------------------------------------------------- |
-| **Name**      | **STARTX cluster Pipeline**                                |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `cicd`, `pipeline` |
-| **provider**  | STARTX                                                     |
-| **format**    | openshift template                                         |
-| **content**   | 1 ArgoCD application                                       |
-| **namespace** | openshift-pipelines                                        |
-| **operator**  | redhat-openshift-pipelines-operator@1.2.3                  |
+| Field         | Content                                               |
+| ------------- | ----------------------------------------------------- |
+| **Name**      | **STARTX cluster Pipeline**                           |
+| **tags**      | `startx` `cluster` `config` `admin` `cicd` `pipeline` |
+| **provider**  | STARTX                                                |
+| **format**    | openshift template                                    |
+| **content**   | 1 ArgoCD application                                  |
+| **namespace** | openshift-pipelines                                   |
+| **operator**  | redhat-openshift-pipelines-operator@1.2.3             |
 
 ## Add to a cluster
 

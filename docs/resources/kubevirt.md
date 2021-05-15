@@ -4,15 +4,15 @@ Deploy cluster resource enable **Kubevirt** for virtualisation support.
 
 ## Description
 
-| Field         | Content                                            |
-| ------------- | -------------------------------------------------- |
-| **Name**      | **STARTX cluster KubeVirt**                        |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `kubevirt` |
-| **provider**  | STARTX                                             |
-| **format**    | openshift template                                 |
-| **content**   | 3 ArgoCD application                               |
-| **namespace** | openshift-cnv                                      |
-| **operator**  | kubevirt-hyperconverged-operator@2.5.4             |
+| Field         | Content                                        |
+| ------------- | ---------------------------------------------- |
+| **Name**      | **STARTX cluster KubeVirt**                    |
+| **tags**      | `startx` `cluster` `config` `admin` `kubevirt` |
+| **provider**  | STARTX                                         |
+| **format**    | openshift template                             |
+| **content**   | 3 ArgoCD application                           |
+| **namespace** | openshift-cnv                                  |
+| **operator**  | kubevirt-hyperconverged-operator@2.5.4         |
 
 ## Add to a cluster
 

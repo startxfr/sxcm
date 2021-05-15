@@ -4,15 +4,15 @@ Deploy cluster resource enable **Logging** for aggregating logging stack.
 
 ## Description
 
-| Field         | Content                                           |
-| ------------- | ------------------------------------------------- |
-| **Name**      | **STARTX cluster Logging**                        |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `logging` |
-| **provider**  | STARTX                                            |
-| **format**    | openshift template                                |
-| **content**   | 3 ArgoCD application                              |
-| **namespace** | openshift-logging                                 |
-| **operator**  | elasticsearch-operator@5.0.3-6                    |
+| Field         | Content                                       |
+| ------------- | --------------------------------------------- |
+| **Name**      | **STARTX cluster Logging**                    |
+| **tags**      | `startx` `cluster` `config` `admin` `logging` |
+| **provider**  | STARTX                                        |
+| **format**    | openshift template                            |
+| **content**   | 3 ArgoCD application                          |
+| **namespace** | openshift-logging                             |
+| **operator**  | elasticsearch-operator@5.0.3-6                |
 
 ## Add to a cluster
 

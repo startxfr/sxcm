@@ -4,15 +4,15 @@ Deploy cluster resource enable **CodeReady Workspaces** for CodeReady Workspaces
 
 ## Description
 
-| Field         | Content                                                           |
-| ------------- | ----------------------------------------------------------------- |
-| **Name**      | **STARTX cluster CodeReady Workspaces**                           |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `workspaces`, `codeready` |
-| **provider**  | STARTX                                                            |
-| **format**    | openshift template                                                |
-| **content**   | 3 ArgoCD application                                              |
-| **namespace** | openshift-workspaces                                              |
-| **operator**  | codeready-workspaces@2.5.1                                        |
+| Field         | Content                                                      |
+| ------------- | ------------------------------------------------------------ |
+| **Name**      | **STARTX cluster CodeReady Workspaces**                      |
+| **tags**      | `startx` `cluster` `config` `admin` `workspaces` `codeready` |
+| **provider**  | STARTX                                                       |
+| **format**    | openshift template                                           |
+| **content**   | 3 ArgoCD application                                         |
+| **namespace** | openshift-workspaces                                         |
+| **operator**  | codeready-workspaces@2.5.1                                   |
 
 ## Add to a cluster
 

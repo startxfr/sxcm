@@ -4,15 +4,15 @@ Deploy cluster resource enable **Metering** for chargeback reports.
 
 ## Description
 
-| Field         | Content                                                          |
-| ------------- | ---------------------------------------------------------------- |
-| **Name**      | **STARTX cluster Metering**                                      |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `metering`, `chargeback` |
-| **provider**  | STARTX                                                           |
-| **format**    | openshift template                                               |
-| **content**   | 3 ArgoCD application                                             |
-| **namespace** | openshift-metering                                               |
-| **operator**  | metering-operator@4.7.0-202104250659.p0                          |
+| Field         | Content                                                     |
+| ------------- | ----------------------------------------------------------- |
+| **Name**      | **STARTX cluster Metering**                                 |
+| **tags**      | `startx` `cluster` `config` `admin` `metering` `chargeback` |
+| **provider**  | STARTX                                                      |
+| **format**    | openshift template                                          |
+| **content**   | 3 ArgoCD application                                        |
+| **namespace** | openshift-metering                                          |
+| **operator**  | metering-operator@4.7.0-202104250659.p0                     |
 
 ## Add to a cluster
 

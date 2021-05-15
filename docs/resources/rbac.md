@@ -4,15 +4,15 @@ Deploy cluster resource enable **RBAC** for configuring cluster RBAC.
 
 ## Description
 
-| Field         | Content                                        |
-| ------------- | ---------------------------------------------- |
-| **Name**      | **STARTX cluster RBAC**                        |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `rbac` |
-| **provider**  | STARTX                                         |
-| **format**    | openshift template                             |
-| **content**   | 1 ArgoCD application                           |
-| **namespace** | _none_                                         |
-| **operator**  | _none_                                         |
+| Field         | Content                                    |
+| ------------- | ------------------------------------------ |
+| **Name**      | **STARTX cluster RBAC**                    |
+| **tags**      | `startx` `cluster` `config` `admin` `rbac` |
+| **provider**  | STARTX                                     |
+| **format**    | openshift template                         |
+| **content**   | 1 ArgoCD application                       |
+| **namespace** | _none_                                     |
+| **operator**  | _none_                                     |
 
 ## Add to a cluster
 

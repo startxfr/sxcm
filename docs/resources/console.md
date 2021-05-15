@@ -4,15 +4,15 @@ Deploy cluster resource enable **Console** for console personnalisation.
 
 ## Description
 
-| Field         | Content                                           |
-| ------------- | ------------------------------------------------- |
-| **Name**      | **STARTX cluster Console**                        |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `console` |
-| **provider**  | STARTX                                            |
-| **format**    | openshift template                                |
-| **content**   | 1 ArgoCD application                              |
-| **namespace** | openshift-config                                  |
-| **operator**  | _none_                                            |
+| Field         | Content                                       |
+| ------------- | --------------------------------------------- |
+| **Name**      | **STARTX cluster Console**                    |
+| **tags**      | `startx` `cluster` `config` `admin` `console` |
+| **provider**  | STARTX                                        |
+| **format**    | openshift template                            |
+| **content**   | 1 ArgoCD application                          |
+| **namespace** | openshift-config                              |
+| **operator**  | _none_                                        |
 
 ## Add to a cluster
 

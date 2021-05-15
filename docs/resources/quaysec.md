@@ -4,15 +4,15 @@ Deploy cluster resource enable **Quaysec** for Quay vulnerability scanner suppor
 
 ## Description
 
-| Field         | Content                                                            |
-| ------------- | ------------------------------------------------------------------ |
-| **Name**      | **STARTX cluster Quay-sec**                                        |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `quay`, `security`, `scan` |
-| **provider**  | STARTX                                                             |
-| **format**    | openshift template                                                 |
-| **content**   | 2 ArgoCD application                                               |
-| **namespace** | startx-quaysecvuln                                                 |
-| **operator**  | container-security-operator@3.3.4                                  |
+| Field         | Content                                                      |
+| ------------- | ------------------------------------------------------------ |
+| **Name**      | **STARTX cluster Quay-sec**                                  |
+| **tags**      | `startx` `cluster` `config` `admin` `quay` `security` `scan` |
+| **provider**  | STARTX                                                       |
+| **format**    | openshift template                                           |
+| **content**   | 2 ArgoCD application                                         |
+| **namespace** | startx-quaysecvuln                                           |
+| **operator**  | container-security-operator@3.3.4                            |
 
 ## Add to a cluster
 

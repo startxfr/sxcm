@@ -4,15 +4,15 @@ Deploy cluster resource enable **Machine** for configuring cluster infrastructur
 
 ## Description
 
-| Field         | Content                                                                           |
-| ------------- | --------------------------------------------------------------------------------- |
-| **Name**      | **STARTX Cluster Machine config**                                                 |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `machine`, `machineset`, `iac`, `cluster` |
-| **provider**  | STARTX                                                                            |
-| **format**    | openshift template                                                                |
-| **content**   | 2 ArgoCD application                                                              |
-| **namespace** | openshift-machine                                                                 |
-| **operator**  | machine-operator@4.7.0                                                            |
+| Field         | Content                                                                    |
+| ------------- | -------------------------------------------------------------------------- |
+| **Name**      | **STARTX Cluster Machine config**                                          |
+| **tags**      | `startx` `cluster` `config` `admin` `machine` `machineset` `iac` `cluster` |
+| **provider**  | STARTX                                                                     |
+| **format**    | openshift template                                                         |
+| **content**   | 2 ArgoCD application                                                       |
+| **namespace** | openshift-machine                                                          |
+| **operator**  | machine-operator@4.7.0                                                     |
 
 ## Add to a cluster
 

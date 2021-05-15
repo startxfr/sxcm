@@ -4,15 +4,15 @@ Deploy cluster resource enable **Infra** for infrastructure configuration.
 
 ## Description
 
-| Field         | Content                                         |
-| ------------- | ----------------------------------------------- |
-| **Name**      | **STARTX cluster Infra**                        |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `infra` |
-| **provider**  | STARTX                                          |
-| **format**    | openshift template                              |
-| **content**   | 3 ArgoCD application                            |
-| **namespace** | openshift-config                                |
-| **operator**  | _none_                                          |
+| Field         | Content                                     |
+| ------------- | ------------------------------------------- |
+| **Name**      | **STARTX cluster Infra**                    |
+| **tags**      | `startx` `cluster` `config` `admin` `infra` |
+| **provider**  | STARTX                                      |
+| **format**    | openshift template                          |
+| **content**   | 3 ArgoCD application                        |
+| **namespace** | openshift-config                            |
+| **operator**  | _none_                                      |
 
 ## Add to a cluster
 

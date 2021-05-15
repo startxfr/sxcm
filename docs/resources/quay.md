@@ -4,15 +4,15 @@ Deploy cluster resource enable **Quay** for Quay enterprise registry support.
 
 ## Description
 
-| Field         | Content                                        |
-| ------------- | ---------------------------------------------- |
-| **Name**      | **STARTX cluster Quay**                        |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `quay` |
-| **provider**  | STARTX                                         |
-| **format**    | openshift template                             |
-| **content**   | 3 ArgoCD application                           |
-| **namespace** | startx-quay                                    |
-| **operator**  | red-hat-quay@3.3.4                             |
+| Field         | Content                                    |
+| ------------- | ------------------------------------------ |
+| **Name**      | **STARTX cluster Quay**                    |
+| **tags**      | `startx` `cluster` `config` `admin` `quay` |
+| **provider**  | STARTX                                     |
+| **format**    | openshift template                         |
+| **content**   | 3 ArgoCD application                       |
+| **namespace** | startx-quay                                |
+| **operator**  | red-hat-quay@3.3.4                         |
 
 ## Add to a cluster
 

@@ -4,15 +4,15 @@ Deploy cluster resource enable **Auth** for authentification backend configurati
 
 ## Description
 
-| Field         | Content                                        |
-| ------------- | ---------------------------------------------- |
-| **Name**      | **STARTX cluster Auth**                        |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `auth` |
-| **provider**  | STARTX                                         |
-| **format**    | openshift template                             |
-| **content**   | 1 ArgoCD application                           |
-| **namespace** | openshift-config                               |
-| **operator**  | _none_                                         |
+| Field         | Content                                    |
+| ------------- | ------------------------------------------ |
+| **Name**      | **STARTX cluster Auth**                    |
+| **tags**      | `startx` `cluster` `config` `admin` `auth` |
+| **provider**  | STARTX                                     |
+| **format**    | openshift template                         |
+| **content**   | 1 ArgoCD application                       |
+| **namespace** | openshift-config                           |
+| **operator**  | _none_                                     |
 
 ## Add to a cluster
 

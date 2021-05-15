@@ -4,15 +4,15 @@ Deploy cluster resource enable **Couchbase** for couchbase operator.
 
 ## Description
 
-| Field         | Content                                                      |
-| ------------- | ------------------------------------------------------------ |
-| **Name**      | **STARTX Couchbase cluster**                                 |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `couchbase`, `NoSQL` |
-| **provider**  | STARTX                                                       |
-| **format**    | openshift template                                           |
-| **content**   | 2 ArgoCD application                                         |
-| **namespace** | openshift-couchbase                                          |
-| **operator**  | couchbase-enterprise-certified@2.1.0                         |
+| Field         | Content                                                 |
+| ------------- | ------------------------------------------------------- |
+| **Name**      | **STARTX Couchbase cluster**                            |
+| **tags**      | `startx` `cluster` `config` `admin` `couchbase` `NoSQL` |
+| **provider**  | STARTX                                                  |
+| **format**    | openshift template                                      |
+| **content**   | 2 ArgoCD application                                    |
+| **namespace** | openshift-couchbase                                     |
+| **operator**  | couchbase-enterprise-certified@2.1.0                    |
 
 ## Add to a cluster
 
