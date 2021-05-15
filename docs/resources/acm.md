@@ -4,15 +4,15 @@ Deploy cluster resource enable **ACM** multi-cluster management support.
 
 ## Description
 
-| Field         | Content                                                |
-| ------------- | ------------------------------------------------------ |
-| **Name**      | STARTX Advanced Cluster Management                     |
-| **tags**      | startx,cluster,config,admin,acm,multi-cloud,management |
-| **provider**  | STARTX                                                 |
-| **format**    | openshift template                                     |
-| **content**   | 3 ArgoCD application                                   |
-| **namespace** | open-cluster-management                                |
-| **operator**  | advanced-cluster-management@2.1.2                      |
+| Field         | Content                                                                    |
+| ------------- | -------------------------------------------------------------------------- |
+| **Name**      | **STARTX Advanced Cluster Management**                                     |
+| **tags**      | `startx`, `cluster`, `config`, `admin`, `acm`, `multi-cloud`, `management` |
+| **provider**  | STARTX                                                                     |
+| **format**    | openshift template                                                         |
+| **content**   | 3 ArgoCD application                                                       |
+| **namespace** | open-cluster-management                                                    |
+| **operator**  | advanced-cluster-management@2.1.2                                          |
 
 ## Add to a cluster
 
@@ -42,4 +42,4 @@ sxcm resource info acm
 ## More on resource
 
 You should read the [cluster resource management](../../4-cluster-resources) documentation section to learn the command
-meaning and how to create your own cluster resource service to deliver personalized cluster configuration
+meaning and how to create your own cluster resource service to deliver personalized cluster configuration.

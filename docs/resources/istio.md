@@ -4,15 +4,15 @@ Deploy cluster resource enable **Istio** for service-mesh support.
 
 ## Description
 
-| Field         | Content                           |
-| ------------- | --------------------------------- |
-| **Name**      | STARTX cluster Istio-operator     |
-| **tags**      | startx,cluster,config,admin,istio |
-| **provider**  | STARTX                            |
-| **format**    | openshift template                |
-| **content**   | 3 ArgoCD application              |
-| **namespace** | startx-istio                      |
-| **operator**  | servicemeshoperator@2.0.2         |
+| Field         | Content                                         |
+| ------------- | ----------------------------------------------- |
+| **Name**      | **STARTX cluster Istio-operator**               |
+| **tags**      | `startx`, `cluster`, `config`, `admin`, `istio` |
+| **provider**  | STARTX                                          |
+| **format**    | openshift template                              |
+| **content**   | 3 ArgoCD application                            |
+| **namespace** | startx-istio                                    |
+| **operator**  | servicemeshoperator@2.0.2                       |
 
 ## Add to a cluster
 
@@ -42,4 +42,4 @@ sxcm resource info istio
 ## More on resource
 
 You should read the [cluster resource management](../../4-cluster-resources) documentation section to learn the command
-meaning and how to create your own cluster resource service to deliver personalized cluster configuration
+meaning and how to create your own cluster resource service to deliver personalized cluster configuration.

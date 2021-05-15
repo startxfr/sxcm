@@ -1,42 +1,42 @@
-# Authentification
+# RBAC
 
-Deploy cluster resource enable **Auth** for authentification backend configuration.
+Deploy cluster resource enable **RBAC** for configuring cluster RBAC.
 
 ## Description
 
 | Field         | Content                                        |
 | ------------- | ---------------------------------------------- |
-| **Name**      | **STARTX cluster Auth**                        |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `auth` |
+| **Name**      | **STARTX cluster RBAC**                        |
+| **tags**      | `startx`, `cluster`, `config`, `admin`, `rbac` |
 | **provider**  | STARTX                                         |
 | **format**    | openshift template                             |
 | **content**   | 1 ArgoCD application                           |
-| **namespace** | openshift-config                               |
+| **namespace** | _none_                                         |
 | **operator**  | _none_                                         |
 
 ## Add to a cluster
 
 ```bash
 # Associate this cluster resource to the cluster mycluster (runable resource)
-sxcm resource associate auth mycluster
+sxcm resource associate rbac mycluster
 # Enable this cluster resource to the cluster mycluster (running resource)
-sxcm resource enable auth mycluster
+sxcm resource enable rbac mycluster
 ```
 
 ## Remove from a cluster
 
 ```bash
 # Dissociate this cluster resource from the cluster mycluster (removable resource)
-sxcm resource dissociate auth mycluster
+sxcm resource dissociate rbac mycluster
 # Disable this cluster resource from the cluster mycluster (removed resource)
-sxcm resource disable auth mycluster
+sxcm resource disable rbac mycluster
 ```
 
 ## Get cluster resource detail
 
 ```bash
 # Read information about the cluster resource version installed into your host (local)
-sxcm resource info auth
+sxcm resource info rbac
 ```
 
 ## More on resource

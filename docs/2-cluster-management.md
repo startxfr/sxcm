@@ -150,9 +150,9 @@ sxcm edit mycluster
 
 ### Cluster resource
 
-To associate / dissociate or enable / disable a cluster resource, you can refer to the [cluster resource management](4-cluster-resources#cluster-interaction-commands).
+To **associate** / **dissociate** or **enable** / **disable** a [cluster resource](../4-cluster-resources), you can follow to the [cluster resource interaction with cluster](../4-cluster-resources#cluster-interaction-commands).
 
-### Exporting the cluster (sxcm export)
+### Exporting the cluster
 
 Export an existing cluster defined locally into the gitops repository. This command
 preserve the cluster state and allow you to share cluster state across various sxcm instance.
@@ -163,13 +163,13 @@ preserve the cluster state and allow you to share cluster state across various s
 | **help**      | no        | Get the manpage of this command   |
 
 ```bash
-# Import the cluster named mycluster from the mycluster remote branch
+# Export all change to the cluster into the gitops remote branch
 sxcm export mycluster
 ```
 
 ## Terminating the cluster
 
-### Destroy a cluster (sxcm destroy)
+### Destroy a cluster
 
 Destroy a locally managed cluster. this command alter the cluster state and record it change into the gitops repository.
 

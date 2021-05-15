@@ -1,42 +1,42 @@
-# ArgoCD Project
+# Pipeline
 
-Deploy cluster resource **ArgoCD** continuous-delivery support.
+Deploy cluster resource enable **Pipeline** for pipeline support.
 
 ## Description
 
 | Field         | Content                                                    |
 | ------------- | ---------------------------------------------------------- |
-| **Name**      | **STARTX ArgoCD**                                          |
-| **tags**      | `startx`, `cluster`, `config`, `admin`, `argocd`, `gitops` |
+| **Name**      | **STARTX cluster Pipeline**                                |
+| **tags**      | `startx`, `cluster`, `config`, `admin`, `cicd`, `pipeline` |
 | **provider**  | STARTX                                                     |
-| **format**    | openshift template + script                                |
-| **content**   | 1 Poject + 3 RoleBinding + 1 Subscription                  |
-| **namespace** | startx-argocd                                              |
-| **operator**  | argocd-operator@0.0.14                                     |
+| **format**    | openshift template                                         |
+| **content**   | 1 ArgoCD application                                       |
+| **namespace** | openshift-pipelines                                        |
+| **operator**  | redhat-openshift-pipelines-operator@1.2.3                  |
 
 ## Add to a cluster
 
 ```bash
 # Associate this cluster resource to the cluster mycluster (runable resource)
-sxcm resource associate argocd-project mycluster
+sxcm resource associate pipeline mycluster
 # Enable this cluster resource to the cluster mycluster (running resource)
-sxcm resource enable argocd-project mycluster
+sxcm resource enable pipeline mycluster
 ```
 
 ## Remove from a cluster
 
 ```bash
 # Dissociate this cluster resource from the cluster mycluster (removable resource)
-sxcm resource dissociate argocd-project mycluster
+sxcm resource dissociate pipeline mycluster
 # Disable this cluster resource from the cluster mycluster (removed resource)
-sxcm resource disable argocd-project mycluster
+sxcm resource disable pipeline mycluster
 ```
 
 ## Get cluster resource detail
 
 ```bash
 # Read information about the cluster resource version installed into your host (local)
-sxcm resource info argocd-project
+sxcm resource info pipeline
 ```
 
 ## More on resource
