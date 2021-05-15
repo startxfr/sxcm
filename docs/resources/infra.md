@@ -1,6 +1,8 @@
 # Configure cluster
 
-Deploy cluster resource enable **Infra** for infrastructure configuration.
+The **infra** [cluster resource](../../4-cluster-resources) apply the cluster **infrastructure configuration** for cluster configuration (image stream, helm repository, alert backend, image prunner, ...).
+
+This cluster resource is based on the [cluster-infra helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-infra) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

@@ -1,6 +1,9 @@
 # Service CodeReady Workspaces
 
-Deploy cluster resource enable **CodeReady Workspaces** for CodeReady Workspaces support.
+The **CodeReady Workspaces** [cluster resource](../../4-cluster-resources) deploy the **codeReady-workspaces operator** and a
+**CodeReady Workspaces instance** that provide a IDE Environment for immediate developpment.
+
+This cluster resource is based on the [cluster-workspace helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-workspace) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

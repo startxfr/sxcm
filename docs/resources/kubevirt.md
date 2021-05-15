@@ -1,6 +1,9 @@
 # Service Kubevirt
 
-Deploy cluster resource enable **Kubevirt** for virtualisation support.
+The **Kubevirt** [cluster resource](../../4-cluster-resources) deploy the **kubevirt hyperconverged operator** and a
+**Kubevirt instance** that provide virtualisation support in the cluster.
+
+This cluster resource is based on the [cluster-kubevirt helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-kubevirt) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

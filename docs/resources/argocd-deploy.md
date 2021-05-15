@@ -1,6 +1,8 @@
 # ArgoCD Deployment
 
-Deploy cluster resource **ArgoCD** continuous-delivery support.
+The **ArgoCD deploy** [cluster resource](../../4-cluster-resources) deploy an **ArgoCD instance** that provide a Continious delivery support in your cluster.
+
+This cluster resource is based on the [argocd-deploy openshift template](https://raw.githubusercontent.com/startxfr/sxcm/main/src/resources/argocd-deploy.yml).
 
 ## Description
 

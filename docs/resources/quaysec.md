@@ -1,6 +1,8 @@
 # Service Quay-vulnerability
 
-Deploy cluster resource enable **Quaysec** for Quay vulnerability scanner support.
+The **Quay vulnerability check** [cluster resource](../../4-cluster-resources) deploy the **container security operator** to enable security scan on the running images in your cluster (console integration).
+
+This cluster resource is based on the [cluster-quay helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-quay) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

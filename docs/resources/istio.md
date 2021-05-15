@@ -1,6 +1,9 @@
 # Service Istio
 
-Deploy cluster resource enable **Istio** for service-mesh support.
+The **istio** [cluster resource](../../4-cluster-resources) deploy the **servicemesh operator** and a
+**istio instance** that provide service-mesh support in your cluster (full-stack including monitoring).
+
+This cluster resource is based on the [cluster-istio helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-istio) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

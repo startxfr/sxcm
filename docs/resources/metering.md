@@ -1,6 +1,9 @@
 # Service Metering
 
-Deploy cluster resource enable **Metering** for chargeback reports.
+The **Metering** [cluster resource](../../4-cluster-resources) deploy the **metering operator** and a
+**metering instance** that provide chargeback reports.
+
+This cluster resource is based on the [cluster-metering helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-metering) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

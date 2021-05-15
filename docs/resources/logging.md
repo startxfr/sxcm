@@ -1,6 +1,9 @@
 # Service Logging
 
-Deploy cluster resource enable **Logging** for aggregating logging stack.
+The **logging** [cluster resource](../../4-cluster-resources) deploy the **cluster logging operator** and a
+**logging instance** that provide a aggregating logging stack.
+
+This cluster resource is based on the [cluster-logging helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-logging) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 
@@ -12,7 +15,7 @@ Deploy cluster resource enable **Logging** for aggregating logging stack.
 | **format**    | openshift template                            |
 | **content**   | 3 ArgoCD application                          |
 | **namespace** | openshift-logging                             |
-| **operator**  | elasticsearch-operator@5.0.3-6                |
+| **operator**  | cluster-logging@5.0.3-6                       |
 
 ## Add to a cluster
 

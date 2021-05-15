@@ -1,6 +1,8 @@
 # Configure console
 
-Deploy cluster resource enable **Console** for console personnalisation.
+The **console** [cluster resource](../../4-cluster-resources) configure the cluster **openshift console** backend for interface tunning.
+
+This cluster resource is based on the [cluster-console helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-console) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

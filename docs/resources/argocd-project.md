@@ -1,6 +1,8 @@
 # ArgoCD Project
 
-Deploy cluster resource **ArgoCD** continuous-delivery support.
+The **ArgoCD project** [cluster resource](../../4-cluster-resources) deploy an **ArgoCD context** that provide a configured environment (project, rbac, operator) for running a Continous delivery support in your cluster.
+
+This cluster resource is based on the [argocd-project openshift template](https://raw.githubusercontent.com/startxfr/sxcm/main/src/resources/argocd-project.yml).
 
 ## Description
 

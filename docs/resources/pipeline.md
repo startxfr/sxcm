@@ -1,6 +1,8 @@
 # Service Pipeline
 
-Deploy cluster resource enable **Pipeline** for pipeline support.
+The **Pipeline** [cluster resource](../../4-cluster-resources) deploy the **redhat pipelines operator** (tekton) that provide a pipeline support in your cluster.
+
+This cluster resource is based on the [cluster-pipeline helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-pipeline) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

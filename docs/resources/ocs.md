@@ -1,6 +1,9 @@
 # Service OCS
 
-Deploy cluster resource enable **OCS** for converged storage capacities.
+The **OCS** [cluster resource](../../4-cluster-resources) deploy the **ocs operator** and a
+**OCS instance** that provide a converged storage service delivered using rook and noobaa.
+
+This cluster resource is based on the [cluster-ocs helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-ocs) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

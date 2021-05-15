@@ -1,6 +1,9 @@
-# Service KeyCloak
+# Service SSO
 
-Deploy cluster resource enable **SSO** for KeyCloak deployment.
+The **SSO** [cluster resource](../../4-cluster-resources) deploy the **redhat sso operator** and a
+**KeyCloak instance** that provide a SSO backend running into the cluster.
+
+This cluster resource is based on the [cluster-sso helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-sso) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

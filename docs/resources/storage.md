@@ -1,6 +1,8 @@
 # Configure storage
 
-Deploy cluster resource enable **Storage** for configuring dynamic-provisionned storage.
+The **Storage** [cluster resource](../../4-cluster-resources) apply the cluster **storage configuration** that define the storage class applyied to this cluster for configuring dynamic-provisionned storage.
+
+This cluster resource is based on the [cluster-storage helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-storage) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

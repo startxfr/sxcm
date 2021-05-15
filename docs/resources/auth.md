@@ -1,6 +1,8 @@
 # Configure authentification
 
-Deploy cluster resource enable **Auth** for authentification backend configuration.
+The **auth** [cluster resource](../../4-cluster-resources) configure the cluster **openshift authentification** backend for user and group authentification.
+
+This cluster resource is based on the [cluster-auth helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-auth) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

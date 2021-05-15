@@ -1,6 +1,9 @@
 # Service Vault
 
-Deploy cluster resource enable **Vault** for deploying Hashicorp Vault service.
+The **vault** [cluster resource](../../4-cluster-resources) deploy a
+**vault instance** that provide a Digital Vault using Hashicorp Vault solution.
+
+This cluster resource is based on the [cluster-vault helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-vault) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

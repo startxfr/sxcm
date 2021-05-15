@@ -1,6 +1,9 @@
 # Service KNative
 
-Deploy cluster resource enable **KNative** for serverless support.
+The **KNative** [cluster resource](../../4-cluster-resources) deploy the **knative operator** and a
+**KNative instance** that provide serverless support in the cluster.
+
+This cluster resource is based on the [cluster-knative helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-knative) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

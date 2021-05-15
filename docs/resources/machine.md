@@ -1,6 +1,8 @@
 # Configure Machine
 
-Deploy cluster resource enable **Machine** for configuring cluster infrastructure, healthCheck and Autoscaler.
+The **machine** [cluster resource](../../4-cluster-resources) apply the cluster **machine configuration** backend for cluster configuration (infrastructure, healthCheck and Autoscaler, ...).
+
+This cluster resource is based on the [cluster-machine helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-machine) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

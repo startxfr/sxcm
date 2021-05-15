@@ -1,6 +1,8 @@
 # Configure RBAC
 
-Deploy cluster resource enable **RBAC** for configuring cluster RBAC.
+The **RBAC** [cluster resource](../../4-cluster-resources) apply the cluster **RBAC configuration** that define the user and group role and access control applyied to this cluster.
+
+This cluster resource is based on the [cluster-rbac helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-rbac) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

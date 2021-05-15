@@ -1,6 +1,9 @@
 # Service ACM
 
-Deploy cluster resource enable **Advanced Cluster-Management** multi-cluster management support.
+The **Advanced Cluster-Management** [cluster resource](../../4-cluster-resources) deploy the **advanced-cluster-management operator** and a
+**Advanced Cluster Management instance** that provide a multi-cluster management support in your cluster.
+
+This cluster resource is based on the [cluster-acm helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-acm) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

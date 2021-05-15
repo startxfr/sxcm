@@ -1,6 +1,9 @@
 # Service Quay
 
-Deploy cluster resource enable **Quay** for Quay enterprise registry support.
+The **Quay repository** [cluster resource](../../4-cluster-resources) deploy the **redhat quay operator** and a
+**Quay Enterprise instance** that deploy a Quay enterprise registry service inside your cluster.
+
+This cluster resource is based on the [cluster-quay helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-quay) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

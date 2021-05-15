@@ -1,6 +1,9 @@
 # Service Couchbase
 
-Deploy cluster resource enable **Couchbase** for couchbase operator.
+The **couchbase** [cluster resource](../../4-cluster-resources) deploy the **couchbase-enterprise certified operator** and a
+**couchbase instance** that provide a NoSQL database support in your cluster.
+
+This cluster resource is based on the [cluster-couchbase helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-couchbase) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 
