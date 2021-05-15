@@ -28,20 +28,23 @@ TO DO
 
 A **profile** is a cluster configuration with the following characteristics :
 
-- A datacenter (e.g. _eu-west-3_)
-- A master and worker compute number of replicas (e.g. _3_)
-- A master and worker compute profile (e.g. _t3a.large_)
-- A master and worker storage profile (e.g. _50Go gp2_)
-- A series of AWS labels to apply to nodes (e.g. _profile, environment, projectOwner, ..._)
-- _pullSecret, sshKey and clustername_ will be dymamycally pushed by `sxcm` command
-- A list of cluser resource to apply to the instanciated cluster
+- A **datacenter** (e.g. _eu-west-3_)
+- A **master** and **worker** compute number of **replicas** (e.g. _3_)
+- A master and worker **compute profile** (e.g. _t3a.large_)
+- A master and worker **storage profile** (e.g. _50Go gp2_)
+- A series of **AWS labels** to apply to nodes (e.g. _profile, environment, projectOwner, ..._)
+- _pullSecret, sshKey and clustername_ will be dymamically pushed by `sxcm` command
+- A list of **cluster resource** to apply to the instanciated cluster
 
 ### Cluster
 
 A **cluster** or **cluster instance** is a named cluster based on a profile (created with the `sxcm create`) and ready to be (or already),
 deployed using the `sxcm deploy` command.
+
 When creating a cluster, a dedicated branch is created under the gitops repository to store the cluster state. All files describing the targeted cluster are recorded and change tracked.
+
 When you deploy the cluster, state change are reflected into the files, and all this content will be versionned and pushed into your remote gitops repository.
+
 If you enable or disable cluster resource on your cluster, change are reflected under your configurations files and will be stored into your gitops respository.
 
 ### Infrastructure
