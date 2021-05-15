@@ -1,4 +1,4 @@
-# Storage
+# Configure storage
 
 Deploy cluster resource enable **Storage** for configuring dynamic-provisionned storage.
 

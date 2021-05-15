@@ -1,4 +1,4 @@
-# 3scale
+# Operator 3scale
 
 Deploy cluster resource enable **3Scale** API management support.
 

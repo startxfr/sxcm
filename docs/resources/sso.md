@@ -1,4 +1,4 @@
-# KeyCloak
+# Operator KeyCloak
 
 Deploy cluster resource enable **SSO** for KeyCloak deployment.
 

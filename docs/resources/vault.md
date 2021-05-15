@@ -1,4 +1,4 @@
-# Vault
+# Operator Vault
 
 Deploy cluster resource enable **Vault** for deploying Hashicorp Vault service.
 

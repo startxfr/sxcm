@@ -1,4 +1,4 @@
-# Quay
+# Operator Quay
 
 Deploy cluster resource enable **Quay** for Quay enterprise registry support.
 

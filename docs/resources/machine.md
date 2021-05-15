@@ -1,4 +1,4 @@
-# Machine
+# Configure Machine
 
 Deploy cluster resource enable **Machine** for configuring cluster infrastructure, healthCheck and Autoscaler.
 

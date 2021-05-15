@@ -1,4 +1,4 @@
-# Authentification
+# Configure authentification
 
 Deploy cluster resource enable **Auth** for authentification backend configuration.
 

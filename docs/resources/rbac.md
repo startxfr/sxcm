@@ -1,4 +1,4 @@
-# RBAC
+# Configure RBAC
 
 Deploy cluster resource enable **RBAC** for configuring cluster RBAC.
 
