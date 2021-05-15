@@ -1,5 +1,7 @@
 # Profiles
 
+![sxcm profiles](https://raw.githubusercontent.com/startxfr/sxcm/main/docs/img/verbs-profiles.svg)
+
 A cluster profile is a cluster definition containing infrastructure description as well as cluster resource to be deployed.
 
 Profile are readonly components defined as shared resources. If you want to add a new profile, you should add it

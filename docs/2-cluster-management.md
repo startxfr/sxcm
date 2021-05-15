@@ -1,5 +1,7 @@
 # Cluster lifecycle
 
+![sxcm commands](https://raw.githubusercontent.com/startxfr/sxcm/main/docs/img/verbs-lifecycle.svg)
+
 ## Listing the clusters
 
 List the available cluster

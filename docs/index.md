@@ -36,36 +36,65 @@ A **profile** is a cluster configuration with the following characteristics :
 - _pullSecret, sshKey and clustername_ will be dymamically pushed by `sxcm` command
 - A list of **cluster resource** to apply to the instanciated cluster
 
-### Cluster
+### Cluster instance
 
-A **cluster** or **cluster instance** is a named cluster based on a profile (created with the `sxcm create`) and ready to be (or already),
+A **cluster instance** is a named cluster based on a profile (created with the `sxcm create`) and ready to be (or already),
 deployed using the `sxcm deploy` command.
 
-When creating a cluster, a dedicated branch is created under the gitops repository to store the cluster state. All files describing the targeted cluster are recorded and change tracked.
+When creating a cluster, a dedicated branch is created under the **gitops repository** to store the cluster state. A new `install-openshift.yaml` file is created and all files describing the targeted cluster are recorded and change tracked.
 
-When you deploy the cluster, state change are reflected into the files, and all this content will be versionned and pushed into your remote gitops repository.
+When importing a cluster, a branch recorded under the **gitops repository** is imported to the **cluster stack**. All cluster stated are locally imported and you can manage the cluster from your `sxcm` environment.
 
-If you enable or disable cluster resource on your cluster, change are reflected under your configurations files and will be stored into your gitops respository.
+When clonning a cluster, a new branch is created under the **gitops repository** to store the cluster state. A copy of the source **cluster instance** is performed and reverted to a configured state.
 
-### Infrastructure
+When you change the cluster state (deploy, destroy, enable, disable, edit), state change are reflected into the files, and all this content will be versionned and pushed into your remote **gitops repository**. Change will be applyed to the **running cluster** if command is intrusive (e.g. deploy, destroy, enable).
+If you enable or disable cluster resource on your cluster, change are reflected under your configurations files, recorded into the **gitops respository** and applyed to the **running cluster**.
 
-TO DO
+### Cluster stack
+
+The **cluster stack** is the local clusters list configured into your local `sxcm` host. Each host user have it own cluster stack witch store **cluster instance** created, imported or cloned into its environement.
+
+When creating, clonning or importing a cluster, a local copy of all the **gitops repository** content is stored. All files describing the targeted cluster state are available and shared among users.
+
+Cluster stack is  local (each host have it own `sxcm` installation) and personnal (each user have it own cluster stack). When **cluster instance** declared into a **cluster stack** are imported, the **cluster state** is shared among multiple users by the **gitOps repository** and multiple git users can manage the same cluster.
+
+### Cluster infrastructure
+
+Each **cluster instance** represent a deployable (or deployed) openshift cluster running under the AWS public infrastructure. The **cluster infrastructure** is the bunch of cloud ressources required to instanciate the **cluster instance** and make it live.
+
+Only **cluster instance** in the **deployed state** have a **cluster infrastructure** associated to it state.
 
 ### Cluster resource
 
-TO DO
+A **cluster ressource** is a kuberetes list of ressource used to configure the cluster and services running into it. Appart the `argocd-project` and `argocd-deploy` all operator are based on **openshift template** deploying **argocd application** or
+**bash script** executing `oc` or `kubectl` commands.
+
+These argoCD applications applyed various cluster configuration or deploy new cluster resources (mostly with operators). The sxcm cluster resource use extensively the [startx helm-repository](https://helm-repository.readthedocs.io) wrapped using various argoCD application acting as an intermediate between the cluster state and this helm chart.
+
+More information about **cluster resource** can be found by eading the [cluster resource manual](../../4-cluster-resources) witch provide so good example on how to use cluster resources.
 
 ### Gitops repository
 
-TO DO
+A **gitops repository** is a git repository linked to the **cluster instance** declared in your **cluster stack** and tracking all change to you cluster state. This state could be shared among various git user and `sxcm` installation if you used `sxcm import` on a deployed cluster.
 
-### Kubernetes resource
+The gitops repository is here to share, track changes and act as a reference for all change relative to a given **cluster instance**. Each cluster instance must belong to a **gitops repository branch** whatever the command used for construction (clone, import or create).
 
-TO DO
+### ArgoCD or Kubernetes resource
+
+**cluster resource**, with exception of the `argocd-project` and `argocd-deploy`, are based on **openshift template** deploying **argocd application** or **bash script** executing `oc` or `kubectl` commands.
+
+All these commands produce creation of multiple kubernetes resource that you can monitor globally with :
+- `oc get application -n startx-argocd` to get all application
+- go to `https://startx-server-startx-argocd.apps.<mycluster>.startx.fr`
+- `oc get pod --all-namespaces` to see what is deployed into your cluster
 
 ### Active cluster
 
-TO DO
+The **cluster stack** store the local clusters list. **active cluster** is the currently active cluster defined in the cluster stack.
+
+Each time you create, clone, import or switch a cluster, a change is done to the currently active cluster, and context is change to this new ative cluster.
+
+The active cluster state is used every time a cluster name is required but not provided.
 
 ## What to do next
 

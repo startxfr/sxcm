@@ -1,5 +1,7 @@
 # Cluster resources
 
+![sxcm resources](https://raw.githubusercontent.com/startxfr/sxcm/main/docs/img/verbs-resources.svg)
+
 A cluster resource is a group of **service** (mostly operator-based) or **configuration** to apply to deployed clusters. With exception of the argocd-x cluster resource, all other cluster resources are based on **openshift template** deploying **argocd application** or
 **bash script** executing `oc` or `kubectl` commands.
 
