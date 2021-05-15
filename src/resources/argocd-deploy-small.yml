@@ -4,16 +4,16 @@ metadata:
   name: sxv4-cluster-argocd-deploy-template
   annotations:
     openshift.io/display-name: STARTX ArgoCD Deployment (gitops)
-    description: Deploy ArgoCD gitops tools according to sxv4-console definitions
+    description: Deploy ArgoCD gitops tools according to sxcm definitions
     iconClass: icon-openshift
     tags: startx,cluster,config,admin,argocd,gitops
     openshift.io/provider-display-name: STARTX
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     sxv4_console_timeout: "60"
   labels:
     template: sxv4-cluster-argocd-deploy-template
     app.kubernetes.io/name: "sxv4-cluster-argocd-deploy-template"
-    app.kubernetes.io/managed-by: sxv4-console
+    app.kubernetes.io/managed-by: sxcm
 message: |-
   Your ArgoCD gitops engine is now enabled
 
@@ -22,7 +22,7 @@ message: |-
   Operator          : container-security-operator.v1.0.5,red-hat-argocd.v3.3.0
 labels:
   template: sxv4-cluster-argocd-deploy-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: ArgoCD
     apiVersion: argoproj.io/v1alpha1
@@ -38,7 +38,7 @@ objects:
         app.kubernetes.io/version: "${VERSION}"
         app.kubernetes.io/component: "argocd"
       annotations: 
-        openshift.io/generated-by: sxv4-console
+        openshift.io/generated-by: sxcm
     spec: 
       applicationInstanceLabelKey: argocd.argoproj.io/instance
       resourceCustomizations: |
@@ -175,7 +175,7 @@ objects:
         app.kubernetes.io/component: "argocd"
         app.kubernetes.io/name: "${SCOPE}-${ENV}-argocd-controller-sa-crb"
       annotations: 
-        openshift.io/generated-by: sxv4-console
+        openshift.io/generated-by: sxcm
     subjects:
       - kind: User
         apiGroup: rbac.authorization.k8s.io
@@ -198,7 +198,7 @@ objects:
         app.kubernetes.io/component: "argocd"
         app.kubernetes.io/name: "default-appproject"
       annotations: 
-        openshift.io/generated-by: sxv4-console
+        openshift.io/generated-by: sxcm
     spec:
       sourceRepos:
         - '*'
@@ -263,7 +263,7 @@ objects:
         app.kubernetes.io/component: "argocd"
         app.kubernetes.io/name: "cluster-admin-appproject"
       annotations: 
-        openshift.io/generated-by: sxv4-console
+        openshift.io/generated-by: sxcm
     spec:
       sourceRepos:
         - '*'

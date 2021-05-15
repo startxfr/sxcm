@@ -1,7 +1,7 @@
 apiVersion: v1
 baseDomain: startx.fr
 metadata:
-  name: __mycluster__er__
+  name: __mycluster__
   annotations:
     hourlyCost: "0,77 "
     description: "3 master + worker (8Vcpu, 32Go RAM, 50Go gp2  50iop) - [AWS Oregon]"
@@ -51,7 +51,7 @@ platform:
     region: us-west-2
     userTags:
       project: sxsf
-      cluster: __mycluster__er__
+      cluster: __mycluster__
       profile: micro
       environment: test
       projectOwner: chris

@@ -4,16 +4,16 @@ metadata:
   name: sxv4-cluster-knative-template
   annotations:
     openshift.io/display-name: STARTX cluster KNative (admin)
-    description: Deploy cluster-wide resources to enable KNative support according to sxv4-console definitions
+    description: Deploy cluster-wide resources to enable KNative support according to sxcm definitions
     iconClass: icon-openshift
     tags: startx,cluster,config,admin,knative
     openshift.io/provider-display-name: STARTX
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     sxv4_console_timeout: "30"
   labels:
     template: sxv4-cluster-knative-template
     app.kubernetes.io/name: "sxv4-cluster-knative-template"
-    app.kubernetes.io/managed-by: sxv4-console
+    app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster serverless support is now enabled
 
@@ -22,7 +22,7 @@ message: |-
   Operator          : serverless-operator.v1.7.0
 labels:
   template: sxv4-cluster-knative-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
@@ -38,7 +38,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-knative"
     annotations: &basic_annotations
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -71,15 +71,15 @@ objects:
           - name: projectOperator.enabled
             value: "true"
           - name: projectOperator.project.requester
-            value: "sxv4-console"
+            value: "sxcm"
           - name: projectKServing.enabled
             value: "true"
           - name: projectKServing.project.requester
-            value: "sxv4-console"
+            value: "sxcm"
           - name: projectKEventing.enabled
             value: "true"
           - name: projectKEventing.project.requester
-            value: "sxv4-console"
+            value: "sxcm"
           - name: operator.enabled
             value: "false"
           - name: kServing.enabled
@@ -113,7 +113,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-knative"
     annotations: 
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -188,7 +188,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-knative"
     annotations:
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io

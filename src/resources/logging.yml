@@ -4,16 +4,16 @@ metadata:
   name: sxv4-cluster-logging-template
   annotations:
     openshift.io/display-name: STARTX cluster Logging (admin)
-    description: Deploy cluster-wide resources to enable logs aggregation support according to sxv4-console definitions
+    description: Deploy cluster-wide resources to enable logs aggregation support according to sxcm definitions
     iconClass: icon-openshift
     tags: startx,cluster,config,admin,logging
     openshift.io/provider-display-name: STARTX
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     sxv4_console_timeout: "40"
   labels:
     template: sxv4-cluster-logging-template
     app.kubernetes.io/name: "sxv4-cluster-logging-template"
-    app.kubernetes.io/managed-by: sxv4-console
+    app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide logs aggregation support is now enabled.
 
@@ -23,7 +23,7 @@ message: |-
   Operator          : clusterlogging.4.3.5
 labels:
   template: sxv4-cluster-logging-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
@@ -39,7 +39,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-logging"
     annotations: &basic_annotations
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -72,7 +72,7 @@ objects:
           - name: project.enabled
             value: "true"
           - name: project.project.requester
-            value: "sxv4-console"
+            value: "sxcm"
           - name: operator.enabled
             value: "false"
           - name: logging.enabled
@@ -110,7 +110,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-logging"
     annotations:
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -187,7 +187,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-logging"
     annotations: 
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -256,7 +256,7 @@ objects:
   #       app.kubernetes.io/component: "cluster-logging"
   #       openshift.io/cluster-monitoring: "true"
   #     annotations:
-  #       openshift.io/generated-by: sxv4-console
+  #       openshift.io/generated-by: sxcm
   #       openshift.io/node-selector: ""
   #   spec: {}
   # - kind: Role
@@ -265,7 +265,7 @@ objects:
   #     name: prometheus-k8s
   #     namespace: "${OPERATOR_NS}"
   #     annotations: &basic_annotations
-  #       openshift.io/generated-by: sxv4-console
+  #       openshift.io/generated-by: sxcm
   #     labels:
   #       <<: *basic_labels
   #       app.kubernetes.io/name: "${SCOPE}-logging-${OPERATOR_NS}-prometheus-role"

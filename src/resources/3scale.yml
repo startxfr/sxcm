@@ -4,25 +4,25 @@ metadata:
   name: sxv4-cluster-3scale-template
   annotations:
     openshift.io/display-name: STARTX cluster 3Scale (admin)
-    description: Deploy cluster-wide resources to enable 3Scale registry support according to sxv4-console definitions
+    description: Deploy cluster-wide resources to enable 3Scale registry support according to sxcm definitions
     iconClass: icon-openshift
     tags: startx,cluster,config,admin,3scale
     openshift.io/provider-display-name: STARTX
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     sxv4_console_timeout: "30"
   labels:
     template: sxv4-cluster-3scale-template
     app.kubernetes.io/name: "sxv4-cluster-3scale-template"
-    app.kubernetes.io/managed-by: sxv4-console
+    app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster enterprise api-management support is now enabled
 
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
-  Operator          : container-security-operator.v1.0.5,red-hat-3scale.v3.3.0
+  Operator          : red-hat-3scale.v0.6.1
 labels:
   template: sxv4-cluster-3scale-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects: 
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
@@ -38,7 +38,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-3scale"
     annotations: &basic_annotations
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -71,7 +71,7 @@ objects:
           - name: project.enabled
             value: "true"
           - name: project.project.requester
-            value: "sxv4-console"
+            value: "sxcm"
           - name: operator.enabled
             value: "false"
           - name: manager.enabled
@@ -115,7 +115,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-3scale"
     annotations: 
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -190,7 +190,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-3scale"
     annotations: 
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io

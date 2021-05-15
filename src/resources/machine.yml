@@ -4,16 +4,16 @@ metadata:
   name: sxv4-cluster-machine-template
   annotations:
     openshift.io/display-name: STARTX Cluster Machine config (admin)
-    description: Configure machine ressource to sxv4-console cluster configuration
+    description: Configure machine ressource to sxcm cluster configuration
     iconClass: icon-openshift
     tags: startx,cluster,config,admin,machine,machineset,iac,cluster
     openshift.io/provider-display-name: STARTX
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     sxv4_console_timeout: "10"
   labels:
     template: sxv4-cluster-machine-template
     app.kubernetes.io/name: "sxv4-cluster-machine-template"
-    app.kubernetes.io/managed-by: sxv4-console
+    app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide machine support is now configured.
 
@@ -22,7 +22,7 @@ message: |-
   Operator          : machine-operator.4.4.0
 labels:
   template: sxv4-cluster-machine-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
@@ -38,7 +38,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-machine"
     annotations: &basic_annotations
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -107,7 +107,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-machine"
     annotations:
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io

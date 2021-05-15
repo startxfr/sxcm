@@ -4,16 +4,16 @@ metadata:
   name: sxv4-cluster-ocs-template
   annotations:
     openshift.io/display-name: STARTX OCS Config (admin)
-    description: Deploy cluster-wide resources to enable OCS support for converged storage according to sxv4-console definitions
+    description: Deploy cluster-wide resources to enable OCS support for converged storage according to sxcm definitions
     iconClass: icon-openshift
     tags: startx,cluster,config,admin,storage,ocs
     openshift.io/provider-display-name: STARTX
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     sxv4_console_timeout: "60"
   labels:
     template: sxv4-cluster-ocs-template
     app.kubernetes.io/name: "sxv4-cluster-ocs-template"
-    app.kubernetes.io/managed-by: sxv4-console
+    app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide private persistent storage backend with OCS is now starting (may take some time to provision and startup).
 
@@ -22,7 +22,7 @@ message: |-
   Operator          : ocs-operator.v4.4.0
 labels:
   template: sxv4-cluster-ocs-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
@@ -38,7 +38,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-ocs"
     annotations: &basic_annotations
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -71,7 +71,7 @@ objects:
           - name: project.enabled
             value: "true"
           - name: project.project.requester
-            value: "sxv4-console"
+            value: "sxcm"
           - name: operator.enabled
             value: "false"
           - name: ocs.enabled
@@ -103,7 +103,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-ocs"
     annotations:
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -172,7 +172,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-ocs"
     annotations:
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io

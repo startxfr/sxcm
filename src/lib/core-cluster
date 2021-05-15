@@ -353,7 +353,7 @@ function doClusterConfigurationCreate {
     if [[ $profile == '' ]]; then
         profile="default"
     fi
-    echo -e "\e[1m\e[32mCreate\e[0m cprocess for cluster \e[1m$cn\e[0m"
+    echo -e "\e[1m\e[32mCreate\e[0m process for cluster \e[1m$cn\e[0m"
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local gitBranch=$cn
     if [[ -r $clusterConfDir/install-config.yaml || -r $clusterConfDir/install-config.yaml.back ]]; then

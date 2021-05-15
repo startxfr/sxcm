@@ -4,16 +4,16 @@ metadata:
   name: sxv4-cluster-sso-template
   annotations:
     openshift.io/display-name: STARTX cluster KeyCloak (admin)
-    description: Deploy cluster-wide resources to enable KeyCloak support according to sxv4-console definitions
+    description: Deploy cluster-wide resources to enable KeyCloak support according to sxcm definitions
     iconClass: icon-openshift
     tags: startx,cluster,config,admin,sso
     openshift.io/provider-display-name: STARTX
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     sxv4_console_timeout: "15"
   labels:
     template: sxv4-cluster-sso-template
     app.kubernetes.io/name: "sxv4-cluster-sso-template"
-    app.kubernetes.io/managed-by: sxv4-console
+    app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster serverless support is now enabled
 
@@ -24,7 +24,7 @@ message: |-
   Services          : sso,freeipa
 labels:
   template: sxv4-cluster-sso-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
@@ -40,7 +40,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-sso"
     annotations: &basic_annotations
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -73,7 +73,7 @@ objects:
           - name: project.enabled
             value: "true"
           - name: project.project.requester
-            value: "sxv4-console"
+            value: "sxcm"
           - name: operator.enabled
             value: "false"
           - name: sso.enabled
@@ -105,7 +105,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-sso"
     annotations:
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -174,7 +174,7 @@ objects:
 #       app.kubernetes.io/version: "${VERSION}"
 #       app.kubernetes.io/component: "cluster-sso"
 #     annotations:
-#       openshift.io/generated-by: sxv4-console
+#       openshift.io/generated-by: sxcm
 #       # argocd.argoproj.io/manifest-generate-paths: .
 #     finalizers:
 #       - resources-finalizer.argocd.argoproj.io
@@ -243,7 +243,7 @@ objects:
 #       annotations: 
 #         openshift.io/description: "Keycloak Control plane"
 #         openshift.io/display-name: "STARTX Infra - KEYCLOAK"
-#         openshift.io/requester: sxv4-console
+#         openshift.io/requester: sxcm
 #   - kind: ResourceQuota
 #     apiVersion: v1
 #     metadata:
@@ -253,7 +253,7 @@ objects:
 #         <<: *basic_labels
 #         app.kubernetes.io/name: "${KEYCLOAK_NS}-quotas"
 #       annotations: &basic_annotations
-#         openshift.io/generated-by: sxv4-console
+#         openshift.io/generated-by: sxcm
 #     spec:
 #       hard:
 #         limits.cpu: "4000m"
@@ -309,7 +309,7 @@ objects:
 #         <<: *basic_labels
 #         app.kubernetes.io/name: "${KEYCLOAK_NS}-limits"
 #       annotations:
-#         openshift.io/generated-by: sxv4-console
+#         openshift.io/generated-by: sxcm
 #     spec:
 #       limits:
 #         - type: "Pod"
@@ -356,7 +356,7 @@ objects:
 #       name: ${KEYCLOAK_NS}
 #       namespace: ${KEYCLOAK_NS}
 #       annotations:
-#         openshift.io/generated-by: sxv4-console
+#         openshift.io/generated-by: sxcm
 #         olm.providedAPIs: Keycloak.v1alpha1.keycloak.org,KeycloakBackup.v1alpha1.keycloak.org,KeycloakClient.v1alpha1.keycloak.org,KeycloakRealm.v1alpha1.keycloak.org,KeycloakUser.v1alpha1.keycloak.org
 #       labels:
 #         <<: *basic_labels
@@ -370,7 +370,7 @@ objects:
 #       name: keycloak-operator
 #       namespace: ${KEYCLOAK_NS}
 #       annotations: &basic_annotations
-#         openshift.io/generated-by: sxv4-console
+#         openshift.io/generated-by: sxcm
 #       labels:
 #         <<: *basic_labels
 #         app.kubernetes.io/name: "${KEYCLOAK_NS}-keycloak-operator-subscription"
