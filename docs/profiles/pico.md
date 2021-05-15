@@ -1,19 +1,19 @@
 # Pico profile
 
-Deploy `pico` profile
+Deploy `pico` profile based on the [sxcm pico profile](https://raw.githubusercontent.com/startxfr/sxcm/main/src/profiles/install-config-pico.yml) that is part of the [sxcm default profiles](../../3-profiles).
 
 ## Description
 
-| Field          | Content                          |
-| -------------- | -------------------------------- |
-| **Name**       | **pico**                             |
-| **Scope**      | shared                           |
-| **cost**       | ***0,15 € / hour***                    |
-| **Datacenter** | _AWS Ohio_                         |
-| **Topology**   | **3** master-worker                  |
+| Field          | Content                                      |
+| -------------- | -------------------------------------------- |
+| **Name**       | **pico**                                     |
+| **Scope**      | shared                                       |
+| **cost**       | ***0,15 € / hour***                          |
+| **Datacenter** | _AWS Ohio_                                   |
+| **Topology**   | **3** master-worker                          |
 | **Master**     | **4**Vcpu,  **8**Go RAM, **40**Go gp2  40iop |
-| **Worker**     |                                  |
-| **service**    | `argocd`                           |
+| **Worker**     |                                              |
+| **service**    | `argocd`                                     |
 
 ## Create a cluster
 
