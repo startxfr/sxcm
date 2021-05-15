@@ -98,7 +98,7 @@ The active cluster state is used every time a cluster name is required but not p
 
 ## What to do next
 
-![sxcm verbs](https://raw.githubusercontent.com/startxfr/sxcm/main/docs/img/verbs.svg)
+![sxcm verbs](https://raw.githubusercontent.com/startxfr/sxcm/main/docs/img/verbs-all.svg)
 
 - You must follow the [system requirements and client install documentation](1-installation.md) to get and install the sxcm cli.
 - After this basic installation, you can [follow the configuration guide](2-configure.md).

@@ -15,7 +15,7 @@ to the `/usr/share/sxcm/profiles` directory.
 | **[milli](../profiles/milli)**     | AWS Paris  | 1,02 €/h | `argocd` `pipeline`                                           |
 | **[centi](../profiles/centi)**     | AWS London | 1,82 €/h | `argocd` `pipeline` `istio` `quaysec`                         |
 | **[deci](../profiles/deci)**       | AWS Mumbai | 0,99 €/h | `argocd` `pipeline` `istio`  `quaysec`                        |
-| **[default].(./profiles/default)** | AWS Paris  | 0,72 €/h | ***deci*** + `machine` `workspaces`                           |
+| **[default](./profiles/default)** | AWS Paris  | 0,72 €/h | ***deci*** + `machine` `workspaces`                           |
 | **[deca](../profiles/deca)**       | AWS London | 0,88 €/h | ***default*** + `couchbase` `sso` `vault` `knative`           |
 | **[hecto](../profiles/hecto)**     | AWS Paris  | 1,33 €/h | ***deca*** + `logging` `acm` `quay` `ocs` `metering` `3scale` |
 | **[kilo](../profiles/kilo)**       | AWS Paris  | 1,87 €/h | ***default*** + `quay`                                        |
