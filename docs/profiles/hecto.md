@@ -1,4 +1,4 @@
-# hecto
+# Hecto profile
 
 Deploy `hecto` profile
 
@@ -6,14 +6,14 @@ Deploy `hecto` profile
 
 | Field          | Content                                                                                                             |
 | -------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **Name**       | hecto                                                                                                               |
+| **Name**       | **hecto**                                                                                                               |
 | **Scope**      | shared                                                                                                              |
-| **cost**       | 1,33 € / hour                                                                                                       |
-| **Datacenter** | AWS Paris                                                                                                           |
-| **Topology**   | 3 master + 6 worker                                                                                                 |
-| **Master**     | 4Vcpu, 16Go RAM, 120Go io1  120iop                                                                                  |
-| **Worker**     | 4Vcpu,  16Go RAM, 200Go io1  200iop                                                                                 |
-| **service**    | argocd,pipeline,istio,quaysec,machine,workspaces,couchbase,sso,vault,Knative,logging,RHACM,quay,OCS,metering,3Scale |
+| **cost**       | ***1,33 € / hour***                                                                                                       |
+| **Datacenter** | _AWS Paris_                                                                                                           |
+| **Topology**   | **3** master + **6** worker                                                                                                 |
+| **Master**     | **4**Vcpu, **16**Go RAM, **120**Go io1  120iop                                                                                  |
+| **Worker**     | **4**Vcpu,  **16**Go RAM, **200**Go io1  200iop                                                                                 |
+| **service**    | `argocd` `pipeline` `istio` `quaysec` `machine` `workspaces` `couchbase` `sso` `vault` `knative` `logging` `acm` `quay` `ocs` `metering` `3scale` |
 
 ## Create a cluster
 

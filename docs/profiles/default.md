@@ -1,4 +1,4 @@
-# default
+# Default profile
 
 Deploy `default` profile
 
@@ -6,14 +6,14 @@ Deploy `default` profile
 
 | Field          | Content                                          |
 | -------------- | ------------------------------------------------ |
-| **Name**       | default                                          |
+| **Name**       | **default**                                          |
 | **Scope**      | shared                                           |
-| **cost**       | 0,72 € / hour                                    |
-| **Datacenter** | AWS Paris                                        |
-| **Topology**   | 3 master + 3 worker                              |
-| **Master**     | 4Vcpu, 16Go RAM, 120Go gp2  120iop               |
-| **Worker**     | 2Vcpu,   8Go RAM, 120Go gp2  120iop              |
-| **service**    | argocd,pipeline,istio,quaysec,machine,workspaces |
+| **cost**       | ***0,72 € / hour***                                    |
+| **Datacenter** | _AWS Paris_                                        |
+| **Topology**   | **3** master + **3** worker                              |
+| **Master**     | **4**Vcpu, **16**Go RAM, **120**Go gp2  120iop               |
+| **Worker**     | **2**Vcpu,   **8**Go RAM, **120**Go gp2  120iop              |
+| **service**    | `argocd` `pipeline` `istio` `quaysec` `machine` `workspaces` |
 
 ## Create a cluster
 

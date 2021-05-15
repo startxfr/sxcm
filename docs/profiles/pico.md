@@ -1,4 +1,4 @@
-# pico
+# Pico profile
 
 Deploy `pico` profile
 
@@ -6,14 +6,14 @@ Deploy `pico` profile
 
 | Field          | Content                          |
 | -------------- | -------------------------------- |
-| **Name**       | pico                             |
+| **Name**       | **pico**                             |
 | **Scope**      | shared                           |
-| **cost**       | 0,15 € / hour                    |
-| **Datacenter** | AWS Ohio                         |
-| **Topology**   | 3 master-worker                  |
-| **Master**     | 4Vcpu,  8Go RAM, 40Go gp2  40iop |
+| **cost**       | ***0,15 € / hour***                    |
+| **Datacenter** | _AWS Ohio_                         |
+| **Topology**   | **3** master-worker                  |
+| **Master**     | **4**Vcpu,  **8**Go RAM, **40**Go gp2  40iop |
 | **Worker**     |                                  |
-| **service**    | argocd                           |
+| **service**    | `argocd`                           |
 
 ## Create a cluster
 

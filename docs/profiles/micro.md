@@ -1,4 +1,4 @@
-# micro
+# Micro profile
 
 Deploy `micro` profile
 
@@ -6,14 +6,14 @@ Deploy `micro` profile
 
 | Field          | Content                          |
 | -------------- | -------------------------------- |
-| **Name**       | micro                            |
+| **Name**       | **micro**                            |
 | **Scope**      | shared                           |
-| **cost**       | 0,77 € / hour                    |
-| **Datacenter** | AWS Oregon                       |
-| **Topology**   | 3 master-worker                  |
-| **Master**     | 8Vcpu, 32Go RAM, 50Go gp2  50iop |
+| **cost**       | ***0,77 € / hour***                    |
+| **Datacenter** | _AWS Oregon_                       |
+| **Topology**   | **3** master-worker                  |
+| **Master**     | **8**Vcpu, **32**Go RAM, **50**Go gp2  50iop |
 | **Worker**     |                                  |
-| **service**    | argocd,pipeline                  |
+| **service**    | `argocd` `pipeline`                  |
 
 ## Create a cluster
 

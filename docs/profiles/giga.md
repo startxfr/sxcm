@@ -1,4 +1,4 @@
-# giga
+# Giga profile
 
 Deploy `giga` profile
 
@@ -6,14 +6,14 @@ Deploy `giga` profile
 
 | Field          | Content                                                                                                             |
 | -------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **Name**       | giga                                                                                                                |
+| **Name**       | **giga**                                                                                                                |
 | **Scope**      | shared                                                                                                              |
-| **cost**       | 2,67 € / hour                                                                                                       |
-| **Datacenter** | AWS London                                                                                                          |
-| **Topology**   | 3 master + 3 worker                                                                                                 |
-| **Master**     | 8Vcpu, 16Go RAM, 200Go gp2  200iop                                                                                  |
-| **Worker**     | 8Vcpu,  64Go RAM, 200Go gp2  200iop                                                                                 |
-| **service**    | argocd,pipeline,istio,quaysec,machine,workspaces,couchbase,sso,vault,Knative,logging,RHACM,quay,OCS,metering,3Scale |
+| **cost**       | ***2,67 € / hour***                                                                                                       |
+| **Datacenter** | _AWS London_                                                                                                          |
+| **Topology**   | **3** master + **3** worker                                                                                                 |
+| **Master**     | **8**Vcpu, **16**Go RAM, **200**Go gp2  200iop                                                                                  |
+| **Worker**     | **8**Vcpu,  **64**Go RAM, **200**Go gp2  200iop                                                                                 |
+| **service**    | `argocd` `pipeline` `istio` `quaysec` `machine` `workspaces` `couchbase` `sso` `vault` `knative` `logging` `acm` `quay` `ocs` `metering` `3scale` |
 
 ## Create a cluster
 

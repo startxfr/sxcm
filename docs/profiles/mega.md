@@ -1,4 +1,4 @@
-# mega
+# Mega profile
 
 Deploy `mega` profile
 
@@ -6,14 +6,14 @@ Deploy `mega` profile
 
 | Field          | Content                                                                                         |
 | -------------- | ----------------------------------------------------------------------------------------------- |
-| **Name**       | mega                                                                                            |
+| **Name**       | **mega**                                                                                            |
 | **Scope**      | shared                                                                                          |
-| **cost**       | 2,34 € / hour                                                                                   |
-| **Datacenter** | AWS Paris                                                                                       |
-| **Topology**   | 3 master + 6 worker                                                                             |
-| **Master**     | 4Vcpu, 16Go RAM, 120Go io1  120iop                                                              |
-| **Worker**     | 8Vcpu,  32Go RAM, 200Go io1  200iop                                                             |
-| **service**    | argocd,pipeline,istio,quaysec,machine,workspaces,couchbase,sso,vault,Knative,logging,RHACM,quay |
+| **cost**       | ***2,34 € / hour***                                                                                   |
+| **Datacenter** | _AWS Paris_                                                                                       |
+| **Topology**   | **3** master + **6** worker                                                                             |
+| **Master**     | **4**Vcpu, **16**Go RAM, **120**Go io1  120iop                                                              |
+| **Worker**     | **8**Vcpu,  **32**Go RAM, **200**Go io1  200iop                                                             |
+| **service**    | `argocd` `pipeline` `istio` `quaysec` `machine` `workspaces` `couchbase` `sso` `vault` `knative` `logging` `acm` `quay` |
 
 ## Create a cluster
 

@@ -1,4 +1,4 @@
-# deci
+# Deci profile
 
 Deploy `deci` profile
 
@@ -6,14 +6,14 @@ Deploy `deci` profile
 
 | Field          | Content                             |
 | -------------- | ----------------------------------- |
-| **Name**       | deci                                |
+| **Name**       | **deci**                                |
 | **Scope**      | shared                              |
-| **cost**       | 0,99 € / hour                       |
-| **Datacenter** | AWS Mumbai                          |
-| **Topology**   | 3 master-worker                     |
-| **Master**     | 16Vcpu, 64Go RAM, 100Go io1  100iop |
+| **cost**       | ***0,99 € / hour***                       |
+| **Datacenter** | _AWS Mumbai_                          |
+| **Topology**   | **3** master-worker                     |
+| **Master**     | **16**Vcpu, **64**Go RAM, **100**Go io1  100iop |
 | **Worker**     |                                     |
-| **service**    | argocd,pipeline,istio,quaysec       |
+| **service**    | `argocd` `pipeline` `istio` `quaysec`       |
 
 ## Create a cluster
 

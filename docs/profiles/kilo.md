@@ -1,4 +1,4 @@
-# kilo
+# Kilo profile
 
 Deploy `kilo` profile
 
@@ -6,14 +6,14 @@ Deploy `kilo` profile
 
 | Field          | Content                                                                           |
 | -------------- | --------------------------------------------------------------------------------- |
-| **Name**       | kilo                                                                              |
+| **Name**       | **kilo**                                                                              |
 | **Scope**      | shared                                                                            |
-| **cost**       | 1,87 € / hour                                                                     |
-| **Datacenter** | AWS Paris                                                                         |
-| **Topology**   | 3 master + 3 worker                                                               |
-| **Master**     | 4Vcpu, 16Go RAM, 120Go gp2  120iop                                                |
-| **Worker**     | 8Vcpu,  32Go RAM, 120Go gp2  120iop                                               |
-| **service**    | argocd,pipeline,istio,quaysec,machine,workspaces,couchbase,sso,vault,Knative,quay |
+| **cost**       | ***1,87 € / hour***                                                                     |
+| **Datacenter** | _AWS Paris_                                                                         |
+| **Topology**   | **3** master + **3** worker                                                               |
+| **Master**     | **4**Vcpu, **16**Go RAM, **120**Go gp2  120iop                                                |
+| **Worker**     | **8**Vcpu,  **32**Go RAM, **120**Go gp2  120iop                                               |
+| **service**    | `argocd` `pipeline` `istio` `quaysec` `machine` `workspaces` `couchbase` `sso` `vault` `knative` `quay` |
 
 ## Create a cluster
 

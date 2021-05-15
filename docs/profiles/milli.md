@@ -1,4 +1,4 @@
-# milli
+# Milli profile
 
 Deploy `milli` profile
 
@@ -6,14 +6,14 @@ Deploy `milli` profile
 
 | Field          | Content                          |
 | -------------- | -------------------------------- |
-| **Name**       | milli                            |
+| **Name**       | **milli**                            |
 | **Scope**      | shared                           |
-| **cost**       | 1,02 € / hour                    |
-| **Datacenter** | AWS Paris                        |
-| **Topology**   | 3 master-worker                  |
-| **Master**     | 8Vcpu, 32Go RAM, 50Go io1  50iop |
+| **cost**       | ***1,02 € / hour***                    |
+| **Datacenter** | _AWS Paris_                        |
+| **Topology**   | **3** master-worker                  |
+| **Master**     | **8**Vcpu, **32**Go RAM, **50**Go io1  50iop |
 | **Worker**     |                                  |
-| **service**    | argocd,pipeline                  |
+| **service**    | `argocd` `pipeline`                  |
 
 ## Create a cluster
 

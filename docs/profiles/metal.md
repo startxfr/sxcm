@@ -1,4 +1,4 @@
-# metal
+# Metal profile
 
 Deploy `metal` profile
 
@@ -6,14 +6,14 @@ Deploy `metal` profile
 
 | Field          | Content                                                                                                                      |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| **Name**       | metal                                                                                                                        |
+| **Name**       | **metal**                                                                                                                        |
 | **Scope**      | shared                                                                                                                       |
-| **cost**       | 13,1 € / hour                                                                                                                |
-| **Datacenter** | AWS Paris                                                                                                                    |
-| **Topology**   | 3 master + 3 worker                                                                                                          |
-| **Master**     | 8Vcpu, 16Go RAM, 500Go io1 2000iop                                                                                           |
-| **Worker**     | 96Vcpu, 192Go RAM, 500Go io1 4000iop                                                                                         |
-| **service**    | argocd,pipeline,istio,quaysec,machine,workspaces,couchbase,sso,vault,Knative,logging,RHACM,quay,OCS,metering,3Scale,Kubevirt |
+| **cost**       | ***13,1 € / hour***                                                                                                                |
+| **Datacenter** | _AWS Paris_                                                                                                                    |
+| **Topology**   | **3** master + **3** worker                                                                                                          |
+| **Master**     | **8**Vcpu, **16**Go RAM, **500**Go io1 2000iop                                                                                           |
+| **Worker**     | **96**Vcpu, **192**Go RAM, **500**Go io1 4000iop                                                                                         |
+| **service**    | `argocd` `pipeline` `istio` `quaysec` `machine` `workspaces` `couchbase` `sso` `vault` `knative` `logging` `acm` `quay` `ocs` `metering` `3scale` `kubevirt` |
 
 ## Create a cluster
 

@@ -1,4 +1,4 @@
-# centi
+# Centi profile
 
 Deploy `centi` profile
 
@@ -6,14 +6,14 @@ Deploy `centi` profile
 
 | Field          | Content                           |
 | -------------- | --------------------------------- |
-| **Name**       | centi                             |
+| **Name**       | **centi**                             |
 | **Scope**      | shared                            |
-| **cost**       | 1,82 € / hour                     |
-| **Datacenter** | AWS London                        |
-| **Topology**   | 3 master-worker                   |
-| **Master**     | 16Vcpu, 64Go RAM, 75Go gp2  75iop |
+| **cost**       | ***1,82 € / hour***                     |
+| **Datacenter** | _AWS London_                        |
+| **Topology**   | **3** master-worker                   |
+| **Master**     | **16**Vcpu, **64**Go RAM, **75**Go gp2  75iop |
 | **Worker**     |                                   |
-| **service**    | argocd,pipeline,istio,quaysec     |
+| **service**    | `argocd` `pipeline` `istio` `quaysec`     |
 
 ## Create a cluster
 

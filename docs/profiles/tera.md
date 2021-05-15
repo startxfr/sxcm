@@ -1,4 +1,4 @@
-# tera
+# Tera profile
 
 Deploy `tera` profile
 
@@ -6,14 +6,14 @@ Deploy `tera` profile
 
 | Field          | Content                                                                                                             |
 | -------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **Name**       | tera                                                                                                                |
+| **Name**       | **tera**                                                                                                                |
 | **Scope**      | shared                                                                                                              |
-| **cost**       | 3,54 € / hour                                                                                                       |
-| **Datacenter** | AWS Ohio                                                                                                            |
-| **Topology**   | 3 master = 6 worker                                                                                                 |
-| **Master**     | 8Vcpu, 16Go RAM, 200Go io1  1000iop                                                                                 |
-| **Worker**     | 8Vcpu,  64Go RAM, 200Go io1  1000iop                                                                                |
-| **service**    | argocd,pipeline,istio,quaysec,machine,workspaces,couchbase,sso,vault,Knative,logging,RHACM,quay,OCS,metering,3Scale |
+| **cost**       | ***3,54 € / hour***                                                                                                       |
+| **Datacenter** | _AWS Ohio_                                                                                                            |
+| **Topology**   | **3** master + **6** worker                                                                                                 |
+| **Master**     | **8**Vcpu, **16**Go RAM, **200**Go io1  1000iop                                                                                 |
+| **Worker**     | **8**Vcpu,  **64**Go RAM, **200**Go io1  1000iop                                                                                |
+| **service**    | `argocd` `pipeline` `istio` `quaysec` `machine` `workspaces` `couchbase` `sso` `vault` `knative` `logging` `acm` `quay` `ocs` `metering` `3scale` |
 
 ## Create a cluster
 

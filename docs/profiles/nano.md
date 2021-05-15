@@ -1,4 +1,4 @@
-# nano
+# Nano profile
 
 Deploy `nano` profile
 
@@ -6,14 +6,14 @@ Deploy `nano` profile
 
 | Field          | Content                          |
 | -------------- | -------------------------------- |
-| **Name**       | nano                             |
+| **Name**       | **nano**                             |
 | **Scope**      | shared                           |
-| **cost**       | 0,29 € / hour                    |
-| **Datacenter** | AWS Dublin                       |
-| **Topology**   | 3 master-worker                  |
-| **Master**     | 8Vcpu, 16Go RAM, 50Go gp2  50iop |
+| **cost**       | ***0,29 € / hour***                    |
+| **Datacenter** | _AWS Dublin_                       |
+| **Topology**   | **3** master-worker                  |
+| **Master**     | **8**Vcpu, **16**Go RAM, **50**Go gp2  50iop |
 | **Worker**     |                                  |
-| **service**    | argocd                           |
+| **service**    | `argocd`                           |
 
 ## Create a cluster
 
