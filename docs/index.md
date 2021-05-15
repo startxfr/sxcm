@@ -6,11 +6,17 @@ STARTX Openshift installer for various infrastructure configuration deployed und
 
 ## Purpose
 
-TO DO
+The main goal of this tool is to help you build gickly and efficiently a cloud infrastructure that ca drive your containerized workloads. 
+If you have a good knowledge in Openshift structucture and how helm chart are managed by ArgoCD infrastructure, you should easilly perform
+the addaptations required to addapt this toold to your needs.
 
 ## Principles
 
-TO DO
+- `sxcm` exist to perform days one and day two operation, no more. Cluster lifecycle and operationnal task are out of it scope
+- `sxcm` is only build and supported for AWS infrstructure backend. Even if experienced user can build it install-openshift,yaml file on top of another infrstructure provider (kvm, openstack, azure, gcp, vmware), only AWS backend are supported at this time.
+- `sxcm` use extensivly the [startx helm-repository](https://helm-repository.readthedocs.io) resources. Read more in theses resources and how 
+  argoCD use it to know how to addapt this tools.
+- All `sxcm` components (with exception of the argocd-xxx cluster resources), are managed using argoCD `Application` resource deployed under the `startx-argocd` namespace. You can follow the sxcm configuration applyed by running `oc get application -n startx-argocd`
 
 ## Architecture
 
@@ -20,11 +26,23 @@ TO DO
 
 ### Profile
 
-TO DO
+A **profile** is a cluster configuration with the following characteristics :
+
+- A datacenter (e.g. _eu-west-3_)
+- A master and worker compute number of replicas (e.g. _3_)
+- A master and worker compute profile (e.g. _t3a.large_)
+- A master and worker storage profile (e.g. _50Go gp2_)
+- A series of AWS labels to apply to nodes (e.g. _profile, environment, projectOwner, ..._)
+- _pullSecret, sshKey and clustername_ will be dymamycally pushed by `sxcm` command
+- A list of cluser resource to apply to the instanciated cluster
 
 ### Cluster
 
-TO DO
+A **cluster** or **cluster instance** is a named cluster based on a profile (created with the `sxcm create`) and ready to be (or already),
+deployed using the `sxcm deploy` command.
+When creating a cluster, a dedicated branch is created under the gitops repository to store the cluster state. All files describing the targeted cluster are recorded and change tracked.
+When you deploy the cluster, state change are reflected into the files, and all this content will be versionned and pushed into your remote gitops repository.
+If you enable or disable cluster resource on your cluster, change are reflected under your configurations files and will be stored into your gitops respository.
 
 ### Infrastructure
 

@@ -3,31 +3,31 @@
 A cluster resource is a group of **service** (mostly operator-based) or **configuration** to apply to deployed clusters. With exception of the argocd-x cluster resource, all other cluster resources are based on **openshift template** deploying **argocd application** or
 **bash script** executing `oc` or `kubectl` commands.
 
-| Profile                                           | Kind    | Purpose                                                |
-| ------------------------------------------------- | ------- | ------------------------------------------------------ |
-| **[argocd-project](../resources/argocd-project)** | Core    | Continious delivery project and operator               |
-| **[argocd-deploy](../resources/argocd-deploy)**   | Core    | Continious delivery instance                           |
-| **[3scale](../resources/3scale)**                 | Service | API management support                                 |
-| **[acm](../resources/acm)**                       | Service | multi-cluster management support                       |
-| **[auth](../resources/auth)**                     | Config  | Configure user and group authentification              |
-| **[console](../resources/console)**               | Config  | Configure interface tunning                            |
-| **[infra](../resources/infra)**                   | Config  | Various cluster-internal configurations                |
-| **[machine](../resources/machine)**               | Config  | Various cluster-external configurations                |
-| **[rbac](../resources/rbac)**                     | Config  | RBAC configuration related to the auth group and users |
-| **[storage](../resources/storage)**               | Config  | Default dynamic-provisionned storage                   |
-| **[couchbase](../resources/couchbase)**           | Service | Manage NoSQL database support                          |
-| **[istio](../resources/istio)**                   | Service | Manage service-mesh support                            |
-| **[knative](../resources/knative)**               | Service | Manage serverless support                              |
-| **[kubevirt](../resources/kubevirt)**             | Service | Manage virtualisation support                          |
-| **[logging](../resources/logging)**               | Service | Manage aggregating logging stack                       |
-| **[metering](../resources/metering)**             | Service | Manage chargeback reports                              |
-| **[ocs](../resources/ocs)**                       | Service | Manage converged storage service                       |
-| **[pipeline](../resources/pipeline)**             | Service | Manage pipeline support                                |
-| **[quay](../resources/quay)**                     | Service | Manage Quay enterprise registry service                |
-| **[quaysec](../resources/quaysec)**               | Service | Scan on the running images in your cluster             |
-| **[sso](../resources/sso)**                       | Service | Manage SSO backend                                     |
-| **[vault](../resources/vault)**                   | Service | Manage Hashicorp Vault backend                         |
-| **[workspaces](../resources/workspaces)**         | Service | Manage Eclipse Che IDE Environment                     |
+| Profile                                           | Kind        | Purpose                                                |
+| ------------------------------------------------- | ----------- | ------------------------------------------------------ |
+| **[argocd-project](../resources/argocd-project)** | **Core**    | Continious delivery project and operator               |
+| **[argocd-deploy](../resources/argocd-deploy)**   | **Core**    | Continious delivery instance                           |
+| **[auth](../resources/auth)**                     | **Config**  | Configure user and group authentification              |
+| **[console](../resources/console)**               | **Config**  | Configure interface tunning                            |
+| **[infra](../resources/infra)**                   | **Config**  | Various cluster-internal configurations                |
+| **[machine](../resources/machine)**               | **Config**  | Various cluster-external configurations                |
+| **[rbac](../resources/rbac)**                     | **Config**  | RBAC configuration related to the auth group and users |
+| **[storage](../resources/storage)**               | **Config**  | Default dynamic-provisionned storage                   |
+| **[3scale](../resources/3scale)**                 | **Service** | API management support                                 |
+| **[acm](../resources/acm)**                       | **Service** | multi-cluster management support                       |
+| **[couchbase](../resources/couchbase)**           | **Service** | Manage NoSQL database support                          |
+| **[istio](../resources/istio)**                   | **Service** | Manage service-mesh support                            |
+| **[knative](../resources/knative)**               | **Service** | Manage serverless support                              |
+| **[kubevirt](../resources/kubevirt)**             | **Service** | Manage virtualisation support                          |
+| **[logging](../resources/logging)**               | **Service** | Manage aggregating logging stack                       |
+| **[metering](../resources/metering)**             | **Service** | Manage chargeback reports                              |
+| **[ocs](../resources/ocs)**                       | **Service** | Manage converged storage service                       |
+| **[pipeline](../resources/pipeline)**             | **Service** | Manage pipeline support                                |
+| **[quay](../resources/quay)**                     | **Service** | Manage Quay enterprise registry service                |
+| **[quaysec](../resources/quaysec)**               | **Service** | Scan on the running images in your cluster             |
+| **[sso](../resources/sso)**                       | **Service** | Manage SSO backend                                     |
+| **[vault](../resources/vault)**                   | **Service** | Manage Hashicorp Vault backend                         |
+| **[workspaces](../resources/workspaces)**         | **Service** | Manage Eclipse Che IDE Environment                     |
 
 ## Read commands
 

@@ -95,7 +95,7 @@ alter the cluster state and create a new cluser instance ready to be deployed.
 
 ```bash
 # Create the mycluster cluster based on the current active cluster
-sxcm clone mycluster
+sxcm clone myclusternew
 # Create the myclusternew cluster based on the mycluster cluster
 sxcm clone myclusternew mycluster
 ```
