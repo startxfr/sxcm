@@ -3,24 +3,24 @@
 A cluster profile is a cluster definition containing infrastructure description as well as cluster resource to be deployed.
 
 Profile are readonly components defined as shared resources. If you want to add a new profile, you should add it
-to the `/usr/share/sxcm/profiles` directory
+to the `/usr/share/sxcm/profiles` directory.
 
-| Profile                           | Region     | cost     | Cluster                                                       |
-| --------------------------------- | ---------- | -------- | ------------------------------------------------------------- |
-| **[pico](./profiles/pico)**       | AWS Ohio   | 0,15 €/h | `argocd`                                                      |
-| **[nano](./profiles/nano)**       | AWS Dublin | 0,29 €/h | `argocd`                                                      |
-| **[micro](./profiles/micro)**     | AWS Oregon | 0,77 €/h | `argocd` `pipeline`                                           |
-| **[milli](./profiles/milli)**     | AWS Paris  | 1,02 €/h | `argocd` `pipeline`                                           |
-| **[centi](./profiles/centi)**     | AWS London | 1,82 €/h | `argocd` `pipeline` `istio` `quaysec`                         |
-| **[deci](./profiles/deci)**       | AWS Mumbai | 0,99 €/h | `argocd` `pipeline` `istio`  `quaysec`                        |
-| **[default](./profiles/default)** | AWS Paris  | 0,72 €/h | ***deci*** + `machine` `workspaces`                           |
-| **[deca](./profiles/deca)**       | AWS London | 0,88 €/h | ***default*** + `couchbase` `sso` `vault` `knative`           |
-| **[hecto](./profiles/hecto)**     | AWS Paris  | 1,33 €/h | ***deca*** + `logging` `acm` `quay` `ocs` `metering` `3scale` |
-| **[kilo](./profiles/kilo)**       | AWS Paris  | 1,87 €/h | ***default*** + `quay`                                        |
-| **[mega](./profiles/mega)**       | AWS Paris  | 2,34 €/h | ***default*** + `logging` `acm` `quay`                        |
-| **[giga](./profiles/giga)**       | AWS London | 2,67 €/h | ***deca*** + `logging` `acm` `quay` `ocs` `metering` `3scale` |
-| **[metal](./profiles/metal)**     | AWS Paris  | 13,1 €/h | ***giga*** +  `kubevirt`                                      |
-| **[metal2](./profiles/metal2)**   | AWS Mumbai | 10,3 €/h | ***giga*** +  `kubevirt`                                      |
+| Profile                            | Region     | cost     | Cluster                                                       |
+| ---------------------------------- | ---------- | -------- | ------------------------------------------------------------- |
+| **[pico](../profiles/pico)**       | AWS Ohio   | 0,15 €/h | `argocd`                                                      |
+| **[nano](./profiles/nano)**        | AWS Dublin | 0,29 €/h | `argocd`                                                      |
+| **[micro](../profiles/micro)**     | AWS Oregon | 0,77 €/h | `argocd` `pipeline`                                           |
+| **[milli](../profiles/milli)**     | AWS Paris  | 1,02 €/h | `argocd` `pipeline`                                           |
+| **[centi](../profiles/centi)**     | AWS London | 1,82 €/h | `argocd` `pipeline` `istio` `quaysec`                         |
+| **[deci](../profiles/deci)**       | AWS Mumbai | 0,99 €/h | `argocd` `pipeline` `istio`  `quaysec`                        |
+| **[default].(./profiles/default)** | AWS Paris  | 0,72 €/h | ***deci*** + `machine` `workspaces`                           |
+| **[deca](../profiles/deca)**       | AWS London | 0,88 €/h | ***default*** + `couchbase` `sso` `vault` `knative`           |
+| **[hecto](../profiles/hecto)**     | AWS Paris  | 1,33 €/h | ***deca*** + `logging` `acm` `quay` `ocs` `metering` `3scale` |
+| **[kilo](../profiles/kilo)**       | AWS Paris  | 1,87 €/h | ***default*** + `quay`                                        |
+| **[mega](../profiles/mega)**       | AWS Paris  | 2,34 €/h | ***default*** + `logging` `acm` `quay`                        |
+| **[giga](../profiles/giga)**       | AWS London | 2,67 €/h | ***deca*** + `logging` `acm` `quay` `ocs` `metering` `3scale` |
+| **[metal](../profiles/metal)**     | AWS Paris  | 13,1 €/h | ***giga*** +  `kubevirt`                                      |
+| **[metal2](../profiles/metal2)**   | AWS Mumbai | 10,3 €/h | ***giga*** +  `kubevirt`                                      |
 
 ## List
 
