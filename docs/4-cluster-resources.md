@@ -5,6 +5,8 @@
 A cluster resource is a group of **service** (mostly operator-based) or **configuration** to apply to deployed clusters. With exception of the argocd-x cluster resource, all other cluster resources are based on **openshift template** deploying **argocd application** or
 **bash script** executing `oc` or `kubectl` commands.
 
+**cluster resource** could be **shared**, meaning stored into the `/usr/share/sxcm/resources` directory, or **local** meaning stored into the `~/.sxcm/resources` directory. all the following resource are **shared** resource and could be cloned to be adapted.
+
 | Profile                                           | Kind        | Purpose                                                |
 | ------------------------------------------------- | ----------- | ------------------------------------------------------ |
 | **[argocd-project](../resources/argocd-project)** | **Core**    | Continious delivery project and operator               |

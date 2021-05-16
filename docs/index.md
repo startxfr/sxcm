@@ -71,6 +71,8 @@ A **cluster ressource** is a kuberetes list of ressource used to configure the c
 
 These argoCD applications applyed various cluster configuration or deploy new cluster resources (mostly with operators). The sxcm cluster resource use extensively the [startx helm-repository](https://helm-repository.readthedocs.io) wrapped using various argoCD application acting as an intermediate between the cluster state and this helm chart.
 
+**cluster resource** could be **shared**, meaning stored into the `/usr/share/sxcm/resources` directory, or **local** meaning stored into the `~/.sxcm/resources` directory.
+
 More information about **cluster resource** can be found by eading the [cluster resource manual](../../4-cluster-resources) witch provide so good example on how to use cluster resources.
 
 ### Gitops repository
