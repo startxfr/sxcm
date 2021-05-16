@@ -768,7 +768,7 @@ function doClusterConfigurationDelete {
             echo -e "You must destroy it first with \e[90;4msxcm destroy $cn\e[0m" ;
         else
             rm -rf $clusterConfDir
-            echo -e "\e[1m\e[31Delete\e[0m the cluster \e[1m$cn\e[0m"
+            echo -e "\e[1m\e[31mDelete\e[0m the cluster \e[1m$cn\e[0m"
             if [[ $cn == `getActiveCluster` ]]; then
                 local LIST=$(listClusterConfigs)
                 local COUNT=$(echo $LIST | wc -w)
