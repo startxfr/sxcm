@@ -13,7 +13,7 @@ Deploy `deca` profile based on the [sxcm deca profile](https://raw.githubusercon
 | **Topology**   | **3** master + **3** worker                                                                      |
 | **Master**     | **4**Vcpu, **16**Go RAM, **120**Go gp2  120iop                                                   |
 | **Worker**     | **4**Vcpu, **16**Go RAM, **120**Go gp2  120iop                                                   |
-| **service**    | `argocd` `pipeline` `istio` `quaysec` `machine` `workspaces` `couchbase` `sso` `vault` `knative` |
+| **service**    | `argocd`  <br/> `pipeline`  <br/> `istio`  <br/> `quaysec`  <br/> `machine`  <br/> `workspaces`  <br/> `couchbase`  <br/> `sso`  <br/> `vault`  <br/> `knative` |
 
 ## Create a cluster
 

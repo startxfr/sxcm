@@ -13,7 +13,7 @@ Deploy `default` profile based on the [sxcm default profile](https://raw.githubu
 | **Topology**   | **3** master + **3** worker                                  |
 | **Master**     | **4**Vcpu, **16**Go RAM, **120**Go gp2  120iop               |
 | **Worker**     | **2**Vcpu,   **8**Go RAM, **120**Go gp2  120iop              |
-| **service**    | `argocd` `pipeline` `istio` `quaysec` `machine` `workspaces` |
+| **service**    | `argocd`  <br/> `pipeline`  <br/> `istio`  <br/> `quaysec`  <br/> `machine`  <br/> `workspaces` |
 
 ## Create a cluster
 

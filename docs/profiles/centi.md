@@ -13,7 +13,7 @@ Deploy `centi` profile based on the [sxcm centi profile](https://raw.githubuserc
 | **Topology**   | **3** master-worker                           |
 | **Master**     | **16**Vcpu, **64**Go RAM, **75**Go gp2  75iop |
 | **Worker**     |                                               |
-| **service**    | `argocd` `pipeline` `istio` `quaysec`         |
+| **service**    | `argocd`  <br/> `pipeline`  <br/> `istio`  <br/> `quaysec`         |
 
 ## Create a cluster
 

@@ -13,7 +13,7 @@ Deploy `giga` profile based on the [sxcm giga profile](https://raw.githubusercon
 | **Topology**   | **3** master + **3** worker                                                                                                                       |
 | **Master**     | **8**Vcpu, **16**Go RAM, **200**Go gp2  200iop                                                                                                    |
 | **Worker**     | **8**Vcpu,  **64**Go RAM, **200**Go gp2  200iop                                                                                                   |
-| **service**    | `argocd` `pipeline` `istio` `quaysec` `machine` `workspaces` `couchbase` `sso` `vault` `knative` `logging` `acm` `quay` `ocs` `metering` `3scale` |
+| **service**    | `argocd`  <br/> `pipeline`  <br/> `istio`  <br/> `quaysec`  <br/> `machine`  <br/> `workspaces`  <br/> `couchbase`  <br/> `sso`  <br/> `vault`  <br/> `knative`  <br/> `logging`  <br/> `acm`  <br/> `quay`  <br/> `ocs`  <br/> `metering`  <br/> `3scale` |
 
 ## Create a cluster
 

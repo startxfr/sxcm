@@ -13,7 +13,7 @@ Deploy `hecto` profile based on the [sxcm hecto profile](https://raw.githubuserc
 | **Topology**   | **3** master + **6** worker                                                                                                                       |
 | **Master**     | **4**Vcpu, **16**Go RAM, **120**Go io1  120iop                                                                                                    |
 | **Worker**     | **4**Vcpu,  **16**Go RAM, **200**Go io1  200iop                                                                                                   |
-| **service**    | `argocd` `pipeline` `istio` `quaysec` `machine` `workspaces` `couchbase` `sso` `vault` `knative` `logging` `acm` `quay` `ocs` `metering` `3scale` |
+| **service**    | `argocd`  <br/> `pipeline`  <br/> `istio`  <br/> `quaysec`  <br/> `machine`  <br/> `workspaces`  <br/> `couchbase`  <br/> `sso`  <br/> `vault`  <br/> `knative`  <br/> `logging`  <br/> `acm`  <br/> `quay`  <br/> `ocs`  <br/> `metering`  <br/> `3scale` |
 
 ## Create a cluster
 
