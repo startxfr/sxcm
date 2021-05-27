@@ -177,9 +177,12 @@ objects:
       annotations: 
         openshift.io/generated-by: sxcm
     subjects:
-      - kind: User
-        apiGroup: rbac.authorization.k8s.io
-        name: system:serviceaccount:${ARGOCD_NS}:argocd-application-controller
+      - kind: ServiceAccount
+        name: ${ARGOCD_NS}-server
+        namespace: ${ARGOCD_NS}
+      - kind: ServiceAccount
+        name: ${ARGOCD_NS}-application-controller
+        namespace: ${ARGOCD_NS}
     roleRef:
       apiGroup: rbac.authorization.k8s.io
       kind: ClusterRole
