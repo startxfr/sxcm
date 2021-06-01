@@ -606,7 +606,6 @@ function doClusterConfigurationInfo {
     fi
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ -r $clusterConfDir/$SXCM_USER_CONF_FILE ]]; then
-        echo -e "\e[1m\e[34mInformation\e[0m on cluster \e[1m$cn\e[0m found in $clusterConfDir/$SXCM_USER_CONF_FILE"
         . $clusterConfDir/$SXCM_USER_CONF_FILE;
         local sourceConfFile=$SXCM_PROFILES_PATH/install-config-$PROFILE.yml
         local desc=$(extractOCPInstallDescription $sourceConfFile desc)
@@ -631,6 +630,7 @@ function doClusterConfigurationInfo {
         else
             STATE="\e[34mdefined\e[0m"
         fi
+        echo -e "\e[1m\e[34mInformation\e[0m on cluster \e[1m$cn\e[0m found in $clusterConfDir/$SXCM_USER_CONF_FILE"
         printf "\e[1m%-10s\e[0m %s\n" name $cn
         printf "\e[1m%-10s\e[0m %s\n" profile $PROFILE
         printf "\e[1m%-10s\e[0m %s$STATE\n" state ""
@@ -672,7 +672,7 @@ function doClusterConfigurationEdit {
         echo -e "or get a list of available cluster configuration with \e[90;4msxcm list\e[0m" ;
         exit 1;
     fi
-    echo -e "\e[1m\e[33Edit\e[0m the cluster \e[1m$cn\e[0m profile in $clusterConfDir"
+    echo -e "\e[1m\e[33mEdit\e[0m the cluster \e[1m$cn\e[0m profile in $clusterConfDir"
     if [[ ! -w $clusterConfDir/install-config.yaml ]]; then
         echo -e "Cluster configuration named \e[1m$cn\e[0m in $clusterConfDir/install-config.yaml doesn't exist or is not writable"
         echo -e "You can create one using \e[90;4msxcm create $cn\e[0m" ;
@@ -693,6 +693,7 @@ function doClusterConfigurationEdit {
             git commit -m "[$cn] Update the $cn cluster definition" &> /dev/null
             git push origin $cn &> /dev/null
             cd - &> /dev/null
+            echo -e "Cluster configuration \e[1m$cn\e[0m \e[36mrecorded\e[0m into gitops repository"
         else
             echo -e "Cluster configuration named \e[1m$cn\e[0m in $clusterConfDir/install-config.yaml doesn't exist"
             echo -e "You can create one using \e[90;4msxcm create $cn\e[0m" ;
@@ -724,7 +725,7 @@ function doClusterConfigurationUpdate {
         echo -e "or get a list of available cluster configuration with \e[90;4msxcm list\e[0m" ;
         exit 1;
     fi
-    echo -e "\e[1m\e[33Update\e[0m the cluster \e[1m$cn\e[0m profile in $clusterConfDir"
+    echo -e "\e[1m\e[33mUpdate\e[0m the cluster \e[1m$cn\e[0m profile in $clusterConfDir"
     if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]]; then
         updateClusterResources $cn
         echo -e "Cluster configuration \e[1m$cn\e[0m \e[36mupdated\e[0m "
@@ -1191,7 +1192,9 @@ function menuClusterList {
 
 # sub-menu for current command
 function menuClusterCurrent {
-    if [[ -z "$1" || "$1" == "" ]]; then
+    if [[ "$1" == "--name" || "$2" == "--name" ]]; then
+        getActiveCluster
+    elif [[ -z "$1" || "$1" == "" ]]; then
         doClusterDisplayActive
     else
         doClusterChangeActive $1
