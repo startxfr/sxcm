@@ -125,6 +125,7 @@ objects:
             ephemeral-storage: 10Mi
             memory: 128Mi
       dex:
+        # !!!!!! Must change argocd-utils to argocd-dex in deployment of the dex-server
         openShiftOAuth: true
         resources:
           limits:

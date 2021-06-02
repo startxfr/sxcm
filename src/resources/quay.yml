@@ -89,7 +89,7 @@ objects:
     syncPolicy:
       automated:
         prune: true
-        selfHeal: true
+        selfHeal: false
       syncOptions:
         - CreateNamespace=false
         - Validate=true
@@ -158,7 +158,7 @@ objects:
     syncPolicy:
       automated:
         prune: true
-        selfHeal: true
+        selfHeal: false
       syncOptions:
         - CreateNamespace=false
         - Validate=true
@@ -231,7 +231,7 @@ objects:
     syncPolicy:
       automated:
         prune: true
-        selfHeal: true
+        selfHeal: false
       syncOptions:
         - CreateNamespace=false
         - Validate=true
