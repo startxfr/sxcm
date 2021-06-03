@@ -866,7 +866,7 @@ function doClusterConfigurationHistory {
         echo -e "\e[1m\e[34mGitops history\e[0m on cluster \e[1m$cn\e[0m (30 last logs)"
         cd $clusterConfDir &> /dev/null
         git log --pretty='format:%ci %s' | head -n $limit
-        cd -
+        cd - &> /dev/null
         exit 0;
     else
         echo -e "Cluster configuration named \e[1m$cn\e[0m in $clusterConfDir doesn't exist"
