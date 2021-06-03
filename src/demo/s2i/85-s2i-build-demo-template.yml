@@ -1,0 +1,130 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxv4-demo-s2i-build-dev-template
+  annotations:
+    openshift.io/display-name: Demo STARTX - CI-CD
+    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/generated-by: sxv4-console
+    openshift.io/provider-display-name: STARTX
+    description:
+      Deployment of a Build and run workflow with a sample application to 
+      illustrate the CI-CD capacities shipped within an openshift 4 environment
+    iconClass: icon-nodejs
+    tags: startx,nodejs,cicd,s2i,build,run,demo,dev
+  labels:
+    component: demo
+    template: sxv4-demo-s2i-build-dev-template
+message: |-
+  Your s2i-build demo will be soon deployed in project ${SCOPE}-s2i.
+  Monitor the deployement for application availability and
+  Follow created route to browse running application
+
+  Scope          : ${SCOPE}
+  Environment    : ${ENV}
+  Project        : ${NS}
+
+labels:
+  template: sxv4-demo-s2i-build-dev-template
+  app.kubernetes.io/managed-by: sxv4-console
+objects:
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${NS}-s2i-app
+    namespace: "${ARGOCD_NS}"
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "${NS}"
+      app.kubernetes.io/name: "${NS}-s2i-application"
+      app.kubernetes.io/part-of: ${NS}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "${NS}-project"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxv4-console
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: ${NS}
+    source:
+      path: charts/example-catalog/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-s2i.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "s2i"
+          - name: demo.s2i.namespace
+            value: "${NS}"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 20s
+parameters:
+  - name: NS
+    displayName: CI-CD namespace for s2i instance
+    description: "Name of the s2i namespace"
+    value: demo-s2i
+    required: true
+  - name: ARGOCD_NS
+    displayName: The namespace where argocd server goes to
+    description: "Namespace to place argocd server to"
+    value: startx-argocd
+    required: true
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: sxv4)"
+    value: demo
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
+    required: true
+  - name: COMPONENT
+    displayName: Project service
+    description: "Project service"
+    value: demo
+    required: true
+  - name: NS_ISTIO_SYSTEM
+    displayName: The namespace where istio system objects goes to
+    description: "Namespace to place istio system objects to"
+    value: startx-istio
+    required: true

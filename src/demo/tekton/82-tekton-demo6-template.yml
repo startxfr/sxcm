@@ -1,0 +1,102 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxv4-demo-tekton-demo6-dev-template
+  annotations:
+    openshift.io/display-name: Demo tekton of a simple task
+    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/generated-by: sxv4-console
+    openshift.io/provider-display-name: STARTX
+    description:
+      Template deploying required ressource to run a sample demonstration on how to use tekton
+      to run a simple standalone task.
+    iconClass: icon-nodejs
+    tags: startx,nodejs,sxapi,sxv4,demo,dev
+  labels:
+    template: sxv4-demo-tekton-demo6-dev-template
+message: |-
+  Your tekton demo 6 ressources are now created.
+
+  Project          : ${PROJECT}
+
+labels:
+  project: demo-tekton
+  demo: demo6
+  app.kubernetes.io/managed-by: sxv4-console
+objects:
+  - kind: Task
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: demo6-task
+      namespace: "${PROJECT}"
+    spec:
+      inputs:
+        resources:
+          - name: repository
+            type: git
+      steps:
+        - name: list-git-repository
+          image: registry.redhat.io/ubi7/ubi-minimal
+          command: ["ls", "-la"]
+          args: ["/workspace/repository"]
+  - kind: Pipeline
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: demo6-pipeline
+      namespace: "${PROJECT}"
+    spec:
+      resources:
+        - name: repository-git
+          type: git
+      tasks:
+        - name: list-git
+          taskRef:
+            name: demo6-task
+          resources:
+            inputs:
+              - name: repository
+                resource: repository-git
+  - kind: PipelineRun
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: demo6-pipelinerun-${RANDRUN}
+      namespace: "${PROJECT}"
+    spec:
+      pipelineRef:
+        name: demo6-pipeline
+      resources:
+        - name: repository-git
+          resourceRef:
+            name: demo5-git
+parameters:
+  - name: PROJECT
+    displayName: Project scope
+    description: "Project scope (ex: demo)"
+    value: demo-tekton
+  - name: RANDRUN
+    displayName: Random string for pipelinerun execution
+    description: Random string suffix to use for pipelinerun task uniqueness
+    from: "[a-z0-9]{10}"
+    generate: expression
+    required: true
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: demo)"
+    value: demo
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: demo
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
+    required: true

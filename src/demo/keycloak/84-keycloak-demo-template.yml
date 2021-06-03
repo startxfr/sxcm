@@ -1,0 +1,570 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxv4-demo-keycloak-dev-template
+  annotations:
+    openshift.io/display-name: Demo STARTX - Keycloak
+    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/generated-by: sxv4-console
+    openshift.io/provider-display-name: STARTX
+    description:
+      Template for building the demo portal for the STARTX v4 Information System in dev mode
+      using sxapi in an openshift PaaS
+    iconClass: icon-nodejs
+    tags: startx,nodejs,sxapi,sxv4,demo,dev
+  labels:
+    component: demo
+    template: sxv4-demo-keycloak-dev-template
+message: |-
+  Your keycloak demo will be soon deployed in project ${SCOPE}-keycloak.
+  Monitor the deployement for application availability and
+  Follow created route to browse running application
+
+  Scope          : ${SCOPE}
+  Environment    : ${ENV}
+  Project        : ${NS}
+  Realm          : ${DEMO_REALM}
+
+labels:
+  template: sxv4-demo-keycloak-dev-template
+  app.kubernetes.io/managed-by: sxv4-console
+objects:
+  - kind: KeycloakRealm
+    apiVersion: keycloak.org/v1alpha1
+    metadata:
+      name: ${DEMO_REALM}
+      namespace: ${KEYCLOAK_NS}
+      annotations: &basic_annotations
+        openshift.io/generated-by: sxv4-console
+      labels: &basic_labels
+        app: "${DEMO_REALM}"
+        version: "${VERSION}"
+        app.startx.fr/scope: "${SCOPE}"
+        app.startx.fr/cluster: "${CLUSTER}"
+        app.startx.fr/env: "${ENV}"
+        app.startx.fr/component: "keycloak"
+        app.kubernetes.io/name: "${KEYCLOAK_NS}-${DEMO_REALM}-keycloakrealm"
+        app.kubernetes.io/part-of: ${CLUSTER}
+        app.kubernetes.io/version: "${VERSION}"
+        app.kubernetes.io/component: "keycloak"
+    spec:
+      instanceSelector:
+        matchLabels:
+          app: startx-keycloak
+      realm:
+        displayName: Demo Realm
+        enabled: true
+        id: ${SCOPE}
+        realm: ${SCOPE}
+        eventsListeners:
+          - "metrics-listener"
+        users:
+          - username: "admin"
+            firstName: "User"
+            lastName: "ADMIN"
+            email: "cl+admin@startx.fr"
+            enabled: True
+            emailVerified: True
+            credentials:
+              - type: "password"
+                value: "secretdemerde"
+            realmRoles:
+              - "offline_access"
+              - "uma_authorization"
+            clientRoles:
+              account:
+                - "manage-account"
+                - "view-profile"
+              realm-management:
+                - "manage-users"
+                - "view-users"
+                - "query-users"
+                - "create-client"
+      realmOverrides:
+        - forFlow: "browser"
+          identityProvider: "openshift-v4"
+  - kind: KeycloakClient
+    apiVersion: keycloak.org/v1alpha1
+    metadata:
+      name: ${SCOPE}-app1
+      namespace: ${KEYCLOAK_NS}
+      annotations:
+        <<: *basic_annotations
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${KEYCLOAK_NS}-${SCOPE}-app1-keycloakclient"
+    spec:
+      client:
+        id: ${NS}-client-app1
+        clientId: ${SCOPE}-app1
+        secret: ${SCOPE}app1secret123
+        directAccessGrantsEnabled: false
+        clientAuthenticatorType: client-app1
+        protocol: openid-connect
+      realmSelector:
+        matchLabels:
+          app: ${KEYCLOAK_NS}
+  - kind: KeycloakUser
+    apiVersion: keycloak.org/v1alpha1
+    metadata:
+      name: ${SCOPE}-user
+      namespace: ${KEYCLOAK_NS}
+      annotations:
+        <<: *basic_annotations
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${KEYCLOAK_NS}-${SCOPE}-user-keycloakuser"
+    spec:
+      realmSelector:
+        matchLabels:
+          app: ${KEYCLOAK_NS}
+      user:
+        username: ${SCOPE}_user
+        email: cl+${SCOPE}@startx.fr
+        firstName: Demo
+        lastName: USER
+        enabled: true
+        emailVerified: true
+        credentials:
+          - type: "password"
+            value: "${SCOPE}_user"
+  - kind: KeycloakUser
+    apiVersion: keycloak.org/v1alpha1
+    metadata:
+      name: ${SCOPE}-admin
+      namespace: ${KEYCLOAK_NS}
+      annotations:
+        <<: *basic_annotations
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${KEYCLOAK_NS}-${SCOPE}-admin-keycloakuser"
+    spec:
+      realmSelector:
+        matchLabels:
+          app: ${KEYCLOAK_NS}
+      user:
+        username: ${SCOPE}_admin
+        email: cl+${SCOPE}_admin@startx.fr
+        firstName: Demo
+        lastName: ADMIN
+        enabled: true
+        emailVerified: true
+        credentials:
+          - type: "password"
+            value: "${SCOPE}_admin"
+        realmRoles:
+          - "offline_access"
+        clientRoles:
+          account:
+            - "manage-account"
+          realm-management:
+            - "manage-users"
+  # - kind: KeycloakBackup
+  #   apiVersion: keycloak.org/v1alpha1
+  #   metadata:
+  #     name: ${SCOPE}-keycloakbackup
+  #     namespace: ${KEYCLOAK_NS}
+  #     annotations:
+  #       <<: *basic_annotations
+  #     labels:
+  #       <<: *basic_labels
+  #       app.kubernetes.io/name: "${KEYCLOAK_NS}-${SCOPE}-keycloakbackup"
+  #   spec:
+  #     instanceSelector:
+  #       matchLabels:
+  #         app: startx-keycloak
+# Demo flask application
+  - kind: ImageStream
+    apiVersion: image.openshift.io/v1
+    metadata:
+      name: flask
+      namespace: ${NS}
+      annotations: &flask_annotations
+        <<: *basic_annotations
+        app.openshift.io/vcs-ref: master
+        app.openshift.io/vcs-uri: https://github.com/startxfr/demo-sso-flask.git
+      labels: &flask_labels
+        <<: *basic_labels
+        app: flask
+        version: "${VERSION}"
+        app.kubernetes.io/name: "${NS}-flask-imagestream"
+        app.kubernetes.io/instance: flask
+        app.kubernetes.io/part-of: flask
+        app.openshift.io/runtime: python
+        app.openshift.io/runtime-version: "3.6"
+    spec:
+      lookupPolicy:
+        local: false
+  - kind: BuildConfig
+    apiVersion: build.openshift.io/v1
+    metadata:
+      name: flask
+      namespace: ${NS}
+      annotations: 
+        <<: *flask_annotations
+        image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"flask:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"flask\")].image"}]'
+        alpha.image.policy.openshift.io/resolve-names: '*'
+      labels: 
+        <<: *flask_labels
+        app.kubernetes.io/name: "${NS}-flask-buildconfig"
+    spec:
+      failedBuildsHistoryLimit: 5
+      successfulBuildsHistoryLimit: 5
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: flask:latest
+      postCommit: {}
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      runPolicy: Serial
+      source:
+        contextDir: /
+        git:
+          uri: https://github.com/startxfr/demo-sso-flask.git
+        type: Git
+      strategy:
+        sourceStrategy:
+          from:
+            kind: ImageStreamTag
+            name: python:3.6
+            namespace: openshift
+        type: Source
+      triggers:
+        - type: Generic
+          generic:
+            secretReference:
+              name: flask-generic-webhook-secret
+        - type: GitHub
+          github:
+            secretReference:
+              name: flask-github-webhook-secret
+        - type: ImageChange
+        - type: ConfigChange
+  - kind: Deployment
+    apiVersion: apps/v1
+    metadata:
+      name: flask
+      namespace: ${NS}
+      annotations: 
+        <<: *flask_annotations
+        image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"flask:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"flask\")].image"}]'
+        alpha.image.policy.openshift.io/resolve-names: '*'
+      labels: 
+        <<: *flask_labels
+        app.kubernetes.io/name: "${NS}-flask-deployment"
+    spec:
+      progressDeadlineSeconds: 600
+      replicas: 2
+      revisionHistoryLimit: 5
+      selector:
+        matchLabels:
+          app: flask
+      strategy:
+        rollingUpdate:
+          maxSurge: 25%
+          maxUnavailable: 25%
+        type: RollingUpdate
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            app: flask
+            deploymentconfig: flask
+        spec:
+          containers:
+          - name: flask
+            image: image-registry.openshift-image-registry.svc:5000/demo-keycloak/flask@sha256:f37564b23be3fe9bf7af8d10f6631b945ca01bb90537b02c811b4b93cf3efeaf
+            imagePullPolicy: Always
+            env:
+              - name: APP_ROOT
+                value: /opt/app-root/src/src
+              - name: HOME
+                value: /opt/app-root/src/src
+              - name: APP_FILE
+                value: /opt/app-root/src/src/app.py
+            ports:
+              - containerPort: 8080
+                protocol: TCP
+            resources:
+              limits:
+                cpu: 100m
+                memory: 128Mi
+              requests:
+                cpu: 50m
+                memory: 64Mi
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            workingDir: /opt/app-root/src/src
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: flask
+      namespace: ${NS}
+      annotations: 
+        <<: *flask_annotations
+      labels: 
+        <<: *flask_labels
+        app.kubernetes.io/name: "${NS}-flask-service"
+    spec:
+      type: ClusterIP
+      ports:
+      - name: 8080-tcp
+        port: 8080
+        protocol: TCP
+        targetPort: 8080
+      selector:
+        app: flask
+        deploymentconfig: flask
+      sessionAffinity: None
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: flask
+      namespace: ${NS}
+      annotations: 
+        <<: *flask_annotations
+      labels: 
+        <<: *flask_labels
+        openshift.io/host.generated: "true"
+        app.kubernetes.io/name: "${NS}-flask-route"
+    spec:
+      port:
+        targetPort: 8080-tcp
+      to:
+        kind: Service
+        name: flask
+        weight: 100
+      wildcardPolicy: None
+# Demo spring-boot application
+  - kind: ImageStream
+    apiVersion: image.openshift.io/v1
+    metadata:
+      name: spring-boot
+      namespace: ${NS}
+      annotations: &springboot_annotations
+        <<: *basic_annotations
+        app.openshift.io/vcs-ref: master
+        app.openshift.io/vcs-uri: https://github.com/moussanaa/rh-sso-spring-boot
+      labels: &springboot_labels
+        <<: *basic_labels
+        app: spring-boot
+        version: "${VERSION}"
+        app.kubernetes.io/name: "${NS}-spring-boot-imagestream"
+        app.kubernetes.io/instance: spring-boot
+        app.kubernetes.io/part-of: spring-boot
+        app.openshift.io/runtime: java
+        app.openshift.io/runtime-version: "11"
+    spec:
+      lookupPolicy:
+        local: false
+  - kind: BuildConfig
+    apiVersion: build.openshift.io/v1
+    metadata:
+      name: spring-boot
+      namespace: ${NS}
+      annotations: 
+        <<: *springboot_annotations
+      labels: 
+        <<: *springboot_labels
+        app.kubernetes.io/name: "${NS}-spring-boot-buildconfig"
+    spec:
+      failedBuildsHistoryLimit: 5
+      successfulBuildsHistoryLimit: 5
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: spring-boot:latest
+      postCommit: {}
+      resources:
+        limits:
+          cpu: 300m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 256Mi
+      runPolicy: Serial
+      source:
+        contextDir: /
+        git:
+          uri: https://github.com/startxfr/demo-sso-spring-boot
+        type: Git
+      strategy:
+        sourceStrategy:
+          from:
+            kind: ImageStreamTag
+            name: java:11
+            namespace: openshift
+        type: Source
+      triggers:
+      - type: Generic
+        generic:
+          secretReference:
+            name: spring-boot-generic-webhook-secret
+      - type: GitHub
+        github:
+          secretReference:
+            name: spring-boot-github-webhook-secret
+      - type: ImageChange
+      - type: ConfigChange
+  - kind: Deployment
+    apiVersion: apps/v1
+    metadata:
+      name: spring-boot
+      namespace: ${NS}
+      annotations: 
+        <<: *springboot_annotations
+        image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"spring-boot:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"spring-boot\")].image"}]'
+        alpha.image.policy.openshift.io/resolve-names: '*'
+      labels: 
+        <<: *springboot_labels
+        app.kubernetes.io/name: "${NS}-spring-boot-deployment"
+    spec:
+      progressDeadlineSeconds: 600
+      replicas: 2
+      revisionHistoryLimit: 5
+      selector:
+        matchLabels:
+          app: spring-boot
+      strategy:
+        rollingUpdate:
+          maxSurge: 25%
+          maxUnavailable: 25%
+        type: RollingUpdate
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            app: spring-boot
+            deploymentconfig: spring-boot
+        spec:
+          containers:
+          - image: image-registry.openshift-image-registry.svc:5000/demo-keycloak/spring-boot@sha256:4cd42210be9c1952fad57463d75fa0423eb3c790acc978d34a85952addc5655b
+            imagePullPolicy: Always
+            name: spring-boot
+            ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8443
+              protocol: TCP
+            - containerPort: 8778
+              protocol: TCP
+            resources:
+              limits:
+                cpu: 100m
+                memory: 400Mi
+              requests:
+                cpu: 50m
+                memory: 256Mi
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: spring-boot
+      namespace: ${NS}
+      annotations: 
+        <<: *springboot_annotations
+        openshift.io/host.generated: "true"
+      labels: 
+        <<: *springboot_labels
+        app.kubernetes.io/name: "${NS}-spring-boot-service"
+    spec:
+      type: ClusterIP
+      ports:
+      - name: 8080-tcp
+        port: 8080
+        protocol: TCP
+        targetPort: 8080
+      - name: 8443-tcp
+        port: 8443
+        protocol: TCP
+        targetPort: 8443
+      - name: 8778-tcp
+        port: 8778
+        protocol: TCP
+        targetPort: 8778
+      selector:
+        app: spring-boot
+        deploymentconfig: spring-boot
+      sessionAffinity: None
+    status:
+      loadBalancer: {}
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: spring-boot
+      namespace: ${NS}
+      annotations: 
+        <<: *springboot_annotations
+        openshift.io/host.generated: "true"
+      labels: 
+        <<: *springboot_labels
+        app.kubernetes.io/name: "${NS}-spring-boot-route"
+    spec:
+      port:
+        targetPort: 8080-tcp
+      to:
+        kind: Service
+        name: spring-boot
+        weight: 100
+      wildcardPolicy: None
+parameters:
+  - name: KEYCLOAK_NS
+    displayName: The namespace where keycloak server goes to
+    description: "Namespace to place keycloak server to"
+    value: startx-keycloak
+    required: true
+  - name: NS
+    displayName: Keycloak namespace for keycloak instance
+    description: "Name of the keycloak namespace"
+    value: demo-keycloak
+    required: true
+  - name: DEMO_REALM
+    displayName: The realm where demo objects goes to
+    description: "realm to place demo objects to"
+    value: demo-realm
+    required: true
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: sxv4)"
+    value: demo
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
+    required: true
+  - name: COMPONENT
+    displayName: Project service
+    description: "Project service"
+    value: demo
+    required: true

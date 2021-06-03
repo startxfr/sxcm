@@ -20,6 +20,7 @@ SXCM_USER_SSH_DIR=~/.ssh
 SXCM_USER_CONF_FILE=config
 SXCM_USER_CONF_DIR_CLUSTER=clusters
 SXCM_USER_CONF_DIR_RESOURCES=resources
+SXCM_USER_CONF_DIR_DEMOS=demo
 
 ## sxcm OCP configuration (if commented, should be declared using 'sxcm setup aws' command)
 SXCM_CLUSTER_DEPLOY_SLEEP_FACTOR=2
