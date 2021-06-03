@@ -29,7 +29,7 @@ function doListDemosAbstract {
         filepath=$SXCM_DEMOS_PATH/$demo
         type=none
         if [[ -d $filepath ]]; then
-            democontent="$(ls $filepath/*.yaml 2>/dev/null | wc -l) yaml, $(ls $filepath/*.sh 2>/dev/null | wc -l) bash"
+            democontent="$(ls $filepath/*.yml 2>/dev/null | wc -l) yaml, $(ls $filepath/*.sh 2>/dev/null | wc -l) bash"
             type="directory ($democontent)"
         else
             type="file (yaml)"
@@ -137,7 +137,7 @@ function doDemoInfo {
     local COUNT=$(echo $LIST | wc -w)
     if [[ -d $demoDirLocal/$rn ]]; then
         echo "location   :  $demoDirLocal/$rn"
-        echo "content    : " "$(ls $demoDirLocal/$rn/*.yaml 2>/dev/null | wc -l) yaml, $(ls $demoDirLocal/$rn/*.sh 2>/dev/null | wc -l) bash"
+        echo "content    : " "$(ls $demoDirLocal/$rn/*.yml 2>/dev/null | wc -l) yaml, $(ls $demoDirLocal/$rn/*.sh 2>/dev/null | wc -l) bash"
     else
         echo -e "\e[1m\e[31mCould not read\e[0m directory \e[1m$rn\e[0m in $demoDirLocal"
         exit 1

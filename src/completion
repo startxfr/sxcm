@@ -21,13 +21,14 @@ loadActiveClusterConf
 
 _sxcm_all()
 {
-    local available="list init create edit switch info deploy update destroy delete connect profiles current version setup import export resources resource demo clone"
+    local available="list init create edit switch info history deploy update destroy delete connect profiles current version setup import export resources resource demo clone"
     local availableService="list create edit info delete associate dissociate enable disable"
     local availableServiceDemo="list edit info associate dissociate enable disable"
     local available2=" "
     if [[ "${COMP_WORDS[1]}" == "edit" ||
             "${COMP_WORDS[1]}" == "switch" ||
             "${COMP_WORDS[1]}" == "info" ||
+            "${COMP_WORDS[1]}" == "history" ||
             "${COMP_WORDS[1]}" == "deploy" ||
             "${COMP_WORDS[1]}" == "update"  ||
             "${COMP_WORDS[1]}" == "destroy"  ||
@@ -100,6 +101,7 @@ _sxcm_all()
     elif [[ "${COMP_WORDS[1]}" == "edit" ||
             "${COMP_WORDS[1]}" == "switch" ||
             "${COMP_WORDS[1]}" == "info" ||
+            "${COMP_WORDS[1]}" == "history" ||
             "${COMP_WORDS[1]}" == "deploy" ||
             "${COMP_WORDS[1]}" == "update"  ||
             "${COMP_WORDS[1]}" == "destroy"  ||

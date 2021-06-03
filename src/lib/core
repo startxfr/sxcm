@@ -165,6 +165,7 @@ Available actions are : list, create, info, update, delete, profiles, current, s
   - import [CLUSTERNAME] [BRANCH]                    Import a cluster from an existing gitops repository branch
   - edit [CLUSTERNAME]                               Change the cluster configuration (should require destroy one major change)
   - info [CLUSTERNAME]                               Get information about a cluster configuration
+  - history [CLUSTERNAME] [LIMIT]                    Get gitops history of the cluster. Default history log limit is set to 30
   - export [CLUSTERNAME]                             Export a cluster local state into it gitops repository branch
   - delete [CLUSTERNAME]                             Remove a cluster configuration from the cluster stack
 
@@ -202,6 +203,7 @@ Available actions are : list, create, info, update, delete, profiles, current, s
   sxcm switch mycluster                            # Change the current cluster to my-example
   sxcm edit                                        # Edit the Openshift cluster configuration (default is current cluster)
   sxcm info                                        # Display info about the my-example cluster (default is current cluster)
+  sxcm history mycluster 10                        # Display the last 10 actions performed to the mycluster cluster
   sxcm deploy                                      # Deploy the my-example cluster (default is current cluster)
   sxcm update                                      # Update the my-example cluster configuration (default is current cluster)
   sxcm export mycluster                            # Export the cluster named mycluster into it gitops repository branch
