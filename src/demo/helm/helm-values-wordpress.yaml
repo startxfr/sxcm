@@ -1,0 +1,102 @@
+# see https://raw.githubusercontent.com/bitnami/charts/master/bitnami/wordpress/values.yaml
+
+image:
+  registry: docker.io
+  repository: bitnami/wordpress
+  tag: 5.5.1-debian-10-r23
+  pullPolicy: IfNotPresent
+  # pullSecrets:
+  #   - myRegistryKeySecretName
+  debug: false
+clusterDomain: cluster.local
+commonLabels: {}
+commonAnnotations: {}
+wordpressUsername: admin
+wordpressPassword: secretdemerde
+wordpressEmail: dev@startx.fr
+wordpressFirstName: STARTX
+wordpressLastName: DevTeam
+wordpressBlogName: STARTX Wordpress Demo
+wordpressTablePrefix: sx_
+wordpressScheme: http
+wordpressSkipInstall: false
+allowEmptyPassword: false
+allowOverrideNone: false
+htaccessPersistenceEnabled: false
+command: []
+args: []
+updateStrategy:
+  type: RollingUpdate
+replicaCount: 1
+extraEnv: []
+extraVolumeMounts: []
+extraVolumes: []
+
+resources:
+  limits: 
+    cpu: 500m
+    memory: 1Gi
+  requests:
+    memory: 512Mi
+    cpu: 300m
+affinity: {}
+nodeSelector: {}
+tolerations: {}
+podAnnotations: {}
+
+securityContext:
+  enabled: true
+  fsGroup: 1001
+  runAsUser: 1001
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 120
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+healthcheckHttps: false
+
+service:
+  type: ClusterIP
+  port: 80
+  httpsPort: 443
+  httpsTargetPort: http
+  externalTrafficPolicy: Cluster
+  annotations: {}
+ingress:
+  enabled: true
+  certManager: false
+  hostname: ""
+  annotations: {}
+  tls: false
+
+persistence:
+  enabled: true
+  storageClass: "aws-slow-delete"
+  accessMode: ReadWriteOnce
+  size: 2Gi
+
+mariadb:
+  enabled: true
+  db:
+    name: wordpress
+    user: dev
+  master:
+    persistence:
+      enabled: true
+      storageClass: "aws-fast-delete"
+      accessModes:
+        - ReadWriteOnce
+      size: 2Gi
+
+initContainers: {}

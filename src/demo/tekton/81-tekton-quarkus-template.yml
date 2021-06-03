@@ -1,0 +1,603 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxv4-demo-tekton-quarkus-dev-template
+  annotations:
+    openshift.io/display-name: SXV4 Istio demo template dev
+    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/generated-by: sxv4-console
+    openshift.io/provider-display-name: STARTX
+    description:
+      Template for building the demo portal for the STARTX v4 Information System in dev mode
+      using sxapi in an openshift PaaS
+    iconClass: icon-nodejs
+    tags: startx,nodejs,sxapi,sxv4,demo,dev
+  labels:
+    template: sxv4-demo-tekton-quarkus-dev-template
+message: |-
+  Your application ${APPNAME} in project ${SCOPE}-${COMPONENTNAME} is deployed.
+
+  Scope          : ${SCOPE}
+  Environment    : ${ENV}
+  Service        : ${COMPONENTNAME}
+  Operators      : tekton
+  Project        : ${SCOPE}-${COMPONENTNAME}
+  Application    : ${APPNAME}
+  
+labels:
+  template: sxv4-demo-tekton-quarkus-dev-template
+  app.kubernetes.io/managed-by: sxv4-console
+objects:
+  - kind: ServiceAccount
+    apiVersion: v1
+    metadata:
+      name: build-robot
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:  &basic_labels
+        app: "${SCOPE}-${COMPONENTNAME}-${APPNAME}"
+        version: "${VERSION}"
+        app.startx.fr/scope: "${SCOPE}"
+        app.startx.fr/cluster: "${CLUSTER}"
+        app.startx.fr/env: "${ENV}"
+        app.startx.fr/component: "tekton"
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-build-robot-sa"
+        app.kubernetes.io/part-of: ${SCOPE}-${COMPONENTNAME}-${APPNAME}
+        app.kubernetes.io/version: "${VERSION}"
+        app.kubernetes.io/component: "tekton"
+      annotations: &basic_annotations
+        openshift.io/generated-by: sxv4-console
+  - kind: ClusterRole
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: builder
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-builder-cr"
+      annotations: 
+        <<: *basic_annotations
+    rules:
+      - apiGroups: [""]
+        resources: ["services", "endpoints", "pods","configmaps","secrets"]
+        verbs: ["get", "list", "watch", "create", "update", "patch", "delete","view"]
+      - apiGroups: ["extensions", "apps"]
+        resources: ["deployments"]
+        verbs: ["get", "list", "watch", "create", "update", "patch", "delete","view"]
+      - apiGroups: ["serving.knative.dev"]
+        resources: ["*"]
+        verbs: ["get", "list", "watch", "create", "update", "patch", "delete","view"]
+      - apiGroups: ["eventing.knative.dev"]
+        resources: ["*"]
+        verbs: ["get", "list", "watch", "create", "update", "patch", "delete","view"]
+      - apiGroups: ["sources.eventing.knative.dev"]
+        resources: ["*"]
+        verbs: ["get", "list", "watch", "create", "update", "patch", "delete","view"]
+  - kind: ClusterRoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: build-robot-role-binding
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-build-robot-crb"
+      annotations: 
+        <<: *basic_annotations
+    subjects:
+    - kind: ServiceAccount
+      name: build-robot
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+    roleRef:
+      kind: ClusterRole 
+      name: builder
+      apiGroup: rbac.authorization.k8s.io
+  - kind: Task
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: greeter-image-from-git
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-greeter-image-from-git-task"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      resources:
+        inputs:
+          - name: git-source
+            type: git
+        outputs:
+          - name: builtImage
+            type: image
+      params:
+        - name: contextDir
+          default: /workspace/git-source
+          description: The Docker build context Dir
+        - name: mavenMirrorUrl
+          default: "https://repo1.maven.org/maven2"
+          description: The MAVEN_MIRROR_URL url to use
+        - name: mavenCmdArgs
+          default: "clean -DskipTests install -Pnative"
+          description: The maven command parameter
+        - name: runScript
+          default: "/usr/local/bin/maven-run.sh"
+          description: The script to use during 
+        - name: push
+          default: "true"
+          description: Whether to push the image to container registry or not
+      steps:
+          - name: buildah-build-push
+            image: quay.io/rhdevelopers/quarkus-java-builder
+            imagePullPolicy: IfNotPresent
+            env:
+            - name: MAVEN_MIRROR_URL
+              value: "https://repo1.maven.org/maven2"
+              # value: "$(inputs.params.mavenMirrorUrl)"
+            - name: WORK_DIR
+              value: "$(inputs.params.contextDir)"
+            - name: PUSH
+              value: "true"
+              # value: "$(inputs.params.push)"
+            - name: MVN_CMD_ARGS
+              # value: "$(inputs.params.mavenCmdArgs)"
+              value: "clean -DskipTests install -Pnative"
+            - name: DESTINATION_NAME
+              value: "$(outputs.resources.builtImage.url)"
+            args:
+            - "/usr/local/bin/maven-run.sh"
+            securityContext:
+              privileged: true
+              capabilities:
+                add: ["SYS_ADMIN"]
+            volumeMounts:
+              - mountPath: /root/.m2
+                name: m2-cache
+      volumes:
+          - name: m2-cache
+            persistentVolumeClaim:
+              claimName: m2-cache
+  - kind: Task
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: kubectl-task
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-kubectl-task"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      resources:
+        inputs:
+          - name: git-source
+            type: git
+          - name: containerImage
+            type: image
+      params:
+        - name: contextDir
+          default: /workspace/git-source
+          description: The Docker build context Dir
+        - name: resourceDir
+          default: "kubernetes"
+          description: >-
+            The path to Kubernetes resource file directory to create the resources.
+            All the YAML files in the directory will be recursively applied
+        - name: resourceFile
+          description: The Kubernetes resource file
+          default: "/deployment.yaml"
+        - name: yamlPath
+          description: The YAML image path i.e. the container image that is built as part of the build
+          default: "spec.template.spec.containers[0].image"
+        - name: docs
+          description: The YAML documents where to apply 
+          default: "-d*"
+        - name: namespace
+          description: The Kubernetes Namespace
+          default: "demos"
+      steps:
+          - name: run-yq
+            image: quay.io/rhdevelopers/tutorial-tools
+            imagePullPolicy: IfNotPresent
+            command: 
+            - "yq"
+            args:
+              - "w"
+              - "-i"
+              - "$(inputs.params.resourceDir)/$(inputs.params.resourceFile)"
+              - "$(inputs.params.yamlPath)"
+              - "$(inputs.resources.containerImage.url)"
+              - "$(inputs.params.docs)"
+            workingDir: "$(inputs.params.contextDir)"
+          - name: run-kubectl
+            image: quay.io/rhdevelopers/tutorial-tools
+            imagePullPolicy: IfNotPresent
+            command: 
+            - "kubectl"
+            args:
+              - "apply"
+              - "--namespace"
+              - "$(inputs.params.namespace)"
+              - "--recursive"
+              - "--filename"
+              - "$(inputs.params.resourceDir)"
+            workingDir: "$(inputs.params.contextDir)"
+  - kind: Pipeline
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: greeter-native-pipeline
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-greeter-native-pipeline"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      resources:
+        - name: source-repo
+          type: git
+        - name: app-container-image
+          type: image
+      params:
+        - name: mavenMirrorUrl
+          default: "https://repo1.mavenorg.maven2"
+          description: The Maven Mirror URL to use for 
+        - name: mavenCmdArgs
+          description: The maven goals to pass to the build
+          default: "clean -DskipTests package"
+        - name: runScript
+          description: The buildah script to run
+          default: "/usr/local/bin/maven-buildah.sh"
+        - name: push
+          default: "true"
+          description: Whether to push the image to container registry
+        - name: contextDir
+          default: /workspace/git-source
+          description: The Docker build context Dir
+        - name: resourceDir
+          description: >-
+            The path to Kubernetes resource file directory to create the resources.
+            All the YAML files in the directory will be recursively applied
+          default: "kubernetes"
+        - name: resourceFile
+          description: The path to Kubernetes resource file relative to sources
+          default: "deployment.yaml"
+        - name: yamlPath
+          description: The YAML image path 
+          default: "spec.template.spec.containers[0].image"
+        - name: docs
+          description: The YAML documents where to apply 
+          default: "-d*"
+        - name: namespace
+          description: The Kubernetes Namespace
+          default: "default"
+      tasks:
+        - name: build-greeter-native
+          taskRef:
+            name: greeter-image-from-git
+          params:
+          - name: mavenMirrorUrl
+            value: "${params.mavenMirrorUrl}"
+          - name: mavenCmdArgs
+            value: "${params.mavenCmdArgs}"
+          - name: runScript
+            value: "${params.runScript}"
+          - name: push
+            value: "${params.push}"
+          resources:
+            inputs:
+              - name: git-source
+                resource: source-repo
+            outputs:
+              - name: builtImage
+                resource: app-container-image
+        - name: deploy-application
+          taskRef:
+            name: kubectl-task
+          params: 
+          - name: contextDir
+            value: "${params.contextDir}"
+          - name: resourceDir
+            value: "${params.resourceDir}"
+          - name: resourceFile
+            value: "${params.resourceFile}"
+          - name: yamlPath
+            value: "${params.yamlPath}"
+          - name: docs
+            value: "${params.docs}"
+          - name: namespace
+            value: "${params.namespace}"
+          resources:
+            inputs:
+              - name: git-source
+                resource: source-repo
+              - name: containerImage
+                resource: app-container-image
+                from:
+                - build-greeter-native
+  - kind: Pipeline
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: greeter-jvm-pipeline
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-greeter-jvm-pipeline"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      resources:
+        - name: source-repo
+          type: git
+        - name: app-container-image
+          type: image
+      params:
+        - name: mavenMirrorUrl
+          default: "https://repo1.mavenorg.maven2"
+          description: The Maven Mirror URL to use for 
+        - name: mavenCmdArgs
+          description: The maven goals to pass to the build
+          default: "clean -DskipTests package"
+        - name: runScript
+          description: The buildah script to run
+          default: "/usr/local/bin/maven-buildah.sh"
+        - name: push
+          default: "true"
+          description: Whether to push the image to container registry
+        - name: contextDir
+          default: /workspace/git-source
+          description: The Docker build context Dir
+        - name: resourceDir
+          description: >-
+            The path to Kubernetes resource file directory to create the resources.
+            All the YAML files in the directory will be recursively applied
+          default: "kubernetes"
+        - name: resourceFile
+          description: The path to Kubernetes resource file relative to sources
+          default: "deployment.yaml"
+        - name: yamlPath
+          description: The YAML image path 
+          default: "spec.template.spec.containers[0].image"
+        - name: docs
+          description: The YAML documents where to apply 
+          default: "-d*"
+        - name: namespace
+          description: The Kubernetes Namespace
+          default: "default"
+      tasks:
+        - name: build-greeter-jvm
+          taskRef:
+            name: greeter-image-from-git
+          params:
+          - name: mavenMirrorUrl
+            value: "${params.mavenMirrorUrl}"
+          - name: mavenCmdArgs
+            value: "${params.mavenCmdArgs}"
+          - name: runScript
+            value: "${params.runScript}"
+          - name: push
+            value: "${params.push}"
+          resources:
+            inputs:
+              - name: git-source
+                resource: source-repo
+            outputs:
+              - name: builtImage
+                resource: app-container-image
+        - name: deploy-application
+          taskRef:
+            name: kubectl-task
+          params: 
+          - name: contextDir
+            value: "${params.contextDir}"
+          - name: resourceDir
+            value: "${params.resourceDir}"
+          - name: resourceFile
+            value: "${params.resourceFile}"
+          - name: yamlPath
+            value: "${params.yamlPath}"
+          - name: docs
+            value: "${params.docs}"
+          - name: namespace
+            value: "${params.namespace}"
+          resources:
+            inputs:
+              - name: git-source
+                resource: source-repo
+              - name: containerImage
+                resource: app-container-image
+                from:
+                - build-greeter-jvm
+
+
+  - kind: ImageStream
+    apiVersion: image.openshift.io/v1
+    metadata:
+      name: pipeline-greeter
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-pipeline-greeter-imagestream"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      lookupPolicy:
+        local: false
+      tags:
+        - name: native
+          annotations:
+            openshift.io/display-name: pipeline-greeter
+            iconClass: icon-java
+            tags: demo,pipeline-greeter,native
+        - name: jvm
+          annotations:
+            openshift.io/display-name: pipeline-greeter
+            iconClass: icon-java
+            tags: demo,pipeline-greeter,jvm
+  - kind: PipelineResource
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: demo-git-source
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-demo-git-source-prs"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      type: git
+      params:
+        - name: revision
+          value: master
+        - name: url
+          value: https://github.com/redhat-developer-demos/quarkus-pipeline-demo
+  - kind: PipelineResource
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: greeter-image-native
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-greeter-image-native-prs"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      type: image
+      params:
+        - name: url
+          value: quay.io/workspace7/pipeline-greeter:native
+  - kind: PipelineResource
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: greeter-image-jvm
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-greeter-image-jvm-prs"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      type: image
+      params:
+        - name: url
+          value: quay.io/workspace7/pipeline-greeter:jvm
+  - kind: PipelineResource
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: greeter-local-image-native
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-greeter-local-image-native-prs"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      type: image
+      params:
+        - name: url
+          # need to enable registry addon in minikube via minikube addon enable registry
+          value: image-registry.openshift-image-registry.svc:5000/${SCOPE}-${COMPONENTNAME}/pipeline-greeter:native
+  - kind: PipelineResource
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: greeter-local-image-jvm
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-greeter-local-image-jvm-prs"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      type: image
+      params:
+        - name: url
+          # need to enable registry addon in minikube via minikube addon enable registry
+          value: image-registry.openshift-image-registry.svc:5000/${SCOPE}-${COMPONENTNAME}/pipeline-greeter:jvm
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: m2-cache
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-m2-cache-pvc"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      resources:
+        requests:
+          storage: 2Gi
+      volumeMode: Filesystem
+      accessModes:
+        - ReadWriteOnce
+      persistentVolumeReclaimPolicy: Retain 
+      storageClassName: aws-generic-retain
+  - kind: PipelineRun
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: greeter-pipeline-run-${RANDRUN}
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-greeter-pru"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      serviceAccountName: build-robot
+      pipelineRef:
+        name: greeter-jvm-pipeline
+      params:
+        - name: namespace
+          value: "${SCOPE}-${COMPONENTNAME}"
+        # By default the Kubernetes deployment and service will be created
+        # uncomment this to deploy the service as Knative Service
+        # - name: resourceDir
+        #   value: "knative"
+        # - name: resourceFile
+        #   value: "service.yaml"
+      resources:
+        - name: source-repo
+          resourceRef:
+            name: demo-git-source
+        - name: app-container-image
+          resourceRef:
+            name: greeter-local-image-jvm
+parameters:
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: demo)"
+    value: demo
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
+    required: true
+  - name: COMPONENT
+    displayName: Project service
+    description: "Project service"
+    value: demo
+    required: true
+  - name: COMPONENTNAME
+    displayName: Sub-service
+    description: "Project sub-service"
+    value: tekton
+    required: true
+  - name: APPNAME
+    displayName: Application name for this service
+    description: "Name of the application"
+    value: quarkus
+    required: true
+  - name: RANDRUN
+    displayName: Random string for pipelinerun execution
+    description: Random string suffix to use for pipelinerun task uniqueness
+    from: "[a-z0-9]{10}"
+    generate: expression
+    required: true

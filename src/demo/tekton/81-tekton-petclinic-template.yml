@@ -1,0 +1,515 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxv4-demo-tekton-petclinic-dev-template
+  annotations:
+    openshift.io/display-name: SXV4 Istio demo template dev
+    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/generated-by: sxv4-console
+    openshift.io/provider-display-name: STARTX
+    description:
+      Template for building the demo portal for the STARTX v4 Information System in dev mode
+      using sxapi in an openshift PaaS
+    iconClass: icon-nodejs
+    tags: startx,nodejs,sxapi,sxv4,demo,dev
+  labels:
+    template: sxv4-demo-tekton-petclinic-dev-template
+message: |-
+  Your application ${APPNAME} in project ${SCOPE}-${COMPONENTNAME} is deployed.
+
+  Scope          : ${SCOPE}
+  Environment    : ${ENV}
+  Service        : ${COMPONENTNAME}
+  Operators      : tekton
+  Project        : ${SCOPE}-${COMPONENTNAME}
+  Application    : ${APPNAME}
+  
+labels:
+  template: sxv4-demo-tekton-petclinic-dev-template
+  app.kubernetes.io/managed-by: sxv4-console
+objects:
+  - kind: Task
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: mvn
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:  &basic_labels
+        app: "${SCOPE}-${COMPONENTNAME}-${APPNAME}"
+        version: "${VERSION}"
+        app.startx.fr/scope: "${SCOPE}"
+        app.startx.fr/cluster: "${CLUSTER}"
+        app.startx.fr/env: "${ENV}"
+        app.startx.fr/component: "tekton"
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-mvn-task"
+        app.kubernetes.io/part-of: ${SCOPE}-${COMPONENTNAME}-${APPNAME}
+        app.kubernetes.io/version: "${VERSION}"
+        app.kubernetes.io/component: "tekton"
+      annotations: &basic_annotations
+        openshift.io/generated-by: sxv4-console
+    spec:
+      workspaces:
+        - name: maven-repo
+      params:
+        - name: GOALS
+          description: The Maven goals to run
+          type: array
+          default: ["package"]
+      resources:
+        inputs:
+          - name: source
+            type: git
+      steps:
+        - name: mvn
+          image: gcr.io/cloud-builders/mvn
+          workingDir: /workspace/source
+          command: ["/usr/bin/mvn"]
+          args:
+            - -Dmaven.repo.local=$(workspaces.maven-repo.path)
+            - "$(inputs.params.GOALS)"
+          resources:
+            limits:
+              cpu: 700m
+              memory: 1024Mi
+            requests:
+              cpu: 200m
+              memory: 512Mi
+  # - kind: Task
+  #   apiVersion: tekton.dev/v1alpha1
+  #   metadata:
+  #     name: build-from-mvn
+  #     namespace: "${SCOPE}-${COMPONENTNAME}"
+  #     labels:
+  #       <<: *basic_labels
+  #       app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-build-from-mvn-task"
+  #     annotations: 
+  #       <<: *basic_annotations
+  #   spec:
+  #     workspaces:
+  #     - name: maven-repo
+  #     inputs:
+  #       params:
+  #         - default: 'http://nexus3-nexus.apps.monaco.startx.fr'
+  #           description: URL Nexus
+  #           name: NEXUS_URL
+  #           type: string
+  #         - default: admin
+  #           description: Utilisateur nexus
+  #           name: NEXUS_USER
+  #           type: string
+  #         - default: ''
+  #           description: Mot de passe nexus
+  #           name: NEXUS_PWD
+  #           type: string
+  #         - default: mc.gouv.candi
+  #           description: Group id de l'artifact a telecharger
+  #           name: APP_GROUP_ID
+  #           type: string
+  #         - default: candi-backserver
+  #           description: Artifact id de l'artifact a telecharger
+  #           name: APP_ARTIFACT_ID
+  #           type: string
+  #         - default: 1.0.5
+  #           description: Version du projet a telecharger
+  #           name: APP_VERSION
+  #           type: string
+  #         - default: 'false'
+  #           description: Tls verify
+  #           name: TLSVERIFY
+  #           type: string
+  #         - default: ''
+  #           description: >-
+  #             Url du healthcheck dont on doit attendre la reponse 200 avant de
+  #             lancer l'application (si null --> on lance directement l'application)
+  #           name: HEALTHCHECK_URL
+  #           type: string
+  #         - default: '10760'
+  #           description: Port de l'application
+  #           name: APP_PORT
+  #           type: string
+  #         - default: 512m
+  #           description: XMX
+  #           name: XMX
+  #           type: string
+  #         - default: 64m
+  #           description: XMS
+  #           name: XMS
+  #           type: string
+  #         - default: .
+  #           description: The location of the path to run s2i from
+  #           name: PATH_CONTEXT
+  #           type: string
+  #         - default: 'true'
+  #           description: >-
+  #             Verify the TLS on the registry endpoint (for push/pull to a non-TLS
+  #             registry)
+  #           name: TLSVERIFY
+  #           type: string
+  #         - default: ''
+  #           description: Additional Maven arguments
+  #           name: MAVEN_ARGS_APPEND
+  #           type: string
+  #         - default: 'false'
+  #           description: Remove the Maven repository after the artifact is built
+  #           name: MAVEN_CLEAR_REPO
+  #           type: string
+  #         - default: ''
+  #           description: The base URL of a mirror used for retrieving artifacts
+  #           name: MAVEN_MIRROR_URL
+  #           type: string
+  #       resources:
+  #         - name: source
+  #           type: git
+  #     outputs:
+  #       resources:
+  #         - name: image
+  #           type: image
+  #     steps:
+  #       - name: gen-env-file
+  #         args:
+  #           - |-
+  #             echo "MAVEN_CLEAR_REPO=$(inputs.params.MAVEN_CLEAR_REPO)" > env-file
+
+  #             [[ '$(inputs.params.MAVEN_ARGS_APPEND)' != "" ]] &&
+  #               echo "MAVEN_ARGS_APPEND=$(inputs.params.MAVEN_ARGS_APPEND)" >> env-file
+
+  #             [[ '$(inputs.params.MAVEN_MIRROR_URL)' != "" ]] &&
+  #               echo "MAVEN_MIRROR_URL=$(inputs.params.MAVEN_MIRROR_URL)" >> env-file
+
+  #             echo "Generated Env file"
+  #             echo "------------------------------"
+  #             cat env-file
+  #             echo "------------------------------"
+
+
+
+
+  #             echo "#Generated from tekton" > Dockerfile
+  #         command:
+  #           - /bin/sh
+  #           - '-c'
+  #         image: quay.io/openshift-pipeline/s2i
+  #         resources: {}
+  #         volumeMounts:
+  #           - mountPath: /env-params
+  #             name: envparams
+  #         workingDir: /env-params
+  #       - name: generate
+  #         command:
+  #           - s2i
+  #           - build
+  #           - $(inputs.params.PATH_CONTEXT)
+  #           - registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift
+  #           - '--image-scripts-url'
+  #           - 'image:///usr/local/s2i'
+  #           - '--as-dockerfile'
+  #           - /gen-source/Dockerfile.gen
+  #           - '--environment-file'
+  #           - /env-params/env-file
+  #         image: quay.io/openshift-pipeline/s2i
+  #         resources: {}
+  #         volumeMounts:
+  #           - mountPath: /gen-source
+  #             name: gen-source
+  #           - mountPath: /env-params
+  #             name: envparams
+  #         workingDir: /workspace/source
+  #       - name: build
+  #         command:
+  #           - buildah
+  #           - bud
+  #           - '--tls-verify=$(inputs.params.TLSVERIFY)'
+  #           - '--layers'
+  #           - '-f'
+  #           - /gen-source/Dockerfile.gen
+  #           - '-t'
+  #           - $(outputs.resources.image.url)
+  #           - .
+  #         image: quay.io/buildah/stable
+  #         resources: {}
+  #         securityContext:
+  #           privileged: true
+  #         volumeMounts:
+  #           - mountPath: /var/lib/containers
+  #             name: varlibcontainers
+  #           - mountPath: /gen-source
+  #             name: gen-source
+  #         workingDir: /gen-source
+  #       - name: push
+  #         command:
+  #           - buildah
+  #           - push
+  #           - '--tls-verify=$(inputs.params.TLSVERIFY)'
+  #           - $(outputs.resources.image.url)
+  #           - 'docker://$(outputs.resources.image.url)'
+  #         image: quay.io/buildah/stable
+  #         resources: {}
+  #         securityContext:
+  #           privileged: true
+  #         volumeMounts:
+  #           - mountPath: /var/lib/containers
+  #             name: varlibcontainers
+  #       - name: download-artifact
+  #         image: >-
+  #           example-quayecosystem-quay-startx-quay.apps.monaco.startx.fr/monaco/gouv-java-builder:1.0.0
+  #         resources: {}
+  #         script: >
+
+  #           JAR_DOWNLOAD_URL=`curl  -X GET -u
+  #           $(inputs.params.NEXUS_USER):$(inputs.params.NEXUS_PWD) -G
+  #           "$(inputs.params.NEXUS_URL)/service/rest/v1/search/assets" \
+  #                 -d maven.groupId=$(inputs.params.APP_GROUP_ID) \
+  #                 -d maven.artifactId=$(inputs.params.APP_ARTIFACT_ID) \
+  #                 -d maven.baseVersion=$(inputs.params.APP_VERSION) \
+  #                 -d maven.extension=jar \
+  #                 | grep -Po '"downloadUrl" : "\K.+(?=",)'`
+
+  #           curl  -u $(inputs.params.NEXUS_USER):$(inputs.params.NEXUS_PWD)  -o
+  #           $(workspaces.app.path)/$(inputs.params.APP_ARTIFACT_ID)-$(inputs.params.APP_VERSION).jar
+  #           $JAR_DOWNLOAD_URL
+
+
+  #           if [ $? -ne 0 ]; then
+  #             echo "Cannot download $URL";
+  #             exit 1;
+  #           fi
+
+
+  #           JAR_NAME=`ls $(workspaces.app.path)`
+
+  #           APP_PATH="/www/local/apps/$(inputs.params.APP_ARTIFACT_ID)"
+
+  #           BASE_IMAGE="adoptopenjdk:8-jre-hotspot"
+
+
+  #           sed -i "s|\$JAR_NAME|$JAR_NAME|g" /Dockerfile-template  
+
+  #           sed -i "s|\$BASE_IMAGE|$BASE_IMAGE|g" /Dockerfile-template 
+
+  #           sed -i "s|\$APP_PATH|$APP_PATH|g" /Dockerfile-template 
+
+
+  #           sed -i "s|\$JAR_NAME|$JAR_NAME|g" /entrypoint-template.sh  
+
+  #           sed -i "s|\$APP_PATH|$APP_PATH|g" /entrypoint-template.sh
+
+  #           sed -i "s|\$APP_ARTIFACT_ID|$(inputs.params.APP_ARTIFACT_ID)|g"
+  #           /entrypoint-template.sh
+
+  #           sed -i "s|\$HTTP_PORT|$(inputs.params.APP_PORT)|g"
+  #           /entrypoint-template.sh
+
+  #           sed -i "s|\$XMX|$(inputs.params.XMX)|g" /entrypoint-template.sh
+
+  #           sed -i "s|\$XMS|$(inputs.params.XMS)|g" /entrypoint-template.sh
+                
+  #           cat /Dockerfile-template > Dockerfile
+
+  #           cat /entrypoint-template.sh > entrypoint.sh
+                    
+                    
+  #         volumeMounts:
+  #           - mountPath: $(workspaces.app.path)
+  #             name: app
+  #         workingDir: $(workspaces.app.path)
+  #       - name: build
+  #         command:
+  #           - buildah
+  #           - bud
+  #           - '--tls-verify=$(inputs.params.TLSVERIFY)'
+  #           - '--layers'
+  #           - '-f'
+  #           - $(workspaces.maven-repo.path)
+  #           - '-t'
+  #           - >-
+  #             example-quayecosystem-quay-startx-quay.apps.monaco.startx.fr/monaco/$(inputs.params.APP_ARTIFACT_ID):$(inputs.params.APP_VERSION)
+  #           - .
+  #         image: >-
+  #           example-quayecosystem-quay-startx-quay.apps.monaco.startx.fr/monaco/gouv-java-builder:1.0.0
+  #         resources: {}
+  #         securityContext:
+  #           privileged: true
+  #         volumeMounts:
+  #           - mountPath: /var/lib/containers
+  #             name: varlibcontainers
+  #           - mountPath: $(workspaces.app.path)
+  #             name: app
+  #         workingDir: $(workspaces.app.path)
+  #       - name: push
+  #         command:
+  #           - buildah
+  #           - push
+  #           - '--tls-verify=$(inputs.params.TLSVERIFY)'
+  #           - >-
+  #             example-quayecosystem-quay-startx-quay.apps.monaco.startx.fr/monaco/$(inputs.params.APP_ARTIFACT_ID):$(inputs.params.APP_VERSION)
+  #           - >-
+  #             docker://example-quayecosystem-quay-startx-quay.apps.monaco.startx.fr/monaco/$(inputs.params.APP_ARTIFACT_ID):$(inputs.params.APP_VERSION)
+  #         image: >-
+  #           example-quayecosystem-quay-startx-quay.apps.monaco.startx.fr/monaco/gouv-java-builder:1.0.0
+  #         resources: {}
+  #         securityContext:
+  #           privileged: true
+  #         volumeMounts:
+  #           - mountPath: $(workspaces.app.path)
+  #             name: app
+  #           - mountPath: /var/lib/containers
+  #             name: varlibcontainers
+  #         workingDir: $(workspaces.app.path)
+  #     volumes:
+  #       - emptyDir: {}
+  #         name: varlibcontainers
+  #       - emptyDir: {}
+  #         name: gen-source
+  #       - emptyDir: {}
+  #         name: envparams
+  #       - emptyDir: {}
+  #         name: app
+  #       - emptyDir: {}
+  #         name: varlibcontainers
+  #     workspaces:
+  #       - description: The folder where we write the message to
+  #         mountPath: /app
+  #         name: app
+  - kind: Pipeline
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: maven-build
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-maven-build-pipeline"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      workspaces:
+      - name: local-maven-repo
+      resources:
+      - name: app-git
+        type: git
+      tasks:
+      - name: build
+        taskRef:
+          name: mvn
+        resources:
+          inputs:
+          - name: source
+            resource: app-git
+        params:
+        - name: GOALS
+          value: ["package"]
+        workspaces:
+        - name: maven-repo
+          workspace: local-maven-repo
+      - name: int-test
+        taskRef:
+          name: mvn
+        runAfter: ["build"]
+        resources:
+          inputs:
+          - name: source
+            resource: app-git
+        params:
+        - name: GOALS
+          value: ["verify"]
+        workspaces:
+        - name: maven-repo
+          workspace: local-maven-repo
+      - name: gen-report
+        taskRef:
+          name: mvn
+        runAfter: ["build"]
+        resources:
+          inputs:
+          - name: source
+            resource: app-git
+        params:
+        - name: GOALS
+          value: ["site"] 
+        workspaces:
+        - name: maven-repo
+          workspace: local-maven-repo
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: "${SCOPE}-${COMPONENTNAME}-${APPNAME}-pvc"
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-pvc"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      resources:
+        requests:
+          storage: 2Gi
+      volumeMode: Filesystem
+      accessModes:
+        - ReadWriteOnce
+      persistentVolumeReclaimPolicy: Retain 
+      storageClassName: aws-generic-retain
+  - kind: PipelineRun
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: ${SCOPE}-${COMPONENTNAME}-${APPNAME}-${RANDRUN}
+      namespace: "${SCOPE}-${COMPONENTNAME}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-${COMPONENTNAME}-${APPNAME}-pru"
+      annotations: 
+        <<: *basic_annotations
+    spec:
+      pipelineRef:
+        name: maven-build
+      resources:
+      - name: app-git
+        resourceSpec:
+          type: git
+          params:
+            - name: url
+              value: https://github.com/spring-projects/spring-petclinic
+      workspaces:
+      - name: local-maven-repo
+        persistentVolumeClaim:
+          claimName: "${SCOPE}-${COMPONENTNAME}-${APPNAME}-pvc"
+parameters:
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: demo)"
+    value: demo
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
+    required: true
+  - name: COMPONENT
+    displayName: Project service
+    description: "Project service"
+    value: demo
+    required: true
+  - name: COMPONENTNAME
+    displayName: Sub-service
+    description: "Project sub-service"
+    value: tekton
+    required: true
+  - name: APPNAME
+    displayName: Application name for this service
+    description: "Name of the application"
+    value: petclinic
+    required: true
+  - name: RANDRUN
+    displayName: Random string for pipelinerun execution
+    description: Random string suffix to use for pipelinerun task uniqueness
+    from: "[a-z0-9]{10}"
+    generate: expression
+    required: true

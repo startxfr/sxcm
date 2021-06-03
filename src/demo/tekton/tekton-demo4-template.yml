@@ -1,0 +1,51 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxv4-demo-tekton-demo4-dev-template
+  annotations:
+    openshift.io/display-name: Demo tekton of a simple task
+    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/generated-by: sxv4-console
+    openshift.io/provider-display-name: STARTX
+    description:
+      Template deploying required ressource to run a sample demonstration on how to use tekton
+      to run a simple standalone task.
+    iconClass: icon-nodejs
+    tags: startx,nodejs,sxapi,sxv4,demo,dev
+  labels:
+    template: sxv4-demo-tekton-demo4-dev-template
+message: |-
+  Your tekton demo 4 ressources are now created.
+
+  Project          : ${PROJECT}
+
+labels:
+  project: demo-tekton
+  demo: demo4
+  app.kubernetes.io/managed-by: sxv4-console
+objects:
+  - kind: PipelineRun
+    apiVersion: tekton.dev/v1alpha1
+    metadata:
+      name: demo4-pipelinerun-${RANDRUN}
+      namespace: "${PROJECT}"
+    spec:
+      pipelineRef:
+        name: demo3-pipeline
+      params:
+        - name: message_one
+          value: Mon premier message
+        - name: message_two
+          value: Mon second message
+parameters:
+  - name: PROJECT
+    displayName: Project scope
+    description: "Project scope (ex: demo)"
+    value: demo-tekton
+  - name: RANDRUN
+    displayName: Random string for pipelinerun execution
+    description: Random string suffix to use for pipelinerun task uniqueness
+    from: "[a-z0-9]{10}"
+    generate: expression
+    required: true

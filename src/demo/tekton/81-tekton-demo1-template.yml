@@ -1,0 +1,551 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxv4-demo-tekton-demo1-dev-template
+  annotations:
+    openshift.io/display-name: Demo tekton of a simple task
+    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/generated-by: sxv4-console
+    openshift.io/provider-display-name: STARTX
+    description:
+      Template deploying required ressource to run a sample demonstration on how to use tekton
+      to run a simple standalone task.
+    iconClass: icon-nodejs
+    tags: startx,nodejs,sxapi,sxv4,demo,dev
+  labels:
+    template: sxv4-demo-tekton-demo1-dev-template
+message: |-
+  Your tekton demo 1 ressources are now created.
+
+  Scope          : ${SCOPE}
+  Environment    : ${ENV}
+
+labels:
+  template: sxv4-demo-tekton-demo1-dev-template
+  app.kubernetes.io/managed-by: sxv4-console
+objects:
+  - kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      name: "${COMPONENT}-db-config"
+      namespace: "${SCOPE}-tekton"
+      labels:  &basic_labels
+        app: "${COMPONENT}-db"
+        version: "${VERSION}"
+        app.startx.fr/scope: "${SCOPE}"
+        app.startx.fr/cluster: "${CLUSTER}"
+        app.startx.fr/env: "${ENV}"
+        app.startx.fr/component: "tekton"
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-db-configmap"
+        app.kubernetes.io/part-of: ${SCOPE}-tekton-${COMPONENT}
+        app.kubernetes.io/version: "${VERSION}"
+        app.kubernetes.io/component: "tekton"
+      annotations: 
+        openshift.io/generated-by: sxv4-console
+        template.openshift.io/expose-mysql_host: "{.data['MYSQL_HOST']}"
+        template.openshift.io/expose-mysql_database: "{.data['MYSQL_DATABASE']}"
+    data:
+      MYSQL_HOST: "${COMPONENT}-db"
+      MYSQL_DATABASE: "${COMPONENT}"
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: "${COMPONENT}-db-auth"
+      namespace: "${SCOPE}-tekton"
+      labels: &db_labels
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-db-auth-secret"
+      annotations:
+        openshift.io/generated-by: sxv4-console
+        template.openshift.io/expose-username: "{.data['MYSQL_USER']}"
+        template.openshift.io/expose-password: "{.data['MYSQL_PASSWORD']}"
+        template.openshift.io/expose-root_password: "{.data['MYSQL_PASSWORD']}"
+    stringData:
+      MYSQL_ROOT_PASSWORD: "rootpwd"
+      MYSQL_USER: "demo"
+      MYSQL_PASSWORD: "demo"
+      MYSQL_ADMIN: "root:rootpwd"
+      MYSQL_USERS: "demo:demo"
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      name: ${COMPONENT}-web
+      namespace: "${SCOPE}-tekton"
+      labels: &web_labels
+        <<: *basic_labels
+        app: "${COMPONENT}-web"
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-web-deploymentconfig"
+        app.openshift.io/runtime: apache
+      annotations: &basic_annotations
+        openshift.io/generated-by: sxv4-console
+    spec:
+      replicas: 2
+      revisionHistoryLimit: 5
+      strategy:
+        type: Rolling
+        rollingParams:
+          intervalSeconds: 1
+          maxSurge: 25%
+          maxUnavailable: 25%
+          timeoutSeconds: 600
+          updatePeriodSeconds: 1
+        activeDeadlineSeconds: 21600
+      selector:
+        deploymentconfig: ${COMPONENT}-web
+      template:
+        metadata:
+          annotations:
+            <<: *basic_annotations
+          labels:
+            <<: *web_labels
+            deploymentconfig: ${COMPONENT}-web
+            app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-web-pod"
+        spec:
+          containers:
+            - name: ${COMPONENT}-web
+              image: openshift/deployment-example:v1
+              imagePullPolicy: IfNotPresent
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          terminationGracePeriodSeconds: 30
+      test: false
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      name: ${COMPONENT}-api
+      namespace: "${SCOPE}-tekton"
+      labels: &api_labels
+        <<: *web_labels
+        app: "${COMPONENT}-api"
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-api-deploymentconfig"
+        app.openshift.io/runtime: nodejs
+      annotations:
+        <<: *basic_annotations
+    spec:
+      replicas: 2
+      revisionHistoryLimit: 5
+      strategy:
+        type: Rolling
+        rollingParams:
+          intervalSeconds: 1
+          maxSurge: 25%
+          maxUnavailable: 25%
+          timeoutSeconds: 600
+          updatePeriodSeconds: 1
+        activeDeadlineSeconds: 21600
+      selector:
+        deploymentconfig: ${COMPONENT}-api
+      template:
+        metadata:
+          annotations:
+            <<: *basic_annotations
+          labels:
+            <<: *api_labels
+            deploymentconfig: ${COMPONENT}-api
+            app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-api-pod"
+        spec:
+          containers:
+            - name: ${COMPONENT}-api
+              image: openshift/deployment-example:v2
+              imagePullPolicy: IfNotPresent
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          terminationGracePeriodSeconds: 30
+      test: false
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      name: "${COMPONENT}-db"
+      namespace: "${SCOPE}-tekton"
+      labels:
+        <<: *db_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-db-deploymentconfig"
+        app.openshift.io/runtime: mariadb
+      annotations:
+        <<: *basic_annotations
+    spec:
+      replicas: 1
+      strategy:
+        type: Recreate
+        recreateParams:
+          timeoutSeconds: 45
+      postCommit:
+        script: "/bin/sx-mariadb info"
+      test: false
+      selector:
+        app: "${COMPONENT}-db"
+        version: "${VERSION}"
+        deploymentconfig: "${COMPONENT}-db"
+      template:
+        metadata:
+          annotations:
+            <<: *basic_annotations
+          labels:
+            <<: *db_labels
+            app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-db-pod"
+            deploymentconfig: "${COMPONENT}-db"
+        spec:
+          containers:
+            - name: "${COMPONENT}-db"
+              image: "quay.io/startx/mariadb:latest"
+              env:
+                - name: SX_VERBOSE
+                  value: "true"
+                - name: SX_DEBUG
+                  value: "true"
+                - name: MYSQL_ROOT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "${COMPONENT}-db-auth"
+                      key: MYSQL_ROOT_PASSWORD
+                - name: MYSQL_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: "${COMPONENT}-db-auth"
+                      key: MYSQL_USER
+                - name: MYSQL_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "${COMPONENT}-db-auth"
+                      key: MYSQL_PASSWORD
+              envFrom:
+                - configMapRef:
+                    name: ${COMPONENT}-db-config
+              command:
+                - "/bin/sx-mariadb"
+              args:
+                - run
+              ports:
+                - containerPort: 3306
+                  protocol: TCP
+              livenessProbe:
+                exec:
+                  command:
+                    - "/bin/sx-mariadb"
+                    - isLive
+                initialDelaySeconds: 8
+                timeoutSeconds: 5
+                periodSeconds: 8
+                successThreshold: 1
+                failureThreshold: 2
+              readinessProbe:
+                exec:
+                  command:
+                    - "/bin/sx-mariadb"
+                    - isReady
+                initialDelaySeconds: 8
+                timeoutSeconds: 5
+                periodSeconds: 8
+                successThreshold: 1
+                failureThreshold: 2
+              resources:
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+                requests:
+                  cpu: 250m
+                  memory: 256Mi
+              terminationMessagePath: "/dev/termination-log"
+              imagePullPolicy: Always
+              volumeMounts:
+                - name: "${COMPONENT}-db-log"
+                  mountPath: "/var/log/mariadb"
+                - name: "${COMPONENT}-db-data"
+                  mountPath: "/data"
+          volumes:
+            - name: "${COMPONENT}-db-log"
+              emptyDir:
+                medium: ""
+            - name: "${COMPONENT}-db-data"
+              emptyDir:
+                medium: ""
+          restartPolicy: Always
+          terminationGracePeriodSeconds: 30
+          dnsPolicy: ClusterFirst
+  # - kind: Task
+  #   apiVersion: tekton.dev/v1alpha1
+  #   metadata:
+  #     name: ${COMPONENT}-oc-command
+  #     namespace: "${SCOPE}-tekton"
+  #     labels: &tekton_labels
+  #       <<: *basic_labels
+  #       app: "${COMPONENT}-tekton"
+  #       app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-oc-command-task"
+  #     annotations:
+  #       <<: *basic_annotations
+  #   spec:
+  #     inputs:
+  #       params:
+  #         - name: ARGS
+  #           description: The OpenShift CLI arguments to run
+  #           type: array
+  #           default:
+  #             - "help"
+  #     steps:
+  #       - name: ocp-client
+  #         image: quay.io/openshift/origin-cli:latest
+  #         command: ["/usr/bin/oc"]
+  #         args:
+  #           - "$(inputs.params.ARGS)"
+  #         resources:
+  #           limits:
+  #             cpu: 250m
+  #             memory: 256Mi
+  #           requests:
+  #             cpu: "50m"
+  #             memory: "32Mi"
+  # - kind: Task
+  #   apiVersion: tekton.dev/v1alpha1
+  #   metadata:
+  #     name: ${COMPONENT}-start-deploy
+  #     namespace: "${SCOPE}-tekton"
+  #     labels: 
+  #       <<: *tekton_labels
+  #       app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-start-deploy-task"
+  #     annotations:
+  #       <<: *basic_annotations
+  #   spec:
+  #     inputs:
+  #       params:
+  #         - name: APP_NAME
+  #           description: The application to deploy
+  #           type: string
+  #           default: "${COMPONENT}"
+  #     steps:
+  #       - name: deploy
+  #         image: quay.io/openshift/origin-cli:latest
+  #         command: ["/usr/bin/oc", "rollout", "latest"]
+  #         args: ["$(inputs.params.APP_NAME)"]
+  #         resources:
+  #           limits:
+  #             cpu: 250m
+  #             memory: 256Mi
+  #           requests:
+  #             cpu: "100m"
+  #             memory: "32Mi"
+  #       - name: wait
+  #         image: quay.io/openshift/origin-cli:latest
+  #         command: ["/usr/bin/oc", "rollout", "status", "-w"]
+  #         args: ["dc/$(inputs.params.APP_NAME)"]
+  #         resources:
+  #           limits:
+  #             cpu: 250m
+  #             memory: 256Mi
+  #           requests:
+  #             cpu: "100m"
+  #             memory: "32Mi"
+  # - kind: Task
+  #   apiVersion: tekton.dev/v1alpha1
+  #   metadata:
+  #     name: ${COMPONENT}-start-build
+  #     namespace: "${SCOPE}-tekton"
+  #     labels: 
+  #       <<: *tekton_labels
+  #       app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-start-build-task"
+  #     annotations:
+  #       <<: *basic_annotations
+  #   spec:
+  #     inputs:
+  #       params:
+  #         - name: APP_NAME
+  #           description: The application to build
+  #           type: string
+  #           default: "${COMPONENT}"
+  #     steps:
+  #       - name: build
+  #         image: quay.io/openshift/origin-cli:latest
+  #         command: ["/usr/bin/oc", "start-build", "-F", "-w"]
+  #         args: ["$(inputs.params.APP_NAME)"]
+  #         resources:
+  #           limits:
+  #             cpu: 250m
+  #             memory: 256Mi
+  #           requests:
+  #             cpu: "100m"
+  #             memory: "32Mi"
+  # - kind: Task
+  #   apiVersion: tekton.dev/v1alpha1
+  #   metadata:
+  #     name: ${COMPONENT}-command
+  #     namespace: "${SCOPE}-tekton"
+  #     labels: 
+  #       <<: *tekton_labels
+  #       app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-command-task"
+  #     annotations:
+  #       <<: *basic_annotations
+  #   spec:
+  #     inputs:
+  #       params:
+  #         - name: CMD
+  #           description: The application to build
+  #           type: string
+  #           default: |-
+  #             echo "echo 'command executed'";
+  #     steps:
+  #       - name: exec
+  #         image: "startx/fedora:32"
+  #         env:
+  #           - name: SX_DEBUG
+  #             value: "true"
+  #           - name: SX_VERBOSE
+  #             value: "true"
+  #         resources:
+  #           limits:
+  #             cpu: 250m
+  #             memory: 256Mi
+  #           requests:
+  #             cpu: "100m"
+  #             memory: "32Mi"
+  #         command:
+  #           - "/bin/bash"
+  #           - "-c"
+  #           - |-
+  #             $(inputs.params.CMD)
+  # - kind: Condition
+  #   apiVersion: tekton.dev/v1alpha1
+  #   metadata:
+  #     name: ${COMPONENT}-approbation
+  #     namespace: "${SCOPE}-tekton"
+  #     labels: 
+  #       <<: *tekton_labels
+  #       app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-approbation-condition"
+  #     annotations:
+  #       <<: *basic_annotations
+  #   spec:
+  #     params:
+  #       - name: APPROBATION
+  #         description: The answer to the approbation
+  #         type: string
+  #         default: "yes"
+  #     check:
+  #       image: "startx/fedora:32"
+  #       env:
+  #         - name: SX_DEBUG
+  #           value: "true"
+  #         - name: SX_VERBOSE
+  #           value: "true"
+  #         - name: APPROBATION
+  #           value: "$(inputs.params.APPROBATION)"
+  #       resources:
+  #         limits:
+  #           cpu: 100m
+  #           memory: 256Mi
+  #         requests:
+  #           cpu: "100m"
+  #           memory: "32Mi"
+  #       command:
+  #         - "/bin/bash"
+  #         - "-c"
+  #         - |-
+  #           env | grep APPROBATION
+  #           if [[ $APPROBATION == "yes" || $APPROBATION == "y" || $APPROBATION == "true" ||  $APPROBATION == true ]]; then
+  #             echo "Approbation is positive, continue next steps ...";
+  #             exit 0;
+  #           else
+  #             echo "Approbation is negative, stop process.";
+  #             exit 1;
+  #           fi;
+  # - kind: Pipeline
+  #   apiVersion: tekton.dev/v1alpha1
+  #   metadata:
+  #     name: ${COMPONENT}-pipeline
+  #     namespace: "${SCOPE}-tekton"
+  #     labels: 
+  #       <<: *tekton_labels
+  #       app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-pipeline"
+  #     annotations:
+  #       <<: *basic_annotations
+  #   spec:
+  #     tasks:
+  #       - name: build-app
+  #         taskRef:
+  #           name: ${COMPONENT}-start-build
+  #         params:
+  #           - name: APP_NAME
+  #             value: "${COMPONENT}-app"
+  #       - name: deploy-app
+  #         runAfter: ["build-app"]
+  #         retries: 2
+  #         taskRef:
+  #           name: ${COMPONENT}-start-deploy
+  #         params:
+  #           - name: APP_NAME
+  #             value: "${COMPONENT}-app"
+  # - kind: PipelineRun
+  #   apiVersion: tekton.dev/v1alpha1
+  #   metadata:
+  #     name: ${COMPONENT}-pipelinerun-${RANDRUN}
+  #     namespace: "${SCOPE}-tekton"
+  #     labels: 
+  #       <<: *tekton_labels
+  #       app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-pru"
+  #     annotations:
+  #       <<: *basic_annotations
+  #   spec:
+  #     timeout: 0h10m0s
+  #     pipelineRef:
+  #       name: ${COMPONENT}-pipeline
+  # - kind: TaskRun
+  #   apiVersion: tekton.dev/v1alpha1
+  #   metadata:
+  #     name: ${COMPONENT}-deploy-database-
+  #     namespace: "${SCOPE}-tekton"
+  #     labels: 
+  #       <<: *tekton_labels
+  #       app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-${COMPONENT}-deploy-database-taskrun"
+  #     annotations:
+  #       <<: *basic_annotations
+  #   spec:
+  #     tasks:
+  #       - name: deploy-database
+  #         taskRef:
+  #           name: ${COMPONENT}-start-deploy
+  #         params:
+  #           - name: APP_NAME
+  #             value: "${COMPONENT}-db"
+parameters:
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: demo)"
+    value: demo
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
+    required: true
+  - name: COMPONENT
+    displayName: Project service
+    description: "Project service"
+    value: demo1
+    required: true
+  - name: RANDRUN
+    displayName: Random string for pipelinerun execution
+    description: Random string suffix to use for pipelinerun task uniqueness
+    from: "[a-z0-9]{10}"
+    generate: expression
+    required: true
