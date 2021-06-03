@@ -27,10 +27,6 @@ labels:
   template: sxv4-demo-awx-project-dev-template
   app.kubernetes.io/managed-by: sxv4-console
 objects:
-
-
-
-
 - kind: AppProject
   apiVersion: argoproj.io/v1alpha1
   metadata:

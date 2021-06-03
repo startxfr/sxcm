@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-demo-tekton-demo2-dev-template
+  name: sxv4-demo-tekton-demo1-dev-template
   annotations:
     openshift.io/display-name: Demo tekton of a simple task
     openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
@@ -14,37 +14,56 @@ metadata:
     iconClass: icon-nodejs
     tags: startx,nodejs,sxapi,sxv4,demo,dev
   labels:
-    template: sxv4-demo-tekton-demo2-dev-template
+    template: sxv4-demo-tekton-demo1-dev-template
 message: |-
-  Your tekton demo 2 ressources are now created.
+  Your tekton demo 1 ressources are now created.
 
   Project          : ${PROJECT}
 
 labels:
   project: demo-tekton
-  demo: demo2
+  demo: demo1
   app.kubernetes.io/managed-by: sxv4-console
 objects:
-  - kind: TaskRun
+  - kind: Task
     apiVersion: tekton.dev/v1alpha1
     metadata:
-      name: demo2-taskrun-${RANDRUN}
+      name: demo1-task
       namespace: "${PROJECT}"
     spec:
-      taskRef:
-        name: demo1-task
       inputs:
         params:
           - name: message
-            value: this is my first run
+            type: string
+            description: The path message to display
+            default: "Hello world!"
+      steps:
+        - name: display-message
+          image: registry.redhat.io/ubi7/ubi-minimal
+          command: ["echo"]
+          args: ["$(inputs.params.message)"]
 parameters:
   - name: PROJECT
     displayName: Project scope
     description: "Project scope (ex: demo)"
     value: demo-tekton
-  - name: RANDRUN
-    displayName: Random string for pipelinerun execution
-    description: Random string suffix to use for pipelinerun task uniqueness
-    from: "[a-z0-9]{10}"
-    generate: expression
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: demo)"
+    value: demo
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: demo
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
     required: true
