@@ -3,6 +3,7 @@
 SXCM_PATH=/usr/share/sxcm
 SXCM_PROFILES_PATH=$SXCM_PATH/profiles
 SXCM_RESOURCES_PATH=$SXCM_PATH/resources
+SXCM_DEMOS_PATH=$SXCM_PATH/demo
 SXCM_LIB_PATH=$SXCM_PATH/lib
 
 source $SXCM_PATH/config
@@ -12,6 +13,7 @@ source $SXCM_LIB_PATH/core-setup
 source $SXCM_LIB_PATH/core-cluster
 source $SXCM_LIB_PATH/core-profiles
 source $SXCM_LIB_PATH/core-resources
+source $SXCM_LIB_PATH/core-demo
 
 ## Start prog switch
 LoadConfig
@@ -24,6 +26,7 @@ if [[ "$1" != "" ]]; then
         profiles)                                                            menuProfiles $2 ;;
         resources)                                                           menuResources $2 $3;;
         resource)                                                            menuResource $2 $3 $4 $5 $6 ;;
+        demo)                                                                menuDemo $2 $3 $4 $5 $6 ;;
         setup)                                                               menuSetup $@ ;;
         * | -h | --help)                                                     menuUsage $@ ;;
     esac

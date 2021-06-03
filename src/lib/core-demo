@@ -1,0 +1,554 @@
+#!/bin/bash
+
+# demos demo
+function doListDemos {
+    echo -e "\e[33mList\e[0m \e[1mavailables demos\e[0m"
+    doListDemosAbstract "false"
+}
+
+# demos demo generator for both local or shared
+function doListDemosAbstract {
+    local LIST
+    local LISTRead=()
+    local TITLE=shared
+    local ECHOTITLE=true
+    local filepath=""
+    local democontent=""
+    local desc=""
+    LIST=$(listDemosDefault)
+    TITLE=shared
+    if [[ $1 == "false" ]]; then
+        ECHOTITLE=false
+    fi
+    local LISTOutput=($(constructDemosList "${LIST[@]}" "${LISTRead[@]}"))
+    COUNT=${#LISTOutput[@]}
+    if [[ $ECHOTITLE == "true" ]]; then
+        echo -e "\e[33mList\e[0m \e[1m$COUNT\e[0m availables \e[0m$TITLE\e[0m demos"
+    fi
+    for demo in "${LISTOutput[@]}"; do
+        filepath=$SXCM_DEMOS_PATH/$demo
+        type=none
+        if [[ -d $filepath ]]; then
+            democontent="$(ls $filepath/*.yaml 2>/dev/null | wc -l) yaml, $(ls $filepath/*.sh 2>/dev/null | wc -l) bash"
+            type="directory ($democontent)"
+        else
+            type="file (yaml)"
+        fi
+        printf "\e[1m%-20s\e[0m %s\n" $demo "$type"
+        desc=""
+    done
+}
+
+# construct a list of demos
+function constructDemosList {
+    local LISTin=$1
+    local LISTout=$2
+    local COUNT=${#LISTin[@]}
+    for i in "${!LISTin[@]}"; do
+        local newdemo=${LISTin[i]}
+        local isFound=false
+        for j in "${!LISTout[@]}"; do
+            local recordeddemo=${LISTout[j]}
+            if [[ $newdemo = $recordeddemo ]]; then
+                isFound=true
+            fi
+        done
+        if [[ $isFound == "false" ]]; then
+            LISTout+=("$newdemo")
+        fi
+    done
+    for i in "${!LISTout[@]}"; do
+        echo "${LISTout[i]}"
+    done
+}
+
+# get list of default demos
+function listDemosDefault {
+    echo $(listDemos $SXCM_DEMOS_PATH)
+}
+
+# get list of cluster demos
+function listDemosCluster {
+    local cn=$1
+    local demoDirLocal=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn/$SXCM_USER_CONF_DIR_DEMOS
+    echo $(listDemos $demoDirLocal)
+}
+
+# get list cluster configuration
+function listDemos {
+    local path=${1}
+    local LIST=$(ls $path 2>/dev/null)
+    local COUNT=$(echo $LIST | wc -w)
+    if [[ $COUNT -gt 0 ]]; then
+        for demo in $LIST; do
+            foo=${demo#"$path/"}
+            foo=${foo%".yml"}
+            echo "${foo}"
+        done
+    fi
+}
+
+##################
+
+# edit demo configuration
+function doDemoEdit {
+    local rn=$1
+    local cn=$2
+    if [[ "$rn" == "" ]]; then
+        echo -en "Demo name [mydemo] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="mydemo"
+        fi
+    fi
+    if [[ $cn == '' ]]; then
+        cn=$(getActiveCluster)
+    fi
+    echo -e "\e[1m\e[33mEditing\e[0m the demo \e[1m$rn\e[0m in cluster \e[1m$cn\e[0m"
+    local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
+    local clusterDemoDir=$clusterDemosDir/$rn
+    if [[ -d $clusterDemoDir ]]; then
+        vi $clusterDemoDir/*
+        cd $clusterDir &>/dev/null
+        git add . &>/dev/null
+        git commit -am "[$cn] Edit the $rn demo defined in the $cn cluster" &>/dev/null
+        git push origin $cn &> /dev/null
+        cd - &>/dev/null
+        echo -e "\e[1m\e[33mUpdated\e[0m demo \e[1m$rn\e[0m in cluster \e[1m$cn\e[0m"
+    else
+        echo -e "\e[1m\e[31mCould not read\e[0m directory \e[1m$rn\e[0m in $clusterDemosDir"
+    fi
+}
+
+# information demo configuration
+function doDemoInfo {
+    local rn=$1
+    if [[ "$rn" == "" ]]; then
+        echo -en "Demo name [mydemo] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="mydemo"
+        fi
+    fi
+    echo -e "\e[1m\e[34mInfo\e[0m about the demo \e[1m$rn\e[0m"
+    local demoDirLocal=$SXCM_DEMOS_PATH
+    local LIST=$(listClusterConfigs)
+    local COUNT=$(echo $LIST | wc -w)
+    if [[ -d $demoDirLocal/$rn ]]; then
+        echo "location   :  $demoDirLocal/$rn"
+        echo "content    : " "$(ls $demoDirLocal/$rn/*.yaml 2>/dev/null | wc -l) yaml, $(ls $demoDirLocal/$rn/*.sh 2>/dev/null | wc -l) bash"
+    else
+        echo -e "\e[1m\e[31mCould not read\e[0m directory \e[1m$rn\e[0m in $demoDirLocal"
+        exit 1
+    fi
+    if [[ $COUNT -gt 0 ]]; then
+        for cluster in $LIST
+        do
+            local demoIsFoundInOCPInstall="false"
+            for demo in $(extractOCPInstallDemoList $(getOCPInstallFileForCluster $cluster)); do
+                if [[ "$demo" == "$rn" ]]; then
+                    demoIsFoundInOCPInstall="true"
+                fi
+            done
+            if [[ "$demoIsFoundInOCPInstall" == "true" ]]; then
+                echo -e "- \e[96menabled\e[0m  in cluster \e[1m$cluster\e[0m"
+            else
+                echo -e "- \e[95mdisabled\e[0m in cluster \e[1m$cluster\e[0m"
+            fi
+        done
+    fi
+    exit
+}
+
+# associate demo configuration
+function doDemoAssociate {
+    local rn=$1
+    local cn=$2
+    if [[ "$rn" == "" ]]; then
+        echo -en "Demo name [mydemo] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="mydemo"
+        fi
+    fi
+    if [[ $cn == '' ]]; then
+        cn=$(getActiveCluster)
+    fi
+    local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
+    local clusterDemoDir=$clusterDemosDir/$rn
+    local demoIsFoundInDemoDir="false"
+    if [[ ! -d $clusterDir ]]; then
+        echo -e "No cluster config found at \e[1m$clusterDir\e[0m for loading the \e[1m$cn\e[0m demos"
+    else
+        for demo in $(listDemosCluster $cn); do
+            if [[ "$demo" == "$rn" ]]; then
+                demoIsFoundInDemoDir="true"
+            fi
+        done
+        if [[ "$demoIsFoundInDemoDir" == "false" ]]; then
+            echo -e "\e[1m\e[95mAssociate\e[0m the demo \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
+            local demoDirShared=$SXCM_DEMOS_PATH
+            if [[ -d $demoDirShared/$rn ]]; then
+                    mkdir -p $clusterDemoDir &>/dev/null
+                    echo -e "\e[1m\e[90mCopy\e[0m demo \e[1m$rn\e[0m to cluster \e[1m$cn\e[0m"
+                    cp -r $demoDirShared/$rn/* $clusterDemoDir/ &>/dev/null
+                    cd $clusterDir &>/dev/null
+                    git add . &>/dev/null
+                    git commit -am "[$cn] Associate the $rn demo to the $cn cluster" &>/dev/null
+                    git push origin $cn &> /dev/null
+                    cd - &>/dev/null
+            fi
+        else 
+            echo -e "demo \e[1m$rn\e[0m already found in cluster \e[1m$cn\e[0m"
+        fi
+    fi
+}
+
+# dissociate demo configuration
+function doDemoDissociate {
+    local rn=$1
+    local cn=$2
+    if [[ "$rn" == "" ]]; then
+        echo -en "Demo name [mydemo] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="mydemo"
+        fi
+    fi
+    if [[ $cn == '' ]]; then
+        cn=$(getActiveCluster)
+    fi
+    local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
+    local clusterDemoDir=$clusterDemosDir/$rn
+    if [[ ! -d $clusterDir ]]; then
+        echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterDir\e[0m for loading the \e[1m$cn\e[0m demos"
+    else
+        rm -rf $clusterDemoDir &>/dev/null
+        echo -e "\e[1m\e[95mDissociate\e[0m the demo \e[1m$rn\e[0m from the cluster \e[1m$cn\e[0m"
+        cd $clusterDir &>/dev/null
+        git add . &>/dev/null
+        git commit -am "[$cn] Dissociate the $rn demo from the $cn cluster" &>/dev/null
+        git push origin $cn &> /dev/null
+        cd - &>/dev/null
+    fi
+}
+
+# enable demo configuration
+function doDemoEnable {
+    local rn=$1
+    local cn=$2
+    if [[ "$rn" == "" ]]; then
+        echo -en "Demo name [mydemo] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="mydemo"
+        fi
+    fi
+    if [[ $cn == '' ]]; then
+        cn=$(getActiveCluster)
+    fi
+    local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
+    local clusterDemoDir=$clusterDemosDir/$rn
+    local demoIsFoundInDemoDir="false"
+    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    local IsDeployed=false
+    if [[ ! -d $clusterDir ]]; then
+        echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterDir\e[0m for enabling the \e[1m$rn\e[0m demos"
+    else
+        echo -e "\e[1m\e[96mEnable\e[0m the demo \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
+        doDemoAssociate $rn $cn
+        if [[ -r $clusterDir/metadata.json || -r $clusterDir/terraform.tfstate ]] && [[ -r $clusterDir/deployed ]]
+        then
+            IsDeployed=true
+        fi
+        if [[ "$IsDeployed" == "true" ]]
+        then
+            applyClusterDemo "update" $cn $rn
+            cd $clusterDir &>/dev/null
+            git add . &>/dev/null
+            git commit -am "[$cn] Enable the $rn demo from the $cn cluster" &>/dev/null
+            git push origin $cn &> /dev/null
+            cd - &>/dev/null
+        else
+            echo -e "Could not \e[1menable $rn\e[0m demo on cluster \e[1m$cn\e[0m because cluster is \e[1m\e[35mnot deployed\e[0m"
+        fi
+    fi
+}
+
+# disable demo configuration
+function doDemoDisable {
+    local rn=$1
+    local cn=$2
+    if [[ "$rn" == "" ]]; then
+        echo -en "Demo name [mydemo] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="mydemo"
+        fi
+    fi
+    if [[ $cn == '' ]]; then
+        cn=$(getActiveCluster)
+    fi
+    local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
+    local clusterDemoDir=$clusterDemosDir/$rn
+    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    local IsDeployed=false
+    if [[ ! -r $clusterConfOCPInstallFile ]]; then
+        echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m demos"
+    else
+        if [[ -r $clusterDir/metadata.json || -r $clusterDir/terraform.tfstate ]] && [[ -r $clusterDir/deployed ]]
+        then
+            IsDeployed=true
+        fi
+        echo -e "\e[1m\e[95mDisable\e[0m the demo \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
+        if [[ "$IsDeployed" == "true" ]]
+        then
+            applyClusterDemo "delete" $cn $rn
+        else
+            echo -e "Could not \e[1mdisable $rn\e[0m demo on cluster \e[1m$cn\e[0m because cluster is \e[1m\e[35mnot deployed\e[0m"
+        fi
+        doDemoDissociate $rn $cn
+        cd $clusterDir &>/dev/null
+        git add . &>/dev/null
+        git commit -am "[$cn] Disable the $rn demo from the $cn cluster" &>/dev/null
+        git push origin $cn
+        cd - &>/dev/null
+    fi
+}
+
+###################
+
+# sub-menu for info command
+function menuDemoInfo {
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm demo info sub-command to read detail from a demo stored into the local demo stack
+
+# Usage
+
+[user@localhost]$ sxcm demo info DEMONAME
+
+
+# Examples
+
+# Read a demo info from the local demo stack
+sxcm demo info mydemo
+
+EOF
+    else
+        doDemoInfo $1 $2
+    fi
+}
+
+# sub-menu for edit command
+function menuDemoEdit {
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm demo edit sub-command to change content of a demo stored into the local demo stack
+
+# Usage
+
+[user@localhost]$ sxcm demo edit DEMONAME
+
+
+# Examples
+
+# Start editor on mycluster demo and record change into the local demo stack
+sxcm demo edit mydemo
+
+EOF
+    else
+        doDemoEdit $1 $2
+    fi
+}
+
+# sub-menu for associate command
+function menuDemoAssociate {
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm demo associate sub-command to add a demo into a cluster configuration
+
+# Usage
+
+[user@localhost]$ sxcm demo associate DEMONAME [CLUSTERNAME]
+
+
+# Examples
+
+# Associate the mydemo demo (local or shared) with the currently active cluster
+sxcm demo associate mydemo
+# Associate the mydemo demo (local or shared) with the mycluster cluster
+sxcm demo associate mydemo mycluster
+
+EOF
+    else
+        doDemoAssociate $1 $2
+    fi
+}
+
+# sub-menu for dissociate command
+function menuDemoDissociate {
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm demo dissociate sub-command to remove a demo into a cluster configuration
+
+# Usage
+
+[user@localhost]$ sxcm demo dissociate DEMONAME [CLUSTERNAME]
+
+
+# Examples
+
+# Dissociate the mydemo demo (local or shared) with the currently active cluster
+sxcm demo dissociate mydemo
+# Dissociate the mydemo demo (local or shared) with the mycluster cluster
+sxcm demo dissociate mydemo mycluster
+
+EOF
+    else
+        doDemoDissociate $1 $2
+    fi
+}
+
+# sub-menu for enable command
+function menuDemoEnable {
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm demo enable sub-command to add a demo into a cluster configuration and the running cluster
+
+# Usage
+
+[user@localhost]$ sxcm demo enable DEMONAME [CLUSTERNAME]
+
+
+# Examples
+
+# Enable the mydemo demo (local or shared) with the currently active cluster
+sxcm demo enable mydemo
+# Enable the mydemo demo (local or shared) with the mycluster cluster
+sxcm demo enable mydemo mycluster
+
+
+EOF
+    else
+        doDemoEnable $1 $2
+    fi
+}
+
+# sub-menu for disable command
+function menuDemoDisable {
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm demo disable sub-command to remove a demo into a cluster configuration and the running cluster
+
+# Usage
+
+[user@localhost]$ sxcm demo disable DEMONAME [CLUSTERNAME]
+
+
+# Examples
+
+# Disable the mydemo demo (local or shared) with the currently active cluster
+sxcm demo disable mydemo
+# Disable the mydemo demo (local or shared) with the mycluster cluster
+sxcm demo disable mydemo mycluster
+
+
+EOF
+    else
+        doDemoDisable $1 $2
+    fi
+}
+
+# menu switch for demo usage command
+function menuDemoUsage {
+    menuHeadArt
+    cat <<EOF
+
+This client helps you manage demos availables and their association with configured clusters
+
+Available actions are : list, create, edit, info, enable, disable, associate, dissociate and delete
+
+# Usage
+
+[user@localhost]$ sxcm demo ACTION [options]
+
+# Availables actions
+
+## Cluster demos commands actions (local) :
+  - list                                   List available cluster configurations
+  - edit DEMONAME [CLUSTERNAME]            edit a demo (only in cluster)
+  - info DEMONAME                          Get information about a demo
+  - associate DEMONAME [CLUSTERNAME]       Add a demo into a demo list and record it (default is active cluster)
+  - dissociate DEMONAME [CLUSTERNAME]      Remove a demo from a demo list and record deletion (default is active cluster)
+
+## Cluster demos commands actions (remote) :
+  - enable DEMONAME [CLUSTERNAME]          Add a demo into a demo list, record, apply to running cluster and record it (default is active cluster)
+  - disable DEMONAME [CLUSTERNAME]         Remove a demo from the cluster, record it, remove the demo list and record it (default is active cluster)
+
+
+# Examples
+
+  sxcm demo list                           # List available cluster configurations
+  sxcm demo edit mydemo                    # Edit the mydemo demo stored into the default demo stack
+  sxcm demo info mydemo                    # Display info about the mydemo demo stored into the local demo stack
+  sxcm demo associate mydemo               # Add the mydemo demo into the demo list of the curently active cluster and record it
+  sxcm demo associate mydemo mycluster     # Add the mydemo demo into the mycluster demo list and record it
+  sxcm demo dissociate mydemo              # Remove the mydemo demo from the curently active demo list and record deletion
+  sxcm demo dissociate mydemo mycluster    # Remove the mydemo demo from the mycluster demo list and record deletion
+  sxcm demo enable mydemo                  # Add the mydemo demo into the demo list of the curently active cluster and apply it to the running cluster
+  sxcm demo enable mydemo mycluster        # Add the mydemo demo into the mycluster demo list and apply it to the running cluster
+  sxcm demo disable mydemo                 # Remove the mydemo demo from the curently active demo list and apply it to the running cluster
+  sxcm demo disable mydemo mycluster       # Remove the mydemo demo from the mycluster demo list and apply it to the running cluster
+
+EOF
+
+    exit
+}
+
+# sub-menu for demos command
+function menuDemos {
+    isPametersContainHelpers $1 $2
+    if [[ $? == "0" || "$1" != "" || "$2" != "" ]]; then
+        menuDemoUsage
+    else
+        doListDemos
+    fi
+}
+
+# main menu for the cluster sub-command
+function menuDemo {
+    case $1 in
+    info) menuDemoInfo ${2} ${3} ${4} ;;
+    edit) menuDemoEdit ${2} ${3} ${4} ;;
+    list) menuDemos ${2} ${3} ${4} ;;
+    associate) menuDemoAssociate ${2} ${3} ${4} ;;
+    dissociate) menuDemoDissociate ${2} ${3} ${4} ;;
+    enable) menuDemoEnable ${2} ${3} ${4} ;;
+    disable) menuDemoDisable ${2} ${3} ${4} ;;
+    *) menuDemoUsage ;;
+    esac
+}

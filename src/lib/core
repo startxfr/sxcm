@@ -28,6 +28,7 @@ function CheckConfigOrCreate {
         touch $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_FILE
         mkdir -p $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER &>/dev/null
         mkdir -p $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES &>/dev/null
+        mkdir -p $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_DEMOS &>/dev/null
     fi
 }
 
