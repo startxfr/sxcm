@@ -77,7 +77,7 @@ function listResourcesDefault {
     echo $(listResources $SXCM_RESOURCES_PATH)
 }
 
-# get list of local cluster resources
+# get list of local resources
 function listResourcesLocal {
     echo $(listResources $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_RESOURCES)
 }
@@ -287,12 +287,12 @@ function doResourceAssociate {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
-    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
-    local clusterResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
+    localConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    localResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
     local resourceIsFoundInOCPInstall="false"
     local resourceIsFoundInResourceDir="false"
     local resourceNewResourceListForOCPInstall=""
-    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    localConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
     if [[ ! -r $clusterConfOCPInstallFile ]]; then
         echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
     else
@@ -357,11 +357,11 @@ function doResourceDissociate {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
-    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
-    local clusterResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
+    localConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    localResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
     local resourceIsFoundInOCPInstall="false"
     local resourceNewResourceListForOCPInstall=""
-    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    localConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
     if [[ ! -r $clusterConfOCPInstallFile ]]; then
         echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
     else
@@ -401,12 +401,12 @@ function doResourceEnable {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
-    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
-    local clusterResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
+    localConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    localResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
     local resourceIsFoundInOCPInstall="false"
     local resourceIsFoundInResourceDir="false"
     local resourceNewResourceListForOCPInstall=""
-    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    localConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
     local IsDeployed=false
     if [[ ! -r $clusterConfOCPInstallFile ]]; then
         echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterConfOCPInstallFile\e[0m for enabling the \e[1m$rn\e[0m cluster resources"
@@ -422,7 +422,7 @@ function doResourceEnable {
             applyClusterResource "update" $cn $rn
             cd $clusterConfDir &>/dev/null
             git add . &>/dev/null
-            git commit -am "[$cn] Dissociate the $rn cluster resource from the $cn cluster" &>/dev/null
+            git commit -am "[$cn] Enable the $rn cluster resource from the $cn cluster" &>/dev/null
             git push origin $cn &> /dev/null
             cd - &>/dev/null
         else
@@ -445,11 +445,11 @@ function doResourceDisable {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
-    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
-    local clusterResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
+    localConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    localResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
     local resourceIsFoundInOCPInstall="false"
     local resourceNewResourceListForOCPInstall=""
-    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    localConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
     local IsDeployed=false
     if [[ ! -r $clusterConfOCPInstallFile ]]; then
         echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
@@ -483,7 +483,7 @@ function menuResourceCreate {
         menuHeadArt
         cat <<EOF
 
-sxcm resource create sub-command to create a new cluster resource into the local cluster resource stack
+sxcm resource create sub-command to create a new cluster resource into the local resource stack
 
 # Usage
 
@@ -508,7 +508,7 @@ function menuResourceInfo {
         menuHeadArt
         cat <<EOF
 
-sxcm resource info sub-command to read detail from a cluster resource stored into the local cluster resource stack
+sxcm resource info sub-command to read detail from a cluster resource stored into the local resource stack
 
 # Usage
 
@@ -517,7 +517,7 @@ sxcm resource info sub-command to read detail from a cluster resource stored int
 
 # Examples
 
-# Read a cluster resource info from the local cluster resource stack
+# Read a cluster resource info from the local resource stack
 sxcm resource info myresource
 
 EOF
@@ -533,7 +533,7 @@ function menuResourceEdit {
         menuHeadArt
         cat <<EOF
 
-sxcm resource edit sub-command to change content of a cluster resource stored into the local cluster resource stack
+sxcm resource edit sub-command to change content of a cluster resource stored into the local resource stack
 
 # Usage
 
@@ -542,7 +542,7 @@ sxcm resource edit sub-command to change content of a cluster resource stored in
 
 # Examples
 
-# Start editor on mycluster cluster resource and record change into the local cluster resource stack
+# Start editor on mycluster cluster resource and record change into the local resource stack
 sxcm resource edit myresource
 
 EOF
@@ -558,7 +558,7 @@ function menuResourceDelete {
         menuHeadArt
         cat <<EOF
 
-sxcm resource delete sub-command to change content of a cluster resource stored into the local cluster resource stack
+sxcm resource delete sub-command to change content of a cluster resource stored into the local resource stack
 
 # Usage
 
@@ -567,7 +567,7 @@ sxcm resource delete sub-command to change content of a cluster resource stored 
 
 # Examples
 
-# Remove the mycluster cluster resource from the local cluster resource stack
+# Remove the mycluster cluster resource from the local resource stack
 sxcm resource delete myresource
 
 EOF
@@ -703,10 +703,10 @@ Available actions are : list, create, edit, info, enable, disable, associate, di
 
 ## Cluster resources commands actions (local) :
   - list                                             List available cluster configurations
-  - create RESOURCENAME RESOURCEFILE                 Add a new cluster resource to the local cluster resource stack
+  - create RESOURCENAME RESOURCEFILE                 Add a new cluster resource to the local resource stack
   - edit RESOURCENAME                                edit a cluster resource (only local)
   - info RESOURCENAME                                Get information about a cluster resource (only local)
-  - delete RESOURCENAME                              Remove a cluster resource from the local cluster resource stack
+  - delete RESOURCENAME                              Remove a cluster resource from the local resource stack
   - associate RESOURCENAME [CLUSTERNAME]             Add a cluster resource into a cluster resource list and record it (default is active cluster)
   - dissociate RESOURCENAME [CLUSTERNAME]            Remove a cluster resource from a cluster resource list and record deletion (default is active cluster)
 
@@ -718,10 +718,10 @@ Available actions are : list, create, edit, info, enable, disable, associate, di
 # Examples
 
   sxcm resource list                               # Alias of 'sxcm resources'
-  sxcm resource create myresource myresource.yml   # Add the myresource cluster resource to the  local cluster resource stack based on the content of the myresource.yml file
-  sxcm resource edit myresource                    # Edit the myresource cluster resource stored into the local cluster resource stack
-  sxcm resource info myresource                    # Display info about the myresource cluster resource stored into the local cluster resource stack
-  sxcm resource delete  myresource                 # Delete the myresource cluster resource stored into the local cluster resource stack
+  sxcm resource create myresource myresource.yml   # Add the myresource cluster resource to the  local resource stack based on the content of the myresource.yml file
+  sxcm resource edit myresource                    # Edit the myresource cluster resource stored into the local resource stack
+  sxcm resource info myresource                    # Display info about the myresource cluster resource stored into the local resource stack
+  sxcm resource delete  myresource                 # Delete the myresource cluster resource stored into the local resource stack
   sxcm resource associate myresource               # Add the myresource cluster resource into the cluster resource list of the curently active cluster and record it
   sxcm resource associate myresource mycluster     # Add the myresource cluster resource into the mycluster cluster resource list and record it
   sxcm resource dissociate myresource              # Remove the myresource cluster resource from the curently active cluster resource list and record deletion

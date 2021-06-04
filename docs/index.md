@@ -1,14 +1,13 @@
 # startx cluster manager (sxcm)
 
-![sxcm](https://img.shields.io/badge/latest-v0.1.4-blue.svg) [![last commit](https://img.shields.io/github/last-commit/startxfr/sxcm.svg)](https://github.com/startxfr/sxcm) [![Doc](https://readthedocs.org/projects/sxcm/badge)](https://sxcm.readthedocs.io)
+![sxcm](https://img.shields.io/badge/latest-v0.1.5-blue.svg) [![last commit](https://img.shields.io/github/last-commit/startxfr/sxcm.svg)](https://github.com/startxfr/sxcm) [![Doc](https://readthedocs.org/projects/sxcm/badge)](https://sxcm.readthedocs.io)
 
 STARTX Openshift installer for various infrastructure configuration deployed under an AWS account.
 
 ## Purpose
 
-The main goal of this tool is to help you build gickly and efficiently a cloud infrastructure that ca drive your containerized workloads. 
-If you have a good knowledge in Openshift structucture and how helm chart are managed by ArgoCD infrastructure, you should easilly perform
-the addaptations required to addapt this toold to your needs.
+The main goal of this tool is to help you build gickly and efficiently a cloud infrastructure that can run your containerized workloads. 
+If you have a good knowledge in Openshift structucture and how helm chart are managed by ArgoCD infrastructure, you should easily perform the changes required to addapt this tool to your needs.
 
 ## Principles
 
@@ -66,12 +65,14 @@ Only **cluster instance** in the **deployed state** have a **cluster infrastruct
 
 ### Cluster resource
 
-A **cluster ressource** is a kuberetes list of ressource used to configure the cluster and services running into it. Appart the `argocd-project` and `argocd-deploy` all operator are based on **openshift template** deploying **argocd application** or
+A **cluster ressource** is a kubernetes list of ressource used to configure the cluster and services running into it. Appart the `argocd-project` and `argocd-deploy` all cluster resources are based on **openshift template** deploying **argocd application** or
 **bash script** executing `oc` or `kubectl` commands.
 
 These argoCD applications applyed various cluster configuration or deploy new cluster resources (mostly with operators). The sxcm cluster resource use extensively the [startx helm-repository](https://helm-repository.readthedocs.io) wrapped using various argoCD application acting as an intermediate between the cluster state and this helm chart.
 
-More information about **cluster resource** can be found by eading the [cluster resource manual](../../4-cluster-resources) witch provide so good example on how to use cluster resources.
+**cluster resource** could be **shared**, meaning stored into the `/usr/share/sxcm/resources` directory, or **local** meaning stored into the `~/.sxcm/resources` directory.
+
+More information about **cluster resource** can be found by reading the [cluster resource manual](../../4-cluster-resources) witch provide so good example on how to use cluster resources.
 
 ### Gitops repository
 
@@ -84,15 +85,16 @@ The gitops repository is here to share, track changes and act as a reference for
 **cluster resource**, with exception of the `argocd-project` and `argocd-deploy`, are based on **openshift template** deploying **argocd application** or **bash script** executing `oc` or `kubectl` commands.
 
 All these commands produce creation of multiple kubernetes resource that you can monitor globally with :
+
 - `oc get application -n startx-argocd` to get all application
 - go to `https://startx-server-startx-argocd.apps.<mycluster>.startx.fr`
 - `oc get pod --all-namespaces` to see what is deployed into your cluster
 
 ### Active cluster
 
-The **cluster stack** store the local clusters list. **active cluster** is the currently active cluster defined in the cluster stack.
+The **cluster stack** store the local clusters list. **active cluster** is the currently active cluster defined in the cluster stack. There is only one active cluster per system user.
 
-Each time you create, clone, import or switch a cluster, a change is done to the currently active cluster, and context is change to this new ative cluster.
+Each time you create, clone, import or switch a cluster, a change is done to the currently active cluster, and context is change to this new active cluster.
 
 The active cluster state is used every time a cluster name is required but not provided.
 

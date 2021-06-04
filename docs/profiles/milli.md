@@ -13,7 +13,7 @@ Deploy `milli` profile based on the [sxcm milli profile](https://raw.githubuserc
 | **Topology**   | **3** master-worker                          |
 | **Master**     | **8**Vcpu, **32**Go RAM, **50**Go io1  50iop |
 | **Worker**     |                                              |
-| **service**    | `argocd` `pipeline`                          |
+| **service**    | `argocd`  <br/> `pipeline`                          |
 
 ## Create a cluster
 

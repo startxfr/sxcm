@@ -5,6 +5,7 @@ ENV=$3
 VERSION=$4
 OCTOKEN=$5
 OCCLUSTER=$6
+OCCLUSTERNAME=$7
 ARGOCDPREFIX=startx
 PROJECT=startx-argocd
 DIR=`dirname $(readlink -f $0)`
@@ -37,7 +38,7 @@ function checkAllComponents {
 function checkOneComponent {
     local COMPONENT="$1"
     local PROJECT="$2"
-    oc wait po -l app.kubernetes.io/name=$COMPONENT --for=condition=Ready --timeout=2000ms -n $PROJECT --token=$OCTOKEN --cluster=$OCCLUSTER &>/dev/null
+    oc wait po -l app.kubernetes.io/name=$COMPONENT --for=condition=Ready --timeout=2000ms -n $PROJECT --token=$OCTOKEN --cluster=$OCCLUSTERNAME &>/dev/null
     if [[ $? == "0" ]]
     then
         echo -e " - Pod $COMPONENT is running"

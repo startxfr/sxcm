@@ -1,0 +1,125 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxv4-demo-sxapi-build-dev-template
+  annotations:
+    openshift.io/display-name: Demo STARTX - SXAPI
+    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/generated-by: sxcm
+    openshift.io/provider-display-name: STARTX
+    description:
+      Template for building the demo portal for the STARTX v4 Information System in dev mode
+      using sxapi in an openshift PaaS
+    iconClass: icon-nodejs
+    tags: startx,nodejs,sxapi,build,sxv4,demo,dev
+  labels:
+    component: demo
+    template: sxv4-demo-sxapi-build-dev-template
+message: |-
+  Your sxapi-build demo will be soon deployed in project ${SCOPE}-sxapi.
+  Monitor the deployement for application availability and
+  Follow created route to browse running application
+
+  Scope          : ${SCOPE}
+  Environment    : ${ENV}
+  Project        : ${NS}
+
+labels:
+  template: sxv4-demo-sxapi-build-dev-template
+  app.kubernetes.io/managed-by: sxcm
+objects:
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${NS}-sxapi-build-app
+    namespace: "${ARGOCD_NS}"
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "${NS}"
+      app.kubernetes.io/name: "${NS}-sxapi-build-application"
+      app.kubernetes.io/part-of: ${NS}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "${NS}-project"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxcm
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: ${NS}
+    source:
+      path: charts/example-catalog/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-sxapi_build.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "sxapi-build"
+          - name: demo.sxapi_build.namespace
+            value: "${NS}"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 20s
+parameters:
+  - name: NS
+    displayName: SXAPI namespace for sxapi instance
+    description: "Name of the sxapi namespace"
+    value: demo-sxapi
+    required: true
+  - name: ARGOCD_NS
+    displayName: The namespace where argocd server goes to
+    description: "Namespace to place argocd server to"
+    value: startx-argocd
+    required: true
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: sxv4)"
+    value: demo
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
+    required: true
+  - name: COMPONENT
+    displayName: Project service
+    description: "Project service"
+    value: demo
+    required: true

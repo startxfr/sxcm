@@ -1,0 +1,195 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxv4-demo-jenkins-project-dev-template
+  annotations:
+    openshift.io/display-name: Demo STARTX - Jenkins
+    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/generated-by: sxcm
+    openshift.io/provider-display-name: STARTX
+    description:
+      Deployment of an Jenkins and a sample application using this infrastructure to 
+      demonstrate the Jenkins capacities running under an openshift 4 environment
+    iconClass: icon-load-balancer
+    tags: startx,jenkins,demo,dev
+  labels:
+    template: sxv4-demo-jenkins-project-dev-template
+message: |-
+  Your demo project ${NS} for Jenkins technology is now created.
+
+  Scope          : ${SCOPE}
+  Environment    : ${ENV}
+  Service        : jenkins
+  Project        : ${NS}
+
+labels:
+  template: sxv4-demo-jenkins-project-dev-template
+  app.kubernetes.io/managed-by: sxcm
+objects:
+- kind: AppProject
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${NS}
+    namespace: "${ARGOCD_NS}"
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "${NS}"
+      app.kubernetes.io/name: "${NS}-appproject"
+      app.kubernetes.io/part-of: ${NS}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "${NS}-project"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxcm
+  spec:
+    sourceRepos:
+      - '*'
+    destinations:
+      - namespace: ${NS}
+        server: '*'
+    clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+    roles:
+    - name: dev
+      description: Read-only privileges to group dev in ${NS} project
+      policies:
+      - g, dev, role:readonly
+      - p, role:startx-dev, *, get, .${NS}/*, allow
+      groups:
+      - dev
+    - name: ops
+      description: Read-only (and sync) privileges to group ops in ${NS} project
+      policies:
+      - p, role:startx-ops, clusters, get, .${NS}/*, allow
+      - p, role:startx-ops, projects, get, .${NS}/*, allow
+      - p, role:startx-ops, applications, get, .${NS}/*, allow
+      - p, role:startx-ops, applications, sync, .${NS}/*, allow
+      - p, role:startx-ops, repositories, get, .${NS}/*, allow
+      - p, role:startx-ops, repositories, sync, .${NS}/*, allow
+      - p, role:startx-ops, certificates, get, .${NS}/*, allow
+      - g, ops, role:startx-ops
+      groups:
+      - ops
+    - name: devops
+      description: Read-only privileges to group devops in ${NS} project
+      policies:
+      - p, role:startx-devops, clusters, get, .${NS}/*, allow
+      - p, role:startx-devops, projects, get, .${NS}/*, allow
+      - p, role:startx-devops, applications, get, .${NS}/*, allow
+      - p, role:startx-devops, repositories, get, .${NS}/*, allow
+      - p, role:startx-devops, certificates, get, .${NS}/*, allow
+      - g, devops, role:startx-devops
+      groups:
+      - devops
+    - name: admin
+      description: All privileges to group admin in ${NS} project
+      policies:
+      - p, role:startx-admin, *, *, ${NS}/*, allow
+      - g, system:cluster-admins, role:admin
+      groups:
+      - my-oidc-group
+      - system:cluster-admins
+      - admin
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${OPERATOR_NS}-project
+    namespace: "${ARGOCD_NS}"
+    labels:
+      <<: *basic_labels
+      app.kubernetes.io/name: "${OPERATOR_NS}-project-application"
+    annotations:
+      <<: *basic_annotations
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${OPERATOR_NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-jenkins/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-demo.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "startx-jenkins"
+          - name: project.enabled
+            value: "true"
+          - name: project.project.requester
+            value: "sxcm"
+          - name: operator.enabled
+            value: "false"
+          - name: jenkins.enabled
+            value: "false"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+parameters:
+  - name: OPERATOR_NS
+    displayName: The namespace where operator goes to
+    description: "Namespace to place objects to"
+    value: startx-jenkins
+    required: true
+  - name: NS
+    displayName: The namespace where objects goes to
+    description: "Namespace to place objects to"
+    value: demo-jenkins
+    required: true
+  - name: ARGOCD_NS
+    displayName: The namespace where argocd server goes to
+    description: "Namespace to place argocd server to"
+    value: startx-argocd
+    required: true
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: sxv4)"
+    value: demo
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
+    required: true
+  - name: COMPONENT
+    displayName: Project service
+    description: "Project service"
+    value: demo
+    required: true

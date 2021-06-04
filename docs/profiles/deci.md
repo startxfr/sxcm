@@ -13,7 +13,7 @@ Deploy `deci` profile based on the [sxcm deci profile](https://raw.githubusercon
 | **Topology**   | **3** master-worker                             |
 | **Master**     | **16**Vcpu, **64**Go RAM, **100**Go io1  100iop |
 | **Worker**     |                                                 |
-| **service**    | `argocd` `pipeline` `istio` `quaysec`           |
+| **service**    | `argocd`  <br/> `pipeline`  <br/> `istio`  <br/> `quaysec`           |
 
 ## Create a cluster
 

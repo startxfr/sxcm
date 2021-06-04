@@ -13,7 +13,7 @@ Deploy `micro` profile based on the [sxcm micro profile](https://raw.githubuserc
 | **Topology**   | **3** master-worker                          |
 | **Master**     | **8**Vcpu, **32**Go RAM, **50**Go gp2  50iop |
 | **Worker**     |                                              |
-| **service**    | `argocd` `pipeline`                          |
+| **service**    | `argocd`  <br/> `pipeline`                          |
 
 ## Create a cluster
 

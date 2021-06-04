@@ -1,0 +1,232 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxv4-demo-tower-runner-project-dev-template
+  annotations:
+    openshift.io/display-name: Demo STARTX - Tower runner
+    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/generated-by: sxcm
+    openshift.io/provider-display-name: STARTX
+    description:
+      Deployment of Tower runner project to demonstrate the dynamic and flexibility of
+      running tower job inside a containerized environment in openshift 4
+    iconClass: icon-nodejs
+    tags: startx,tower,runner,knative,demo,dev
+  labels:
+    template: sxv4-demo-tower-runner-project-dev-template
+message: |-
+  Your demo project ${NS} for Tower runner technology is now created.
+
+  Scope          : ${SCOPE}
+  Environment    : ${ENV}
+  Service        : tower-runner
+  Project        : ${NS}
+
+labels:
+  template: sxv4-demo-tower-runner-project-dev-template
+  app.kubernetes.io/managed-by: sxcm
+objects:
+  - kind: Project
+    apiVersion: project.openshift.io/v1
+    metadata:
+      name: ${NS}
+      labels:
+        app: "${NS}"
+        version: "${VERSION}"
+        app.startx.fr/scope: "${SCOPE}"
+        app.startx.fr/cluster: "${CLUSTER}"
+        app.startx.fr/env: "${ENV}"
+        app.startx.fr/component: "tower-runner"
+        app.kubernetes.io/name: "${SCOPE}-tower-runner-project"
+        app.kubernetes.io/part-of: ${NS}
+        app.kubernetes.io/component: "tower-runner"
+      annotations:
+        openshift.io/description: "Tower runner Demo"
+        openshift.io/display-name: "Demo Tower runner"
+        openshift.io/requester: sxcm
+        openshift.io/generated-by: sxcm
+  - kind: ResourceQuota
+    apiVersion: v1
+    metadata:
+      name: ${NS}-quotas
+      namespace: "${NS}"
+      labels:  &basic_labels
+        app: "${NS}"
+        version: "${VERSION}"
+        app.startx.fr/scope: "${SCOPE}"
+        app.startx.fr/cluster: "${CLUSTER}"
+        app.startx.fr/env: "${ENV}"
+        app.startx.fr/component: "tower-runner"
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-tower-runner-${NS}-quotas"
+        app.kubernetes.io/part-of: ${NS}
+        app.kubernetes.io/version: "${VERSION}"
+        app.kubernetes.io/component: "tower-runner"
+      annotations: &basic_annotations
+        openshift.io/generated-by: sxcm
+    spec:
+      hard:
+        limits.cpu: "1500m"
+        limits.memory: "1800Mi"
+        requests.cpu: "300m"
+        requests.memory: "900Mi"
+        requests.storage: "8Gi"
+        persistentvolumeclaims: "1"
+        ephemeral-storage: "0" 
+        gp2.storageclass.storage.k8s.io/requests.storage: "8Gi"
+        gp2.storageclass.storage.k8s.io/persistentvolumeclaims: "1"
+        aws-generic-retain.storageclass.storage.k8s.io/requests.storage: "0"
+        aws-generic-retain.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+        aws-generic-delete.storageclass.storage.k8s.io/requests.storage: "0"
+        aws-generic-delete.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+        aws-fast-retain.storageclass.storage.k8s.io/requests.storage: "0"
+        aws-fast-retain.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+        aws-fast-delete.storageclass.storage.k8s.io/requests.storage: "0"
+        aws-fast-delete.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+        aws-slow-retain.storageclass.storage.k8s.io/requests.storage: "0"
+        aws-slow-retain.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+        aws-slow-delete.storageclass.storage.k8s.io/requests.storage: "0"
+        aws-slow-delete.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+        ocs-generic-delete.storageclass.storage.k8s.io/requests.storage: "0"
+        ocs-generic-delete.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+        ocs-generic-retain.storageclass.storage.k8s.io/requests.storage: "0"
+        ocs-generic-retain.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+        ocs-fs-delete.storageclass.storage.k8s.io/requests.storage: "0"
+        ocs-fs-delete.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+        ocs-fs-retain.storageclass.storage.k8s.io/requests.storage: "0"
+        ocs-fs-retain.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+        ocs-storagecluster-ceph-rbd.storageclass.storage.k8s.io/requests.storage: "0"
+        ocs-storagecluster-ceph-rbd.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+        openshift-storage.noobaa.io.storageclass.storage.k8s.io/requests.storage: "0"
+        openshift-storage.noobaa.io.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
+        pods: "4"
+        services.loadbalancers: "0"
+        services.nodeports: "0"
+        secrets: "20"
+        configmaps: "10"
+        replicationcontrollers: "2"
+        openshift.io/imagestreams: "3"
+        count/daemonsets.apps: "0"
+        count/replicasets.apps: "2"
+        count/deployments.apps: "2"
+        services: "3"
+  - kind: LimitRange
+    apiVersion: v1
+    metadata:
+      name: ${NS}-limits
+      namespace: "${NS}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-tower-runner-${NS}-limits"
+      annotations:
+        <<: *basic_annotations
+    spec:
+      limits:
+        - type: "Pod"
+          min:
+            cpu: "10m"
+            memory: "10Mi"
+          max:
+            cpu: 500m
+            memory: 700Mi
+        - type: "Container"
+          default:
+            cpu: 400m
+            memory: 512Mi
+          defaultRequest:
+            cpu: 20m
+            memory: 32Mi
+          min:
+            cpu: "10m"
+            memory: "10Mi"
+          max:
+            cpu: 400m
+            memory: 512Mi
+  - kind: RoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: ${NS}-dev-rb
+      namespace: "${NS}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-tower-runner-${NS}-dev-rb"
+      annotations:
+        <<: *basic_annotations
+    subjects:
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: dev
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: view
+  - kind: RoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: ${NS}-devops-rb
+      namespace: "${NS}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-tower-runner-${NS}-devops-rb"
+      annotations:
+        <<: *basic_annotations
+    subjects:
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: devops
+      - kind: User
+        apiGroup: rbac.authorization.k8s.io
+        name: system:serviceaccount:startx-argocd:argocd-application-controller
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: edit
+  - kind: RoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: ${NS}-ops-rb
+      namespace: "${NS}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${SCOPE}-${ENV}-tower-runner-${NS}-ops-rb"
+      annotations:
+        <<: *basic_annotations
+    subjects:
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: ops
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+parameters:
+  - name: NS
+    displayName: The namespace where objects goes to
+    description: "Namespace to place objects to"
+    value: demo-tower-runner
+    required: true
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: demo)"
+    value: demo
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
+    required: true
+  - name: COMPONENT
+    displayName: Project service
+    description: "Project service"
+    value: demo
+    required: true

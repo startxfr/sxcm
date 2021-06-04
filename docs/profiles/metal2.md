@@ -13,7 +13,7 @@ Deploy `metal2` profile based on the [sxcm metal2 profile](https://raw.githubuse
 | **Topology**   | **3** master + **3** worker                                                                                                                                  |
 | **Master**     | **8**Vcpu, **16**Go RAM, **500**Go io1 2000iop                                                                                                               |
 | **Worker**     | **96**Vcpu, **192**Go RAM, **500**Go io1 4000iop                                                                                                             |
-| **service**    | `argocd` `pipeline` `istio` `quaysec` `machine` `workspaces` `couchbase` `sso` `vault` `knative` `logging` `acm` `quay` `ocs` `metering` `3scale` `kubevirt` |
+| **service**    | `argocd`  <br/> `pipeline`  <br/> `istio`  <br/> `quaysec`  <br/> `machine`  <br/> `workspaces`  <br/> `couchbase`  <br/> `sso`  <br/> `vault`  <br/> `knative`  <br/> `logging`  <br/> `acm`  <br/> `quay`  <br/> `ocs`  <br/> `metering`  <br/> `3scale`  <br/> `kubevirt` |
 
 ## Create a cluster
 
