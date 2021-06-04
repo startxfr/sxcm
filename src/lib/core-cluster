@@ -795,6 +795,7 @@ function doClusterConfigurationInfo {
         local sourceConfFile=$SXCM_PROFILES_PATH/install-config-$PROFILE.yml
         local desc=$(extractOCPInstallDescription $sourceConfFile desc)
         local service=$(extractOCPInstallDescription $sourceConfFile service)
+        local demos=$(listDemosCluster $cn)
         local hourlyCost=$(extractOCPInstallHourlyCost $sourceConfFile)
         local admpwd=""
         if [[ -r $clusterConfDir/auth/kubeadmin-password ]]; then
@@ -821,6 +822,7 @@ function doClusterConfigurationInfo {
         printf "\e[1m%-10s\e[0m %s$STATE\n" state ""
         printf "\e[1m%-10s\e[0m%s\n" desc "$desc"
         printf "\e[1m%-10s\e[0m%s\n" services "$service"
+        printf "\e[1m%-10s\e[0m %s\n" demos "$demos"
         printf "\e[1m%-10s\e[0m%s\n" cost " $hourlyCost €/h"
         printf "\e[1m%-10s\e[0m %s\n" "git repo" "$SXCM_GIT_REPO"
         printf "\e[1m%-10s\e[0m %s\n" "git branch" "$SXCM_GIT_BRANCH"

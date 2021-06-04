@@ -6,7 +6,7 @@ metadata:
     openshift.io/display-name: "Demo couchbase : Deploy operator and cluster"
     openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
     openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
       Template deploying required ressource to run a sample demonstration on how to use couchbase
@@ -23,7 +23,7 @@ message: |-
 
 labels:
   template: sxv4-demo-couchbase-demo1-dev-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: Application
     apiVersion: argoproj.io/v1alpha1
@@ -39,7 +39,7 @@ objects:
         app.kubernetes.io/version: "${VERSION}"
         app.kubernetes.io/component: "${NS}-project"
       annotations: &basic_annotations
-        openshift.io/generated-by: sxv4-console
+        openshift.io/generated-by: sxcm
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
@@ -346,7 +346,7 @@ objects:
         template.openshift.io/expose-color: "{.data['COLOR']}"
         template.openshift.io/expose-couchbase_host: "{.data['COUCHBASE_HOST']}"
         template.openshift.io/expose-couchbase_bucket: "{.data['COUCHBASE_BUCKET']}"
-        openshift.io/generated-by: sxv4-console
+        openshift.io/generated-by: sxcm
     data:
       SX_ID: ${SCOPE}-${COMPONENT}-${ENV}/couchbase
       SX_TYPE: couchbase
@@ -377,7 +377,7 @@ objects:
         template.openshift.io/expose-color: "{.data['COLOR']}"
         template.openshift.io/expose-couchbase_host: "{.data['COUCHBASE_HOST']}"
         template.openshift.io/expose-couchbase_bucket: "{.data['COUCHBASE_BUCKET']}"
-        openshift.io/generated-by: sxv4-console
+        openshift.io/generated-by: sxcm
     data:
       SX_ID: ${SCOPE}-${COMPONENT}-${ENV}/couchbase
       SX_TYPE: couchbase
