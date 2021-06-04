@@ -42,7 +42,7 @@ SXCM_AWS_ZONE=eu-west-3
 # SXCM_RHN_PULLSECRET='{"auths":{"cloud.openshift.com":{"auth":"XXXX","email":"cl@startx.fr"},"quay.io":{"auth":"XXXX","email":"cl@startx.fr"},"registry.connect.redhat.com":{"auth":"XXXX","email":"cl@startx.fr"},"registry.redhat.io":{"auth":"XXXX","email":"cl@startx.fr"}}}'
 
 ## sxcm GIT configuration (if commented, should be declared using 'sxcm setup git' command)
-SXCM_GIT_BRANCH_MAIN=v0.1.4
+SXCM_GIT_BRANCH_MAIN=v0.1.5
 SXCM_GIT_BRANCH_DEFAULT=mycluster
 # SXCM_GIT_REPO=https://github.com/startxfr/sxcm-cluster-repo.git
 # SXCM_GIT_LOGIN=mygithubname
