@@ -1,6 +1,7 @@
 # Demo Couchbase
 
 The **couchbase** [demo](../../5-demos) use the [couchbase cluster resource](../../resources/couchbase) to deploy multiple Couchbase cluster using the couchbase operator with several example applications working with them.
+
 This demo is based on the [cluster-couchbase helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-couchbase) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
