@@ -146,13 +146,13 @@ function doDemoInfo {
         for cluster in $LIST
         do
             local demoIsFoundInOCPInstall="false"
-            for demo in $(extractOCPInstallDemoList $(getOCPInstallFileForCluster $cluster)); do
+            for demo in $(listDemosCluster $cluster); do
                 if [[ "$demo" == "$rn" ]]; then
                     demoIsFoundInOCPInstall="true"
                 fi
             done
             if [[ "$demoIsFoundInOCPInstall" == "true" ]]; then
-                echo -e "- \e[96menabled\e[0m  in cluster \e[1m$cluster\e[0m"
+                echo -e "- \e[1m\e[96menabled\e[0m  in cluster \e[1m$cluster\e[0m"
             else
                 echo -e "- \e[95mdisabled\e[0m in cluster \e[1m$cluster\e[0m"
             fi
