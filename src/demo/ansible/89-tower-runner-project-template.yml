@@ -6,7 +6,7 @@ metadata:
     openshift.io/display-name: Demo STARTX - Tower runner
     openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
     openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
       Deployment of Tower runner project to demonstrate the dynamic and flexibility of
@@ -25,7 +25,7 @@ message: |-
 
 labels:
   template: sxv4-demo-tower-runner-project-dev-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: Project
     apiVersion: project.openshift.io/v1
@@ -44,8 +44,8 @@ objects:
       annotations:
         openshift.io/description: "Tower runner Demo"
         openshift.io/display-name: "Demo Tower runner"
-        openshift.io/requester: sxv4-console
-        openshift.io/generated-by: sxv4-console
+        openshift.io/requester: sxcm
+        openshift.io/generated-by: sxcm
   - kind: ResourceQuota
     apiVersion: v1
     metadata:
@@ -63,7 +63,7 @@ objects:
         app.kubernetes.io/version: "${VERSION}"
         app.kubernetes.io/component: "tower-runner"
       annotations: &basic_annotations
-        openshift.io/generated-by: sxv4-console
+        openshift.io/generated-by: sxcm
     spec:
       hard:
         limits.cpu: "1500m"

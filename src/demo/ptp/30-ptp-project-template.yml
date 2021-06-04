@@ -6,7 +6,7 @@ metadata:
     openshift.io/display-name: Demo STARTX - PrecisionTimeProtocol
     openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
     openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
       Deployment of an PrecisionTimeProtocol and a sample application using this infrastructure to 
@@ -25,7 +25,7 @@ message: |-
 
 labels:
   template: sxv4-demo-ptp-project-dev-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: AppProject
   apiVersion: argoproj.io/v1alpha1
@@ -41,7 +41,7 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "${NS}-project"
     annotations: &basic_annotations
-      openshift.io/generated-by: sxv4-console
+      openshift.io/generated-by: sxcm
   spec:
     sourceRepos:
       - '*'
@@ -134,7 +134,7 @@ objects:
           - name: project.enabled
             value: "true"
           - name: project.project.requester
-            value: "sxv4-console"
+            value: "sxcm"
           - name: operator.enabled
             value: "false"
           - name: ptp.enabled
@@ -194,7 +194,7 @@ objects:
           - name: project.enabled
             value: "false"
           - name: project.project.requester
-            value: "sxv4-console"
+            value: "sxcm"
           - name: operator.enabled
             value: "true"
           - name: ptp.enabled
@@ -260,7 +260,7 @@ objects:
 #           - name: project.enabled
 #             value: "false"
 #           - name: project.project.requester
-#             value: "sxv4-console"
+#             value: "sxcm"
 #           - name: operator.enabled
 #             value: "false"
 #           - name: ptp.enabled

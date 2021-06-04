@@ -155,12 +155,12 @@ objects:
         resources:
           limits:
             cpu: 300m
-            ephemeral-storage: 500Mi
-            memory: 256Mi
+            ephemeral-storage: 600Mi
+            memory: 512Mi
           requests:
-            cpu: 100m
-            ephemeral-storage: 100Mi
-            memory: 128Mi
+            cpu: 200m
+            ephemeral-storage: 300Mi
+            memory: 256Mi
   # !!!!! warning sur les droits confies a argocd (creation de resources cluster)
   - kind: ClusterRoleBinding
     apiVersion: rbac.authorization.k8s.io/v1

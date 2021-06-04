@@ -6,7 +6,7 @@ metadata:
     openshift.io/display-name: Demo STARTX - HUGO
     openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
     openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
-    openshift.io/generated-by: sxv4-console
+    openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
       Template for building the demo portal for the STARTX v4 Information System in dev mode
@@ -27,7 +27,7 @@ message: |-
 
 labels:
   template: sxv4-demo-hugo-dev-template
-  app.kubernetes.io/managed-by: sxv4-console
+  app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: PersistentVolumeClaim
     apiVersion: v1
@@ -46,7 +46,7 @@ objects:
         app.kubernetes.io/version: "${VERSION}"
         app.kubernetes.io/component: "hugo"
       annotations: &basic_annotations
-        openshift.io/generated-by: sxv4-console
+        openshift.io/generated-by: sxcm
     spec:
       resources:
         requests:
@@ -852,7 +852,7 @@ objects:
           else
             echoInfo "Cluster doesn't have container-security-operator enabled. Running application vulnerability scan is not possible"
             echo "$DATEF : Skip vulnerability scan for $COMPONENT $APP because cluster doesn't have container-security-operator enabled" >> $REPORT_FILEPATH
-            echoDebug "Please use sxv4-console to deploy quay service within the cluster"
+            echoDebug "Please use sxcm to deploy quay service within the cluster"
           fi
         }
 
