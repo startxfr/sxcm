@@ -1,0 +1,80 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxcm-demo-tekton-demo3-template
+  annotations:
+    openshift.io/display-name: Demo tekton of a simple task
+    openshift.io/documentation-url: https://github.com/startxfr/sxcm/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
+    openshift.io/generated-by: sxcm
+    openshift.io/provider-display-name: STARTX
+    description:
+      Template deploying required ressource to run a sample demonstration on how to use tekton
+      to run a simple standalone task.
+    iconClass: icon-nodejs
+    tags: startx,nodejs,sxapi,sxcm,demo,dev
+  labels:
+    template: sxcm-demo-tekton-demo3-template
+message: |-
+  Your tekton demo 3 ressources are now created.
+
+  Project          : ${NS}
+
+labels:
+  project: demo-tekton
+  demo: demo3
+  app.kubernetes.io/managed-by: sxcm
+objects:
+  - kind: Pipeline
+    apiVersion: tekton.dev/v1beta1
+    metadata:
+      name: demo3-pipeline
+      namespace: "${NS}"
+    spec:
+      params:
+        - name: message_one
+          type: string
+          description: Premier message
+          default: Mon premier message par defaut
+        - name: message_two
+          type: string
+          description: Second message
+          default: Mon second message par defaut
+      tasks:
+        - name: premier-message
+          taskRef:
+            name: demo1-task
+          params:
+            - name: message
+              value: "$(params.message_one)"
+        - name: second-message
+          taskRef:
+            name: demo1-task
+          params:
+            - name: message
+              value: "$(params.message_two)"
+parameters:
+  - name: NS
+    displayName: Project scope
+    description: "Project scope (ex: demo)"
+    value: demo-tekton
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: demo)"
+    value: demo
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: demo
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
+    required: true
