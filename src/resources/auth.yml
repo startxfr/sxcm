@@ -55,10 +55,7 @@ objects:
       targetRevision: devel
       helm:
         valueFiles:
-          - values-startx.yaml
-          # - values-manutan.yaml
-          # - values-cisval.yaml
-          # - values-lumiplan.yaml
+          - values-${TUNNING_PROFILE}.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -82,8 +79,7 @@ objects:
           factor: 2
           maxDuration: 20s
     ignoreDifferences:
-      - group: "apps"
-        kind: Secret
+      - kind: Secret
         namespace: "openshift-authentication"
         jsonPointers:
           - /
@@ -112,4 +108,9 @@ parameters:
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
+  - name: TUNNING_PROFILE
+    displayName: Name of the personnalisation to perform
+    description: "The name of the personnalisation to execute (could be manutan, cisval, lumiplan, monaco)"
+    value: startx
+
 
