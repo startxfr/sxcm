@@ -1,19 +1,19 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-demo-storage-ocs-dev-template
+  name: sxcm-demo-storage-ocs-template
   annotations:
     openshift.io/display-name: Demo STARTX - Storage OCS
-    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
-    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/documentation-url: https://github.com/startxfr/sxcm/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description: Deployment of a sample application using OCS infrastructure to illustrate how to persist data within an hyper-converged openshift 4 environment
     iconClass: icon-nodejs
-    tags: startx,nodejs,ocs,storage,sxv4,demo,dev
+    tags: startx,nodejs,ocs,storage,sxcm,demo,dev
   labels:
     component: demo
-    template: sxv4-demo-storage-ocs-dev-template
+    template: sxcm-demo-storage-ocs-template
 message: |-
   Your ocs demo will be soon deployed in project ${SCOPE}-ocs.
   Monitor the deployement for application availability and
@@ -24,7 +24,7 @@ message: |-
   Project        : ${NS}
 
 labels:
-  template: sxv4-demo-storage-ocs-dev-template
+  template: sxcm-demo-storage-ocs-template
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application

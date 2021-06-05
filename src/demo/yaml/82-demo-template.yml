@@ -1,20 +1,20 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-demo-yaml-demo-dev-template
+  name: sxcm-demo-yaml-demo-template
   annotations:
     openshift.io/display-name: Demo yaml of a simple task
-    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
-    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/documentation-url: https://github.com/startxfr/sxcm/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
       Template deploying required ressource to run a sample demonstration on how to use yaml
       to run a simple standalone task.
     iconClass: icon-nodejs
-    tags: startx,nodejs,sxapi,sxv4,demo,dev
+    tags: startx,nodejs,sxapi,sxcm,demo,dev
   labels:
-    template: sxv4-demo-yaml-demo-dev-template
+    template: sxcm-demo-yaml-demo-template
 message: |-
   Your yaml demo 1 ressources are now created.
 
@@ -22,7 +22,7 @@ message: |-
   Environment    : ${ENV}
 
 labels:
-  template: sxv4-demo-yaml-demo-dev-template
+  template: sxcm-demo-yaml-demo-template
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application

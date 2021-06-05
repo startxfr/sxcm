@@ -1,20 +1,20 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-kustomize-app-template
+  name: sxcm-kustomize-app-template
   annotations:
     openshift.io/display-name: Demo STARTX - Kustomize samples
-    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
-    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/documentation-url: https://github.com/startxfr/sxcm/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
       Template for deploying ArgoCD samples
     iconClass: icon-nodejs
-    tags: startx,nodejs,kustomize,gitops,sxv4,demo,dev
+    tags: startx,nodejs,kustomize,gitops,sxcm,demo,dev
   labels:
     component: demo
-    template: sxv4-kustomize-app-template
+    template: sxcm-kustomize-app-template
 message: |-
   Your kustomize demo applications will be soon deployed in project ${SCOPE}-kustomize.
   Monitor the deployement for application availability and
@@ -25,7 +25,7 @@ message: |-
   Project        : ${NS}
 
 labels:
-  template: sxv4-kustomize-app-template
+  template: sxcm-kustomize-app-template
   app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: Application

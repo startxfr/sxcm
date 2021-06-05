@@ -1,11 +1,11 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-demo-imagestreams-project-dev-template
+  name: sxcm-demo-imagestreams-project-template
   annotations:
     openshift.io/display-name: Demo STARTX - Images Streams
-    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
-    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/documentation-url: https://github.com/startxfr/sxcm/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
@@ -13,7 +13,7 @@ metadata:
     iconClass: icon-load-balancer
     tags: startx,imagestreams,demo,dev
   labels:
-    template: sxv4-demo-imagestreams-project-dev-template
+    template: sxcm-demo-imagestreams-project-template
 message: |-
   Your demo project ${SCOPE}-imagestreams for Images Streams technology is now created.
 
@@ -24,7 +24,7 @@ message: |-
   Image base repo   : ${BASE_REPO}
 
 labels:
-  template: sxv4-demo-imagestreams-project-dev-template
+  template: sxcm-demo-imagestreams-project-template
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -78,11 +78,11 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: demo-sxv4-imagestreams
+    name: demo-sxcm-imagestreams
     namespace: "${ARGOCD_NS}"
     labels:
       <<: *basic_labels
-      app.kubernetes.io/name: "demo-sxv4-imagestreams-application"
+      app.kubernetes.io/name: "demo-sxcm-imagestreams-application"
     annotations:
       <<: *basic_annotations
     finalizers:
@@ -101,7 +101,7 @@ objects:
       targetRevision: devel
       helm:
         valueFiles:
-          - values-sxv4.yaml
+          - values-sxcm.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"

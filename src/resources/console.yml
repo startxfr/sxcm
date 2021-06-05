@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-console-template
+  name: sxcm-cluster-console-template
   annotations:
     openshift.io/display-name: STARTX cluster Console (admin)
     description: Deploy cluster-wide resources to personnalize OCP web console according to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,console
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "5"
+    sxcm_console_timeout: "5"
   labels:
-    template: sxv4-cluster-console-template
-    app.kubernetes.io/name: "sxv4-cluster-console-template"
+    template: sxcm-cluster-console-template
+    app.kubernetes.io/name: "sxcm-cluster-console-template"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your console personnalisation for project ${SCOPE}-${ENV} is done.
@@ -20,7 +20,7 @@ message: |-
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
 labels:
-  template: sxv4-cluster-console-template
+  template: sxcm-cluster-console-template
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -83,7 +83,7 @@ objects:
         name: custom-logo
         namespace: "openshift-console"
         jsonPointers:
-          - /
+          - .
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
@@ -96,7 +96,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"

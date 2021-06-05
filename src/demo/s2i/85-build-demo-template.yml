@@ -1,11 +1,11 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-demo-s2i-build-dev-template
+  name: sxcm-demo-s2i-build-template
   annotations:
     openshift.io/display-name: Demo STARTX - CI-CD
-    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
-    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/documentation-url: https://github.com/startxfr/sxcm/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
@@ -15,7 +15,7 @@ metadata:
     tags: startx,nodejs,cicd,s2i,build,run,demo,dev
   labels:
     component: demo
-    template: sxv4-demo-s2i-build-dev-template
+    template: sxcm-demo-s2i-build-template
 message: |-
   Your s2i-build demo will be soon deployed in project ${SCOPE}-s2i.
   Monitor the deployement for application availability and
@@ -26,7 +26,7 @@ message: |-
   Project        : ${NS}
 
 labels:
-  template: sxv4-demo-s2i-build-dev-template
+  template: sxcm-demo-s2i-build-template
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application

@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-kubevirt-template
+  name: sxcm-cluster-kubevirt-template
   annotations:
     openshift.io/display-name: STARTX cluster KubeVirt (admin)
     description: Deploy cluster-wide resources to enable KubeVirt support according to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,kubevirt
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "40"
+    sxcm_console_timeout: "40"
   labels:
-    template: sxv4-cluster-kubevirt-template
-    app.kubernetes.io/name: "sxv4-cluster-kubevirt-template"
+    template: sxcm-cluster-kubevirt-template
+    app.kubernetes.io/name: "sxcm-cluster-kubevirt-template"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide KubeVirt support is now enabled. Pay attention to hardware requirements before attempting to run VMs.
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : kubevirt-hyperconverged-operator.v2.3.0
 labels:
-  template: sxv4-cluster-kubevirt-template
+  template: sxcm-cluster-kubevirt-template
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -239,7 +239,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"

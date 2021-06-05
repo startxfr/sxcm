@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-argocd-template
+  name: sxcm-cluster-argocd-template
   annotations:
     openshift.io/display-name: STARTX ArgoCD (gitops)
     description: Deploy ArgoCD gitops environment to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,argocd,gitops
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "20"
+    sxcm_console_timeout: "20"
   labels:
-    template: sxv4-cluster-argocd-template
-    app.kubernetes.io/name: "sxv4-cluster-argocd-template"
+    template: sxcm-cluster-argocd-template
+    app.kubernetes.io/name: "sxcm-cluster-argocd-template"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your ArgoCD gitops project is now configured
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : red-hat-argocd.v3.3.2-20200903
 labels:
-  template: sxv4-cluster-argocd-template
+  template: sxcm-cluster-argocd-template
   app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: Project
@@ -114,8 +114,8 @@ objects:
             memory: 32Mi
           max:
             cpu: "6000m"
-            ephemeral-storage: 712Mi
-            memory: "4Gi"
+            ephemeral-storage: 1Gi
+            memory: "5Gi"
         - type: "Container"
           defaultRequest:
             cpu: 100m
@@ -125,12 +125,11 @@ objects:
             memory: 256Mi
           min:
             cpu: 20m
-            # ephemeral-storage: 32Mi
             memory: 32Mi
           max:
             cpu: "6000m"
-            ephemeral-storage: 512Mi
-            memory: "4Gi"
+            ephemeral-storage: 1Gi
+            memory: "5Gi"
   - kind: RoleBinding
     apiVersion: rbac.authorization.k8s.io/v1
     metadata:
@@ -251,7 +250,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"

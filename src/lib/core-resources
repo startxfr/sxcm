@@ -117,7 +117,7 @@ function extractResourceDescription {
 
 # read the content of the cluster resource timeout from the given file
 function extractResourceTimeout {
-    local CLUSTERTIMEOUT=$(cat $1 | yq .metadata.annotations.sxv4_console_timeout -cr)
+    local CLUSTERTIMEOUT=$(cat $1 | yq .metadata.annotations.sxcm_console_timeout -cr)
     echo "$CLUSTERTIMEOUT"
 }
 

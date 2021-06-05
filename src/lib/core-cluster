@@ -161,7 +161,7 @@ function applyClusterResource {
     if [[ -r $clusterConfDirResource/$rn.yml ]]
     then
         CLUSTERTIMEOUT=$(extractResourceTimeout $clusterConfDirResource/$rn.yml)
-        echo -e "${UPSERT} \e[1m$rn\e[0m cluster resource in cluster \e[1m$cn\e[0m \e[93m(admin)\e[0m"
+        echo -e "${UPSERT} \e[1m$rn\e[0m cluster \e[1mresource\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${rn}.yml\e[0m \e[93m(admin)\e[0m"
         if [[ 
               "$rn" == "quay" || 
               "$rn" == "3scale" || 
@@ -231,14 +231,14 @@ function applyClusterResource {
         local ressscript="upsert.sh"
         if [[ -x $clusterConfDirResource/$rn/$ressscript ]]
         then
-            echo -e "${UPSERT} \e[1m$rn\e[0m cluster resource in cluster \e[1m$cn\e[0m \e[93m(admin)\e[0m"
+            echo -e "${UPSERT} \e[1m$rn\e[0m cluster \e[1mresource\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${ressscript}\e[0m \e[93m(admin)\e[0m"
             . $clusterConfDirResource/$rn/$ressscript "$cn" "$localScope" "$localEnv" "$localVersion" "$localToken" "$cn" "$clusterName"
             if [[ "${UPSERT}" == "create" ]]; then
                 echo -e "wait ${CLUSTERTIMEOUT}sec for deployment dependencies start"
                 temporize 10 2
             fi
         else 
-            echo -e "No \e[1m$rn\e[0m cluster resource found at \e[1m$clusterConfDirResource/$rn/$ressscript\e[0 or is executable"
+            echo -e "No \e[1m$rn\e[0m cluster \e[1mresource\e[0m found at \e[1m$clusterConfDirResource/$rn/$ressscript\e[0 or is executable"
         fi
     fi
 }
@@ -285,12 +285,14 @@ function applyClusterDemo {
             # 9x. Developer template (reserved)
             if [[ -x $file ]]
             then
-                echo -e "${UPSERT} \e[1m$rn\e[0m demo in cluster \e[1m$cn\e[0m with resource \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
+                echo -e "${UPSERT} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
                 . $file $UPSERT "$cn" "$localScope" "$localEnv" "$localVersion" "$cn" "$clusterName"
             else
-                if [[ "$file" == "*.yml" || "$file" == "*.yaml" ]]
+                if [[ "$file" == "*.sh" ]]
                 then
-                    echo -e "${UPSERT} \e[1m$rn\e[0m demo in cluster \e[1m$cn\e[0m with resource \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
+                echo -e "${UPSERT} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${demo}\e[0m skipped"
+                else
+                    echo -e "${UPSERT} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
                     if [[ "${FAMILLY:0:1}" == "2" ]]
                     then
                         oc process -f $file --local -o yaml \
@@ -417,7 +419,7 @@ function getCredentialsFromCreatedCluster {
     cd - &> /dev/null
 }
 
-# Record SXCM_CLUSTER_ADMIN_TOKEN for created cluster in sxv4 configuration
+# Record SXCM_CLUSTER_ADMIN_TOKEN for created cluster in sxcm configuration
 function recordAdminTokenFromCreatedCluster {
     local cn=$1
     getCredentialsFromCreatedCluster $cn

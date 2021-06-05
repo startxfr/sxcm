@@ -1,21 +1,21 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-demo-istio-mesh-dev-template
+  name: sxcm-demo-istio-mesh-template
   annotations:
     openshift.io/display-name: SXV4 Istio demo template dev
-    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
-    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/documentation-url: https://github.com/startxfr/sxcm/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
       Template for building the demo portal for the STARTX v4 Information System in dev mode
       using sxapi in an openshift PaaS
     iconClass: icon-nodejs
-    tags: startx,nodejs,sxapi,sxv4,demo,dev
+    tags: startx,nodejs,sxapi,sxcm,demo,dev
   labels:
     component: demo
-    template: sxv4-demo-istio-mesh-dev-template
+    template: sxcm-demo-istio-mesh-template
 message: |-
   Your istio demo will be soon deployed in project ${SCOPE}-istio.
   Monitor the deployement for application availability and
@@ -27,7 +27,7 @@ message: |-
   Micro-services : istio
 
 labels:
-  template: sxv4-demo-istio-mesh-dev-template
+  template: sxcm-demo-istio-mesh-template
   app.kubernetes.io/managed-by: sxcm
 objects: 
 - kind: Application

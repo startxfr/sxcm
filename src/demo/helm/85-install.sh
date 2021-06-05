@@ -17,10 +17,10 @@ DEMO2_REPO="redhat-charts/nodejs-ex-k"
 
 echo -e "deplacement vers le projet $PROJECT" 
 oc project $PROJECT
-if [[ $? == "0" ]]
+if [[ $? != "0" ]]
 then
-    echo -e "Wait 20sec for project $PROJECT to be created"
-    sleep 20
+    echo -e "Wait 30sec for project $PROJECT to be created"
+    sleep 30
     oc project $PROJECT
 fi
 
@@ -38,8 +38,8 @@ then
         if [[ $(helm list | grep $DEMO1_NAME | wc -l) == "0" ]]
         then
             echo -e "Updating helm repository stable and redhat-charts"
-            helm repo add stable https://kubernetes-charts.storage.googleapis.com
-            helm repo add redhat-charts https://redhat-developer.github.com/redhat-helm-charts
+            helm repo add stable https://charts.helm.sh/stable 
+            helm repo add redhat-charts https://redhat-developer.github.io/redhat-helm-charts
             helm repo update
         fi
         # test de la premiere demo

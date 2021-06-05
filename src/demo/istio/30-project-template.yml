@@ -1,11 +1,11 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-demo-istio-project-dev-template
+  name: sxcm-demo-istio-project-template
   annotations:
     openshift.io/display-name: Demo STARTX - Istio
-    openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
-    openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
+    openshift.io/documentation-url: https://github.com/startxfr/sxcm/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
@@ -15,7 +15,7 @@ metadata:
     iconClass: icon-load-balancer
     tags: startx,istio,demo,dev
   labels:
-    template: sxv4-demo-istio-project-dev-template
+    template: sxcm-demo-istio-project-template
 message: |-
   Your demo project ${NS} for Istio technology is now created.
 
@@ -25,7 +25,7 @@ message: |-
   Project        : ${NS}
 
 labels:
-  template: sxv4-demo-istio-project-dev-template
+  template: sxcm-demo-istio-project-template
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: AppProject
