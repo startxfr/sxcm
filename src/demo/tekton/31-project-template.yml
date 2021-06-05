@@ -192,17 +192,11 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 20s
-
-
-
-
-
-
 - kind: Config
   apiVersion: operator.tekton.dev/v1beta1
   metadata:
     name: cluster
-    namespace: "${SCOPE}-tekton"
+    namespace: "${NS}"
     labels:
       <<: *basic_labels
       app.kubernetes.io/name: "${SCOPE}-${ENV}-tekton-cluster-config"
@@ -211,7 +205,7 @@ objects:
       openshift.io/display-name: ${CLUSTER} - ${SCOPE} Tekton Config activation
       openshift.io/description: Tekton configuration for ${CLUSTER} - ${SCOPE} environment
   spec:
-    targetNamespace: "${SCOPE}-tekton"
+    targetNamespace: "${NS}"
 parameters:
   - name: NS
     displayName: Tekton namespace for demo instance

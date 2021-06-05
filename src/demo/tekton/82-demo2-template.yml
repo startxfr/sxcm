@@ -18,7 +18,7 @@ metadata:
 message: |-
   Your tekton demo 2 ressources are now created.
 
-  Project          : ${PROJECT}
+  Project          : ${NS}
 
 labels:
   project: demo-tekton
@@ -29,7 +29,7 @@ objects:
     apiVersion: tekton.dev/v1beta1
     metadata:
       name: demo2-taskrun-${RANDRUN}
-      namespace: "${PROJECT}"
+      namespace: "${NS}"
     spec:
       taskRef:
         name: demo1-task
@@ -38,7 +38,7 @@ objects:
           - name: message
             value: this is my first run
 parameters:
-  - name: PROJECT
+  - name: NS
     displayName: Project scope
     description: "Project scope (ex: demo)"
     value: demo-tekton

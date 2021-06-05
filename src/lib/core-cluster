@@ -288,7 +288,7 @@ function applyClusterDemo {
                 echo -e "${UPSERT} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
                 . $file $UPSERT "$cn" "$localScope" "$localEnv" "$localVersion" "$cn" "$clusterName"
             else
-                if [[ "$file" == "*.sh" ]]
+                if [[ "${file: -3}" == ".sh" ]]
                 then
                 echo -e "${UPSERT} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${demo}\e[0m skipped"
                 else

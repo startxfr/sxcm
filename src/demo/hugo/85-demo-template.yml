@@ -93,6 +93,11 @@ parameters:
     description: "Name of the hugo namespace"
     value: demo-hugo
     required: true
+  - name: ARGOCD_NS
+    displayName: The namespace where argocd server goes to
+    description: "Namespace to place argocd server to"
+    value: startx-argocd
+    required: true
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
