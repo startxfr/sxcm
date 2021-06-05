@@ -6,15 +6,15 @@ This demo is based on the [cluster-vpa helm chart](https://helm-repository.readt
 
 ## Description
 
-| Field            | Content                                     |
-| ---------------- | ------------------------------------------- |
-| **Name**         | **STARTX demo vpa**                         |
-| **tags**         | `startx` `demo` `ha` `k8s`  `vpa`           |
-| **provider**     | STARTX                                      |
-| **requirements** | [vpa cluster resource](../../resources/vpa) |
-| **format**       | openshift template with argoCD application  |
-| **content**      | 6 ArgoCD application                        |
-| **namespace**    | demo-vpa                                    |
+| Field            | Content                                    |
+| ---------------- | ------------------------------------------ |
+| **Name**         | **STARTX demo vpa**                        |
+| **tags**         | `startx` `demo` `ha` `k8s`  `vpa`          |
+| **provider**     | STARTX                                     |
+| **requirements** | _none_                                     |
+| **format**       | openshift template with argoCD application |
+| **content**      | 6 ArgoCD application                       |
+| **namespace**    | demo-vpa                                   |
 
 ## Add to a cluster
 

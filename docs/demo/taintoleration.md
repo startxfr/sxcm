@@ -6,15 +6,15 @@ This demo is based on the [cluster-taintoleration helm chart](https://helm-repos
 
 ## Description
 
-| Field            | Content                                                           |
-| ---------------- | ----------------------------------------------------------------- |
-| **Name**         | **STARTX demo taintoleration**                                    |
-| **tags**         | `startx` `demo` `ha` `k8s` `taintoleration`                       |
-| **provider**     | STARTX                                                            |
-| **requirements** | [taintoleration cluster resource](../../resources/taintoleration) |
-| **format**       | openshift template with argoCD application                        |
-| **content**      | 6 ArgoCD application                                              |
-| **namespace**    | demo-taintoleration                                               |
+| Field            | Content                                     |
+| ---------------- | ------------------------------------------- |
+| **Name**         | **STARTX demo taintoleration**              |
+| **tags**         | `startx` `demo` `ha` `k8s` `taintoleration` |
+| **provider**     | STARTX                                      |
+| **requirements** | _none_                                      |
+| **format**       | openshift template with argoCD application  |
+| **content**      | 6 ArgoCD application                        |
+| **namespace**    | demo-taintoleration                         |
 
 ## Add to a cluster
 

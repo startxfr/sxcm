@@ -6,15 +6,15 @@ This demo is based on the [cluster-keycloak helm chart](https://helm-repository.
 
 ## Description
 
-| Field            | Content                                               |
-| ---------------- | ----------------------------------------------------- |
-| **Name**         | **STARTX demo keycloak**                              |
-| **tags**         | `startx` `demo` `sso` `security` `keycloak`           |
-| **provider**     | STARTX                                                |
-| **requirements** | [keycloak cluster resource](../../resources/keycloak) |
-| **format**       | openshift template with argoCD application            |
-| **content**      | 6 ArgoCD application                                  |
-| **namespace**    | demo-keycloak                                         |
+| Field            | Content                                     |
+| ---------------- | ------------------------------------------- |
+| **Name**         | **STARTX demo keycloak**                    |
+| **tags**         | `startx` `demo` `sso` `security` `keycloak` |
+| **provider**     | STARTX                                      |
+| **requirements** | _none_                                      |
+| **format**       | openshift template with argoCD application  |
+| **content**      | 6 ArgoCD application                        |
+| **namespace**    | demo-keycloak                               |
 
 ## Add to a cluster
 

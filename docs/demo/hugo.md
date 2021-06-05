@@ -6,15 +6,15 @@ This demo is based on the [cluster-hugo helm chart](https://helm-repository.read
 
 ## Description
 
-| Field            | Content                                       |
-| ---------------- | --------------------------------------------- |
-| **Name**         | **STARTX demo hugo**                          |
-| **tags**         | `startx` `demo` `micro-services` `hugo`       |
-| **provider**     | STARTX                                        |
-| **requirements** | [hugo cluster resource](../../resources/hugo) |
-| **format**       | openshift template with argoCD application    |
-| **content**      | 6 ArgoCD application                          |
-| **namespace**    | demo-hugo                                     |
+| Field            | Content                                    |
+| ---------------- | ------------------------------------------ |
+| **Name**         | **STARTX demo hugo**                       |
+| **tags**         | `startx` `demo` `micro-services` `hugo`    |
+| **provider**     | STARTX                                     |
+| **requirements** | _none_                                     |
+| **format**       | openshift template with argoCD application |
+| **content**      | 6 ArgoCD application                       |
+| **namespace**    | demo-hugo                                  |
 
 ## Add to a cluster
 

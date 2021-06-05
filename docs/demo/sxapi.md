@@ -6,15 +6,15 @@ This demo is based on the [cluster-sxapi helm chart](https://helm-repository.rea
 
 ## Description
 
-| Field            | Content                                         |
-| ---------------- | ----------------------------------------------- |
-| **Name**         | **STARTX demo sxapi**                           |
-| **tags**         | `startx` `demo` `api` `micro-services` `sxapi`  |
-| **provider**     | STARTX                                          |
-| **requirements** | [sxapi cluster resource](../../resources/sxapi) |
-| **format**       | openshift template with argoCD application      |
-| **content**      | 6 ArgoCD application                            |
-| **namespace**    | demo-sxapi                                      |
+| Field            | Content                                        |
+| ---------------- | ---------------------------------------------- |
+| **Name**         | **STARTX demo sxapi**                          |
+| **tags**         | `startx` `demo` `api` `micro-services` `sxapi` |
+| **provider**     | STARTX                                         |
+| **requirements** | _none_                                         |
+| **format**       | openshift template with argoCD application     |
+| **content**      | 6 ArgoCD application                           |
+| **namespace**    | demo-sxapi                                     |
 
 ## Add to a cluster
 

@@ -4,19 +4,36 @@ A demo is a group of **argocd application** deploying a group of resources into 
 
 **demo** are stored into the `/usr/share/sxcm/demos` directory and copied into a cluster gitops repository when enabled into a cluster.
 
-| Profile                             | Kind         | Purpose                                                         |
-| ----------------------------------- | ------------ | --------------------------------------------------------------- |
-| **[3scale](../demos/3scale)** | **API** | Demo on how to use 3Scale API Management |
-| **[couchbase](../demos/couchbase)** | **Database** | Demo on how to deploy and use NoSQL database in a resilient way |
-| **[affinity](../demos/affinity)** | **Infra** | Demo on how to use Afinity pod placement |
-| **[ansible](../demos/ansible)** | **Automation** | Demo on how to use Ansible AWX infrastructure |
-| **[argocd](../demos/argocd)** | **Automation** | Demo on how to use ArgoCD Gitops platform for application lifecycle |
-| **[compliance](../demos/compliance)** | **Infra** | Demo on how to use the compliance operator |
-| **[helm](../demos/helm)** | **App** | Demo on how to use Helm to deploy application |
-| **[hpa](../demos/hpa)** | **Infra** | Demo on how to use the Horizontal Pod Autoscaler |
-| **[hugo](../demos/hugo)** | **App** | Demo on how to use HUGO to build static website container |
-| **[imagestreams](../demos/imagestreams)** | **Infra** | Demo on how to load imagestreams into the service catalog |
-
+| Demo name                                    | Kind            | Purpose                                                                    |
+| -------------------------------------------- | --------------- | -------------------------------------------------------------------------- |
+| **[3scale](../demo/3scale)**                 | **API**         | Demo on how to use 3Scale API Management                                   |
+| **[couchbase](../demo/couchbase)**           | **Application** | Demo on how to deploy and use NoSQL database in a resilient way            |
+| **[affinity](../demo/affinity)**             | **Run**         | Demo on how to use Afinity pod placement                                   |
+| **[ansible](../demo/ansible)**               | **Automation**  | Demo on how to use Ansible AWX infrastructure                              |
+| **[argocd](../demo/argocd)**                 | **Automation**  | Demo on how to use ArgoCD Gitops platform for application lifecycle        |
+| **[compliance](../demo/compliance)**         | **Security**    | Demo on how to use the compliance operator                                 |
+| **[helm](../demo/helm)**                     | **Application** | Demo on how to use Helm to deploy application                              |
+| **[hpa](../demo/hpa)**                       | **Infra**       | Demo on how to use the Horizontal Pod Autoscaler                           |
+| **[hugo](../demo/hugo)**                     | **Application** | Demo on how to use HUGO to build static website container                  |
+| **[imagestreams](../demo/imagestreams)**     | **Infra**       | Demo on how to load imagestreams into the service catalog                  |
+| **[istio](../demo/istio)**                   | **Run**         | Demo on how to use service mesh                                            |
+| **[jenkins](../demo/jenkins)**               | **Build**       | Demo on how to deploy and use a jenkins server                             |
+| **[keycloak](../demo/keycloak)**             | **Security**    | Demo deploying an SSO server                                               |
+| **[knative](../demo/knative)**               | **App**         | Demo on to deploy an application using a serverless architecture           |
+| **[kubevirt](../demo/kubevirt)**             | **Run**         | Demo running virtual machine into a Kubernetes cluster                     |
+| **[kustomize](../demo/kustomize)**           | **Automation**  | Demo on how to deploy application using kustomize files                    |
+| **[nexus](../demo/nexus)**                   | **Build**       | Demo on how to deploy and use a nexus server                               |
+| **[ocs](../demo/ocs)**                       | **Infra**       | Demo on how to deploy and use an ODF storage backend                       |
+| **[ptp](../demo/ptp)**                       | **Infra**       | Demo on how to enable Precision Time Protocol                              |
+| **[s2i](../demo/s2i)**                       | **Build**       | Demo on how to build application container using source to image           |
+| **[storage](../demo/storage)**               | **Infra**       | Demo with various deployment using block, FS and object storage            |
+| **[sxapi](../demo/sxapi)**                   | **API**         | Demo on how to deploy various micro-services                               |
+| **[taintoleration](../demo/taintoleration)** | **Run**         | Demo on how to deploy a application using tain and toleration placement    |
+| **[tekton](../demo/tekton)**                 | **Build**       | Demo on how to build using tekton task and pipeline                        |
+| **[vault](../demo/vault)**                   | **Security**    | Demo on how a application can consume secret stored into a vault           |
+| **[vpa](../demo/vpa)**                       | **Run**         | Demo on how to deploy an application with vertical autoscalling capacities |
+| **[workspace](../demo/workspace)**           | **Build**       | Demo on how to deploy an Eclipse IDE environment                           |
+| **[yaml](../demo/yaml)**                     | **Run**         | Demo on how to describe resource with the yaml syntax                      |
 
 ## Read commands
 

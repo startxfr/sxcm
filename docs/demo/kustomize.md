@@ -6,15 +6,15 @@ This demo is based on the [cluster-kustomize helm chart](https://helm-repository
 
 ## Description
 
-| Field            | Content                                                 |
-| ---------------- | ------------------------------------------------------- |
-| **Name**         | **STARTX demo kustomize**                               |
-| **tags**         | `startx` `demo` `k8s` `kustomize`                       |
-| **provider**     | STARTX                                                  |
-| **requirements** | [kustomize cluster resource](../../resources/kustomize) |
-| **format**       | openshift template with argoCD application              |
-| **content**      | 6 ArgoCD application                                    |
-| **namespace**    | demo-kustomize                                          |
+| Field            | Content                                    |
+| ---------------- | ------------------------------------------ |
+| **Name**         | **STARTX demo kustomize**                  |
+| **tags**         | `startx` `demo` `k8s` `kustomize`          |
+| **provider**     | STARTX                                     |
+| **requirements** | _none_                                     |
+| **format**       | openshift template with argoCD application |
+| **content**      | 6 ArgoCD application                       |
+| **namespace**    | demo-kustomize                             |
 
 ## Add to a cluster
 
