@@ -377,7 +377,7 @@ parameters:
   - name: NS
     displayName: AWX namespace for awx instance
     description: "Name of the awx namespace"
-    value: startx-awx
+    value: demo-awx
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to

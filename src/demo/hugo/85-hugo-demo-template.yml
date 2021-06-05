@@ -947,7 +947,7 @@ objects:
           fi
         }
   - kind: Task
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: prepare-workspace
       namespace: "${NS}"
@@ -1060,7 +1060,7 @@ objects:
                 displayCommitInfo
               fi
   - kind: Task
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: build-s2i
       namespace: "${NS}"
@@ -1170,7 +1170,7 @@ objects:
               echo "Start build of application $(inputs.params.COMPONENT_NAME) $(inputs.params.APP_NAME)"
               startBuildS2I $(inputs.params.COMPONENT_NAME) $(inputs.params.APP_NAME) "$(inputs.params.BUILD_IMAGE)"
   - kind: Task
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: publish-image-single
       namespace: "${NS}"
@@ -1292,7 +1292,7 @@ objects:
               publishImage $REPO_URL $TLSVERIFY
               exit 0;
   - kind: Task
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: application-deploy
       namespace: "${NS}"
@@ -1383,7 +1383,7 @@ objects:
               # Load current commit environment
               ocDeployRolloutWatch "$(inputs.params.COMPONENT_NAME)" "$(inputs.params.APP_NAME)" "$(inputs.params.DEPLOYMENT_KIND)"
   - kind: Task
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: test-code
       namespace: "${NS}"
@@ -1483,7 +1483,7 @@ objects:
               # Display test code report
               testCodeDisplayResult "$(inputs.params.COMPONENT_NAME)" "$(inputs.params.APP_NAME)"
   - kind: Task
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: test-vulnerability-run
       namespace: "${NS}"
@@ -1575,7 +1575,7 @@ objects:
               # Start testing code
               testScanApplicationDisplayResult "$(inputs.params.COMPONENT_NAME)" "$(inputs.params.APP_NAME)"
   - kind: Task
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: report-notify
       namespace: "${NS}"
@@ -1672,7 +1672,7 @@ objects:
               # Report test result
               reportNotify "$(inputs.params.COMPONENT_NAME)" "$(inputs.params.APP_NAME)"
   - kind: Task
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: "hugo-generate-content"
       namespace: "${NS}"
@@ -1738,7 +1738,7 @@ objects:
               # generate static html files using hugo
               generateHugoStaticContent $COMPONENT $BASE_URL
   - kind: Pipeline
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: ${COMPONENT}
       namespace: "${NS}"
@@ -1930,7 +1930,7 @@ objects:
             - name: pipeline-workspace
               workspace: running-workspace
   - kind: PipelineResource
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: image-hugo-latest-internal
       namespace: "${NS}"
@@ -1945,7 +1945,7 @@ objects:
         - name: url
           value: image-registry.openshift-image-registry.svc:5000/${NS}/hugo:latest
   - kind: PipelineResource
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: git-hugo-demo-master
       namespace: "${NS}"
@@ -1964,7 +1964,7 @@ objects:
         - name: revision
           value: master
   - kind: PipelineResource
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: github-hugo-demo-addissue
       namespace: "${NS}"
@@ -1979,7 +1979,7 @@ objects:
         - name: targetURI
           value: http://github.com/startxfr/okd-demo-hugo/issues/new
   - kind: PipelineRun
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: ${SCOPE}-hugo-${RANDRUN}
       namespace: "${NS}"

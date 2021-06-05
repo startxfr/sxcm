@@ -26,7 +26,7 @@ labels:
   app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: Task
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: demo6-task
       namespace: "${PROJECT}"
@@ -41,7 +41,7 @@ objects:
           command: ["ls", "-la"]
           args: ["/workspace/repository"]
   - kind: Pipeline
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: demo6-pipeline
       namespace: "${PROJECT}"
@@ -58,7 +58,7 @@ objects:
               - name: repository
                 resource: repository-git
   - kind: PipelineRun
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: demo6-pipelinerun-${RANDRUN}
       namespace: "${PROJECT}"

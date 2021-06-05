@@ -26,7 +26,7 @@ labels:
   app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: PipelineRun
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: demo4-pipelinerun-${RANDRUN}
       namespace: "${PROJECT}"

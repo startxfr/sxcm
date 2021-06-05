@@ -278,7 +278,7 @@ objects:
           terminationGracePeriodSeconds: 30
           dnsPolicy: ClusterFirst
   # - kind: Task
-  #   apiVersion: tekton.dev/v1alpha1
+  #   apiVersion: tekton.dev/v1beta1
   #   metadata:
   #     name: ${COMPONENT}-oc-command
   #     namespace: "${SCOPE}-tekton"
@@ -310,7 +310,7 @@ objects:
   #             cpu: "50m"
   #             memory: "32Mi"
   # - kind: Task
-  #   apiVersion: tekton.dev/v1alpha1
+  #   apiVersion: tekton.dev/v1beta1
   #   metadata:
   #     name: ${COMPONENT}-start-deploy
   #     namespace: "${SCOPE}-tekton"
@@ -350,7 +350,7 @@ objects:
   #             cpu: "100m"
   #             memory: "32Mi"
   # - kind: Task
-  #   apiVersion: tekton.dev/v1alpha1
+  #   apiVersion: tekton.dev/v1beta1
   #   metadata:
   #     name: ${COMPONENT}-start-build
   #     namespace: "${SCOPE}-tekton"
@@ -379,7 +379,7 @@ objects:
   #             cpu: "100m"
   #             memory: "32Mi"
   # - kind: Task
-  #   apiVersion: tekton.dev/v1alpha1
+  #   apiVersion: tekton.dev/v1beta1
   #   metadata:
   #     name: ${COMPONENT}-command
   #     namespace: "${SCOPE}-tekton"
@@ -417,7 +417,7 @@ objects:
   #           - |-
   #             $(inputs.params.CMD)
   # - kind: Condition
-  #   apiVersion: tekton.dev/v1alpha1
+  #   apiVersion: tekton.dev/v1beta1
   #   metadata:
   #     name: ${COMPONENT}-approbation
   #     namespace: "${SCOPE}-tekton"
@@ -461,7 +461,7 @@ objects:
   #             exit 1;
   #           fi;
   # - kind: Pipeline
-  #   apiVersion: tekton.dev/v1alpha1
+  #   apiVersion: tekton.dev/v1beta1
   #   metadata:
   #     name: ${COMPONENT}-pipeline
   #     namespace: "${SCOPE}-tekton"
@@ -487,7 +487,7 @@ objects:
   #           - name: APP_NAME
   #             value: "${COMPONENT}-app"
   # - kind: PipelineRun
-  #   apiVersion: tekton.dev/v1alpha1
+  #   apiVersion: tekton.dev/v1beta1
   #   metadata:
   #     name: ${COMPONENT}-pipelinerun-${RANDRUN}
   #     namespace: "${SCOPE}-tekton"
@@ -501,7 +501,7 @@ objects:
   #     pipelineRef:
   #       name: ${COMPONENT}-pipeline
   # - kind: TaskRun
-  #   apiVersion: tekton.dev/v1alpha1
+  #   apiVersion: tekton.dev/v1beta1
   #   metadata:
   #     name: ${COMPONENT}-deploy-database-
   #     namespace: "${SCOPE}-tekton"

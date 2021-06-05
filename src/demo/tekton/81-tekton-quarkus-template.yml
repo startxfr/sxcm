@@ -90,7 +90,7 @@ objects:
       name: builder
       apiGroup: rbac.authorization.k8s.io
   - kind: Task
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: greeter-image-from-git
       namespace: "${SCOPE}-${COMPONENTNAME}"
@@ -155,7 +155,7 @@ objects:
             persistentVolumeClaim:
               claimName: m2-cache
   - kind: Task
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: kubectl-task
       namespace: "${SCOPE}-${COMPONENTNAME}"
@@ -220,7 +220,7 @@ objects:
               - "$(inputs.params.resourceDir)"
             workingDir: "$(inputs.params.contextDir)"
   - kind: Pipeline
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: greeter-native-pipeline
       namespace: "${SCOPE}-${COMPONENTNAME}"
@@ -313,7 +313,7 @@ objects:
                 from:
                 - build-greeter-native
   - kind: Pipeline
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: greeter-jvm-pipeline
       namespace: "${SCOPE}-${COMPONENTNAME}"
@@ -432,7 +432,7 @@ objects:
             iconClass: icon-java
             tags: demo,pipeline-greeter,jvm
   - kind: PipelineResource
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: demo-git-source
       namespace: "${SCOPE}-${COMPONENTNAME}"
@@ -449,7 +449,7 @@ objects:
         - name: url
           value: https://github.com/redhat-developer-demos/quarkus-pipeline-demo
   - kind: PipelineResource
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: greeter-image-native
       namespace: "${SCOPE}-${COMPONENTNAME}"
@@ -464,7 +464,7 @@ objects:
         - name: url
           value: quay.io/workspace7/pipeline-greeter:native
   - kind: PipelineResource
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: greeter-image-jvm
       namespace: "${SCOPE}-${COMPONENTNAME}"
@@ -479,7 +479,7 @@ objects:
         - name: url
           value: quay.io/workspace7/pipeline-greeter:jvm
   - kind: PipelineResource
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: greeter-local-image-native
       namespace: "${SCOPE}-${COMPONENTNAME}"
@@ -495,7 +495,7 @@ objects:
           # need to enable registry addon in minikube via minikube addon enable registry
           value: image-registry.openshift-image-registry.svc:5000/${SCOPE}-${COMPONENTNAME}/pipeline-greeter:native
   - kind: PipelineResource
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: greeter-local-image-jvm
       namespace: "${SCOPE}-${COMPONENTNAME}"
@@ -530,7 +530,7 @@ objects:
       persistentVolumeReclaimPolicy: Retain 
       storageClassName: aws-generic-retain
   - kind: PipelineRun
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: greeter-pipeline-run-${RANDRUN}
       namespace: "${SCOPE}-${COMPONENTNAME}"

@@ -31,7 +31,7 @@ objects:
   - kind: Application
     apiVersion: argoproj.io/v1alpha1
     metadata:
-      name: demo-argocd-helm-pod
+      name: ${NS}-export
       namespace: "${ARGOCD_NS}"
       annotations: &basic_annotations
         openshift.io/generated-by: sxcm
@@ -42,7 +42,7 @@ objects:
         app.startx.fr/cluster: "${CLUSTER}"
         app.startx.fr/env: "${ENV}"
         app.startx.fr/component: "argocd"
-        app.kubernetes.io/name: "demo-argocd-helm-pod-application"
+        app.kubernetes.io/name: "${NS}-export-application"
         app.kubernetes.io/part-of: argocd-app
         app.kubernetes.io/version: "${VERSION}"
         app.kubernetes.io/component: "argocd"
@@ -50,12 +50,68 @@ objects:
         - resources-finalizer.argocd.argoproj.io
     spec:
       destination:
-        namespace: demo-argocd
+        namespace: ${NS}
         server: 'https://kubernetes.default.svc'
       info:
         - name: teammail
           value: dev@startx.fr
-      project: demo-argocd
+      project: ${NS}
+      source:
+        path: charts/cluster-argocd/
+        repoURL: 'https://github.com/startxfr/helm-repository.git'
+        targetRevision: HEAD
+        helm:
+          valueFiles:
+            - values-startx.yaml
+          parameters:
+            - name: context.scope
+              value: "${SCOPE}"
+            - name: context.cluster
+              value: "${CLUSTER}"
+            - name: context.environment
+              value: "${ENV}"
+            - name: context.version
+              value: "${VERSION}"
+            - name: argocd_export.enabled
+              value: "true"
+            - name: argocd_export.list[0].name
+              value: "demo-export"
+            - name: argocd_export.list[0].namespace
+              value: "${NS}"
+            - name: project.project.name
+              value: "${ARGOCD_NS}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+  - kind: Application
+    apiVersion: argoproj.io/v1alpha1
+    metadata:
+      name: ${NS}-helm-pod
+      namespace: "${ARGOCD_NS}"
+      annotations: &basic_annotations
+        openshift.io/generated-by: sxcm
+      labels: &basic_labels
+        app: "argocd-app"
+        version: "${VERSION}"
+        app.startx.fr/scope: "${SCOPE}"
+        app.startx.fr/cluster: "${CLUSTER}"
+        app.startx.fr/env: "${ENV}"
+        app.startx.fr/component: "argocd"
+        app.kubernetes.io/name: "${NS}-helm-pod-application"
+        app.kubernetes.io/part-of: argocd-app
+        app.kubernetes.io/version: "${VERSION}"
+        app.kubernetes.io/component: "argocd"
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      destination:
+        namespace: ${NS}
+        server: 'https://kubernetes.default.svc'
+      info:
+        - name: teammail
+          value: dev@startx.fr
+      project: ${NS}
       source:
         path: charts/example-pod/
         repoURL: 'https://github.com/startxfr/helm-repository.git'
@@ -75,23 +131,23 @@ objects:
   - kind: Application
     apiVersion: argoproj.io/v1alpha1
     metadata:
-      name: demo-argocd-kustomize-pod
+      name: ${NS}-kustomize-pod
       namespace: "${ARGOCD_NS}"
       labels:
         <<: *basic_labels
-        app.kubernetes.io/name: "demo-argocd-kustomize-pod-application"
+        app.kubernetes.io/name: "${NS}-kustomize-pod-application"
       annotations:
         <<: *basic_annotations
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
       destination:
-        namespace: demo-argocd
+        namespace: ${NS}
         server: 'https://kubernetes.default.svc'
       info:
         - name: teammail
           value: dev@startx.fr
-      project: demo-argocd
+      project: ${NS}
       source:
         kustomize:
           namePrefix: argocd-
@@ -106,7 +162,7 @@ parameters:
   - name: NS
     displayName: SXAPI namespace for argocd instance
     description: "Name of the argocd namespace"
-    value: demo-argocd
+    value: ${NS}
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to

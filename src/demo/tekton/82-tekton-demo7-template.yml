@@ -26,7 +26,7 @@ labels:
   app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: PipelineResource
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: demo7-event
       namespace: "${PROJECT}"
@@ -36,7 +36,7 @@ objects:
         - name: targetURI
           value: http://github.com
   - kind: Task
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: demo7-build-task
       namespace: "${PROJECT}"
@@ -51,7 +51,7 @@ objects:
           command: ["ls", "-la"]
           args: ["/workspace/repository"]
   - kind: Task
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: demo7-event-task
       namespace: "${PROJECT}"
@@ -66,7 +66,7 @@ objects:
           command: ["ls", "-la"]
           args: ["/workspace/registry"]
   - kind: Pipeline
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: demo7-pipeline
       namespace: "${PROJECT}"
@@ -90,7 +90,7 @@ objects:
               - name: output-event
                 resource: demo7-event
   - kind: PipelineRun
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: demo7-pipelinerun-${RANDRUN}
       namespace: "${PROJECT}"

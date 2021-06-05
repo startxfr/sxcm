@@ -26,7 +26,7 @@ labels:
   app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: PipelineResource
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: demo-git
       namespace: "${SCOPE}-tekton"
@@ -49,7 +49,7 @@ objects:
         - name: revision
           value: master
   - kind: PipelineResource
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: myapp-latest-local
       namespace: "${SCOPE}-tekton"
@@ -64,7 +64,7 @@ objects:
         - name: url
           value: image-registry.openshift-image-registry.svc:5000/${SCOPE}-tekton/myapp:latest
   - kind: PipelineResource
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: myapp-latest-quay
       namespace: "${SCOPE}-tekton"
@@ -79,7 +79,7 @@ objects:
         - name: url
           value: image-registry.openshift-image-registry.svc:5000/${SCOPE}-tekton/myapp:latest
   - kind: PipelineResource
-    apiVersion: tekton.dev/v1alpha1
+    apiVersion: tekton.dev/v1beta1
     metadata:
       name: github-addissue
       namespace: "${SCOPE}-tekton"
