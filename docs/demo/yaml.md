@@ -2,19 +2,19 @@
 
 The **yaml** [demo](../../5-demos) use the [yaml cluster resource](../../resources/yaml) to deploy multiple YAML cluster using the yaml operator with several example applications working with them.
 
-This demo is based on the [cluster-yaml helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-yaml) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-catalog helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-catalog) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 
-| Field            | Content                                                 |
-| ---------------- | ------------------------------------------------------- |
-| **Name**         | **STARTX demo yaml**                               |
-| **tags**         | `startx` `demo` `iac` `yaml`                     |
-| **provider**     | STARTX                                                  |
+| Field            | Content                                       |
+| ---------------- | --------------------------------------------- |
+| **Name**         | **STARTX demo yaml**                          |
+| **tags**         | `startx` `demo` `iac` `yaml`                  |
+| **provider**     | STARTX                                        |
 | **requirements** | [yaml cluster resource](../../resources/yaml) |
-| **format**       | openshift template with argoCD application              |
-| **content**      | 6 ArgoCD application                                    |
-| **namespace**    | demo-yaml                                          |
+| **format**       | openshift template with argoCD application    |
+| **content**      | 6 ArgoCD application                          |
+| **namespace**    | demo-yaml                                     |
 
 ## Add to a cluster
 

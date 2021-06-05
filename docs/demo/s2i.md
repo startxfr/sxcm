@@ -2,7 +2,7 @@
 
 The **s2i** [demo](../../5-demos) use the [s2i cluster resource](../../resources/s2i) to deploy multiple Source-to-image cluster using the s2i operator with several example applications working with them.
 
-This demo is based on the [cluster-s2i helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-s2i) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-catalog helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-catalog) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

@@ -2,7 +2,7 @@
 
 The **ansible** [demo](../../5-demos) use the [ansible cluster resource](../../resources/ansible) to deploy multiple Ansible cluster using the ansible operator with several example applications working with them.
 
-This demo is based on the [cluster-ansible helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-ansible) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-catalog helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-catalog) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

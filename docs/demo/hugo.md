@@ -2,7 +2,7 @@
 
 The **hugo** [demo](../../5-demos) use the [hugo cluster resource](../../resources/hugo) to deploy multiple HUGO cluster using the hugo operator with several example applications working with them.
 
-This demo is based on the [cluster-hugo helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-hugo) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-catalog helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-catalog) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

@@ -2,7 +2,7 @@
 
 The **sxapi** [demo](../../5-demos) use the [sxapi cluster resource](../../resources/sxapi) to deploy multiple SXApi cluster using the sxapi operator with several example applications working with them.
 
-This demo is based on the [cluster-sxapi helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-sxapi) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-sxapi helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-sxapi) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

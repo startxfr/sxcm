@@ -9,7 +9,7 @@ This demo is based on the [cluster-workspace helm chart](https://helm-repository
 | Field            | Content                                                 |
 | ---------------- | ------------------------------------------------------- |
 | **Name**         | **STARTX demo workspace**                               |
-| **tags**         | `startx` `demo` `ide` `workspace`                     |
+| **tags**         | `startx` `demo` `ide` `workspace`                       |
 | **provider**     | STARTX                                                  |
 | **requirements** | [workspace cluster resource](../../resources/workspace) |
 | **format**       | openshift template with argoCD application              |

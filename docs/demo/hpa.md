@@ -2,7 +2,7 @@
 
 The **hpa** [demo](../../5-demos) use the [hpa cluster resource](../../resources/hpa) to deploy multiple Horizontal Pod Autoscaler cluster using the hpa operator with several example applications working with them.
 
-This demo is based on the [cluster-hpa helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-hpa) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-pod helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-pod) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

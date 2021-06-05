@@ -2,7 +2,7 @@
 
 The **jenkins** [demo](../../5-demos) use the [jenkins cluster resource](../../resources/jenkins) to deploy multiple Jenkins cluster using the jenkins operator with several example applications working with them.
 
-This demo is based on the [cluster-jenkins helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-jenkins) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-catalog helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-catalog) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

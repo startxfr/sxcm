@@ -2,7 +2,7 @@
 
 The **kustomize** [demo](../../5-demos) use the [kustomize cluster resource](../../resources/kustomize) to deploy multiple Kustomize cluster using the kustomize operator with several example applications working with them.
 
-This demo is based on the [cluster-kustomize helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-kustomize) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-catalog helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-catalog) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

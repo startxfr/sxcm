@@ -2,7 +2,7 @@
 
 The **affinity** [demo](../../5-demos) use the [affinity cluster resource](../../resources/affinity) to deploy multiple Affinity cluster using the affinity operator with several example applications working with them.
 
-This demo is based on the [cluster-affinity helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-affinity) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-catalog helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-catalog) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 

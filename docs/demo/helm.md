@@ -2,7 +2,7 @@
 
 The **helm** [demo](../../5-demos) use the [helm cluster resource](../../resources/helm) to deploy multiple Helm cluster using the helm operator with several example applications working with them.
 
-This demo is based on the [cluster-helm helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-helm) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-pod](https://helm-repository.readthedocs.io/en/latest/charts/example-pod),[example-deployment](https://helm-repository.readthedocs.io/en/latest/charts/example-deployment) and [example-sxapi](https://helm-repository.readthedocs.io/en/latest/charts/example-sxapi) helm chart defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 
