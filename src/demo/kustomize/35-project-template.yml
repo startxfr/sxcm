@@ -134,6 +134,8 @@ objects:
               value: "${VERSION}"
             - name: project.requester
               value: "sxcm"
+            - name: project.name
+              value: "${NS}"
             - name: networkpolicy.enabled
               value: "false"
       syncPolicy:

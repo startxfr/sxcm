@@ -95,11 +95,11 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${OPERATOR_NS}-project
+    name: ${NS}-project
     namespace: "${ARGOCD_NS}"
     labels:
       <<: *basic_labels
-      app.kubernetes.io/name: "${OPERATOR_NS}-project-application"
+      app.kubernetes.io/name: "${NS}-project-application"
     annotations:
       <<: *basic_annotations
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -107,7 +107,7 @@ objects:
       - resources-finalizer.argocd.argoproj.io
   spec:
     destination:
-      namespace: "${OPERATOR_NS}"
+      namespace: "${NS}"
       server: 'https://kubernetes.default.svc'
     info:
       - name: teammail
@@ -130,7 +130,9 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "startx-nexus"
+            value: "${NS}"
+          - name: project.project.name
+            value: "${NS}"
           - name: project.enabled
             value: "true"
           - name: project.project.requester
@@ -153,11 +155,6 @@ objects:
           factor: 2
           maxDuration: 5m
 parameters:
-  - name: OPERATOR_NS
-    displayName: The namespace where operator goes to
-    description: "Namespace to place objects to"
-    value: startx-nexus
-    required: true
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"

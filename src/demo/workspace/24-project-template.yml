@@ -1,30 +1,31 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-demo-jenkins-project-dev-template
+  name: sxv4-demo-che-project-dev-template
   annotations:
-    openshift.io/display-name: Demo STARTX - Jenkins
+    openshift.io/display-name: Demo STARTX - EclipseChe
     openshift.io/documentation-url: https://github.com/startxfr/sxv4/blob/dev/README.md
     openshift.io/support-url: https://github.com/startxfr/sxv4/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of an Jenkins and a sample application using this infrastructure to 
-      demonstrate the Jenkins capacities running under an openshift 4 environment
-    iconClass: icon-load-balancer
-    tags: startx,jenkins,demo,dev
+      Deployment of a EclipseChe infrastructure and a sample application using this infrastructure to 
+      demonstrate the Virtual Machine management capacities of EclipseChe solution running under an 
+      openshift 4 environment
+    iconClass: icon-che
+    tags: startx,che,demo,dev
   labels:
-    template: sxv4-demo-jenkins-project-dev-template
+    template: sxv4-demo-che-project-dev-template
 message: |-
-  Your demo project ${NS} for Jenkins technology is now created.
+  Your demo project ${NS} for EclipseChe technology is now created.
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
-  Service        : jenkins
+  Service        : che
   Project        : ${NS}
 
 labels:
-  template: sxv4-demo-jenkins-project-dev-template
+  template: sxv4-demo-che-project-dev-template
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: AppProject
@@ -95,31 +96,30 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${OPERATOR_NS}-project
+    name: ${NS}-project
     namespace: "${ARGOCD_NS}"
     labels:
       <<: *basic_labels
-      app.kubernetes.io/name: "${OPERATOR_NS}-project-application"
+      app.kubernetes.io/name: "${NS}-project-application"
     annotations:
       <<: *basic_annotations
-      # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
   spec:
     destination:
-      namespace: "${OPERATOR_NS}"
+      namespace: "${NS}"
       server: 'https://kubernetes.default.svc'
     info:
       - name: teammail
         value: dev@startx.fr
-    project: cluster-admin
+    project: ${NS}
     source:
-      path: charts/cluster-jenkins/
+      path: charts/project/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: devel
       helm:
         valueFiles:
-          - values-demo.yaml
+          - values-demo-che.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -129,16 +129,10 @@ objects:
             value: "${ENV}"
           - name: context.version
             value: "${VERSION}"
-          - name: context.app
-            value: "startx-jenkins"
-          - name: project.enabled
-            value: "true"
-          - name: project.project.requester
+          - name: project.requester
             value: "sxcm"
-          - name: operator.enabled
-            value: "false"
-          - name: jenkins.enabled
-            value: "false"
+          - name: project.name
+            value: "${NS}"
     syncPolicy:
       automated:
         prune: true
@@ -146,22 +140,16 @@ objects:
       syncOptions:
         - CreateNamespace=false
         - Validate=true
-      retry:
-        limit: 5
-        backoff:
-          duration: 5s
-          factor: 2
-          maxDuration: 5m
 parameters:
-  - name: OPERATOR_NS
-    displayName: The namespace where operator goes to
-    description: "Namespace to place objects to"
-    value: startx-jenkins
-    required: true
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
-    value: demo-jenkins
+    value: demo-che
+    required: true
+  - name: OPERATOR_NS
+    displayName: demo namespace for che operator
+    description: "Name of the che operator namespace"
+    value: startx-workspaces
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
@@ -170,7 +158,7 @@ parameters:
     required: true
   - name: SCOPE
     displayName: Project scope
-    description: "Project scope (ex: sxv4)"
+    description: "Project scope (ex: demo)"
     value: demo
     required: true
   - name: CLUSTER
@@ -193,3 +181,57 @@ parameters:
     description: "Project service"
     value: demo
     required: true
+  - name: MARKETPLACE_NS
+    displayName: The operator marketplace namespace where objects goes to
+    description: "operator marketplace namespace to place objects to"
+    value: openshift-marketplace
+    required: true
+  - name: AWS_ZONE
+    displayName: AWS zone
+    description: AWS availability zone
+    value: "eu-west-2"
+    required: true
+  - name: AWS_ACCESS_ID
+    displayName: AWS access ID
+    description: AWS Access ID used for accessing AWS ressources
+    value: "AKIA3QVVK7346YAAV32Z"
+    required: true
+  - name: AWS_ACCESS_KEY
+    displayName: AWS access Key
+    description: AWS Access Key used for accessing AWS ressources
+    value: "ZiMhYy1WB3qugYDNadKdaiWs5pnM/+vOnmccgPw"
+    required: true
+  - name: AWS_SQS_BUS
+    displayName: AWS SQS Bus ID
+    description: AWS SQS message bus ID for all message endpoints
+    value: "791728029433"
+    required: true
+  - name: AWS_SMTP_ZONE
+    displayName: AWS SMTP zone
+    description: AWS availability zone for SES service
+    value: "eu-west-1"
+    required: true
+  - name: AWS_SMTP_USER
+    displayName: AWS SMTP User
+    description: AWS SMTP user
+    value: "AKIA3QVVK7346YAAV32Z"
+    required: true
+  - name: AWS_SMTP_PASSWORD
+    displayName: AWS SMTP User password
+    description: AWS SMTP password coresponding to the smtp user
+    value: "ZiMhYy1WB3qugYDNadKdaiWs5pnM/+vOnmccgPw"
+    required: true
+  - name: AWS_SMTP_FROM
+    displayName: AWS SMTP sender
+    description: AWS SMTP email of the sender
+    value: "cl@startx.fr"
+    required: true
+  - name: RHN_USER
+    displayName: RHN container access user
+    description: Redhat Network access user to the RH container catalog
+    required: true
+  - name: RHN_PASSWORD
+    displayName: RHN container access password
+    description: Redhat Network access password to the Rh container catalog
+    required: true
+

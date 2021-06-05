@@ -107,7 +107,7 @@ objects:
           limits:
             cpu: 3500m
             ephemeral-storage: 256Mi
-            memory: 4Gi
+            memory: 4.5Gi
           requests:
             cpu: 1200m
             ephemeral-storage: 64Mi

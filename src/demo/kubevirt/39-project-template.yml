@@ -133,6 +133,8 @@ objects:
             value: "${NS}"
           - name: project.enabled
             value: "true"
+          - name: project.project.name
+            value: "${NS}"
           - name: project.project.requester
             value: "sxcm"
           - name: operator.enabled
@@ -194,6 +196,8 @@ objects:
             value: "${NS}"
           - name: project.enabled
             value: "false"
+          - name: project.project.name
+            value: "${NS}"
           - name: project.project.requester
             value: "sxcm"
           - name: operator.enabled

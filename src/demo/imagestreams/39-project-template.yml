@@ -30,13 +30,13 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-imagestreams
+    name: demo-startx-imagestreams
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "startx"
-      app.kubernetes.io/name: "startx-imagestreams-application"
+      app.kubernetes.io/name: "demo-startx-imagestreams-application"
       app.kubernetes.io/part-of: "startx"
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "startx"
@@ -78,11 +78,11 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: sxv4-imagestreams
+    name: demo-sxv4-imagestreams
     namespace: "${ARGOCD_NS}"
     labels:
       <<: *basic_labels
-      app.kubernetes.io/name: "sxv4-imagestreams-application"
+      app.kubernetes.io/name: "demo-sxv4-imagestreams-application"
     annotations:
       <<: *basic_annotations
     finalizers:
@@ -118,6 +118,12 @@ objects:
       syncOptions:
         - CreateNamespace=false
         - Validate=false
+    ignoreDifferences:
+      - group: image.openshift.io
+        kind: ImageStream
+        namespace: "${NS}"
+        jsonPointers:
+          - /spec/*
 parameters:
   - name: NS
     displayName: Openshift namespace

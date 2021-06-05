@@ -85,11 +85,82 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 20s
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: startx-cluster-workspace-instance
+    namespace: "${ARGOCD_NS}"
+    labels: 
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "argocd"
+      app.kubernetes.io/name: "startx-cluster-workspace-instance-application"
+      app.kubernetes.io/part-of: ${CLUSTER}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "argocd"
+    annotations:
+      openshift.io/generated-by: sxcm
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-workspace/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        releaseName: startx-workspace-instance
+        valueFiles:
+          - values-startx.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "${NS}"
+          - name: project.project.name
+            value: "${NS}"
+          - name: project.enabled
+            value: "false"
+          - name: operator.enabled
+            value: "false"
+          - name: cheCluster.enabled
+            value: "true"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: false
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 3
+        backoff:
+          duration: 50s
+          factor: 2
+          maxDuration: 300s
 parameters:
   - name: NS
     displayName: demo namespace for che instance
     description: "Name of the che namespace"
     value: demo-che
+    required: true
+  - name: OPERATOR_NS
+    displayName: demo namespace for che operator
+    description: "Name of the che operator namespace"
+    value: startx-workspaces
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to

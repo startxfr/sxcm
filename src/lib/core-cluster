@@ -288,51 +288,54 @@ function applyClusterDemo {
                 echo -e "${UPSERT} \e[1m$rn\e[0m demo in cluster \e[1m$cn\e[0m with resource \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
                 . $file $UPSERT "$cn" "$localScope" "$localEnv" "$localVersion" "$cn" "$clusterName"
             else
-                echo -e "${UPSERT} \e[1m$rn\e[0m demo in cluster \e[1m$cn\e[0m with resource \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
-                if [[ "${FAMILLY:0:1}" == "2" ]]
+                if [[ "$file" == "*.yml" || "$file" == "*.yaml" ]]
                 then
-                    oc process -f $file --local -o yaml \
-                    -p SCOPE=$localScope \
-                    -p CLUSTER=$cn \
-                    -p ENV=$localEnv \
-                    -p VERSION=$localVersion \
-                    -p RHN_USER=$SXCM_RHN_USER \
-                    -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
-                    | $CMD
-                elif [[ "${FAMILLY:0:1}" == "4" ]]
-                then
-                    oc process -f $file --local -o yaml \
-                    -p SCOPE=$localScope \
-                    -p CLUSTER=$cn \
-                    -p ENV=$SXCM_ENV \
-                    -p VERSION=$localVersion \
-                    -p AWS_ZONE=$SXCM_AWS_ZONE \
-                    -p AWS_ACCESS_ID=$SXCM_AWS_ID \
-                    -p AWS_ACCESS_KEY=$SXCM_AWS_KEY \
-                    -p AWS_SMTP_USER=$SXCM_AWS_SMTP_USER \
-                    -p AWS_SMTP_PASSWORD=$SXCM_AWS_SMTP_PASSWORD \
-                    -p AWS_SMTP_ZONE=$SXCM_AWS_SMTPZONE \
-                    -p AWS_SMTP_FROM=$SXCM_AWS_SMTPFROM \
-                    | $CMD
-                elif [[ "${FAMILLY:0:1}" == "5" ]]
-                then
-                    oc process -f $file --local -o yaml \
-                    -p SCOPE=$localScope \
-                    -p CLUSTER=$cn \
-                    -p ENV=$localEnv \
-                    -p VERSION=$localVersion \
-                    -p CLUSTERID=$clusterID \
-                    -p CLUSTER_REGION=$clusterRegion \
-                    -p RHN_USER=$SXCM_RHN_USER \
-                    -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
-                    | $CMD
-                else
-                    oc process -f $file --local -o yaml \
-                    -p SCOPE=$localScope \
-                    -p CLUSTER=$cn \
-                    -p ENV=$localEnv \
-                    -p VERSION=$localVersion \
-                    | $CMD
+                    echo -e "${UPSERT} \e[1m$rn\e[0m demo in cluster \e[1m$cn\e[0m with resource \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
+                    if [[ "${FAMILLY:0:1}" == "2" ]]
+                    then
+                        oc process -f $file --local -o yaml \
+                        -p SCOPE=$localScope \
+                        -p CLUSTER=$cn \
+                        -p ENV=$localEnv \
+                        -p VERSION=$localVersion \
+                        -p RHN_USER=$SXCM_RHN_USER \
+                        -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
+                        | $CMD
+                    elif [[ "${FAMILLY:0:1}" == "4" ]]
+                    then
+                        oc process -f $file --local -o yaml \
+                        -p SCOPE=$localScope \
+                        -p CLUSTER=$cn \
+                        -p ENV=$SXCM_ENV \
+                        -p VERSION=$localVersion \
+                        -p AWS_ZONE=$SXCM_AWS_ZONE \
+                        -p AWS_ACCESS_ID=$SXCM_AWS_ID \
+                        -p AWS_ACCESS_KEY=$SXCM_AWS_KEY \
+                        -p AWS_SMTP_USER=$SXCM_AWS_SMTP_USER \
+                        -p AWS_SMTP_PASSWORD=$SXCM_AWS_SMTP_PASSWORD \
+                        -p AWS_SMTP_ZONE=$SXCM_AWS_SMTPZONE \
+                        -p AWS_SMTP_FROM=$SXCM_AWS_SMTPFROM \
+                        | $CMD
+                    elif [[ "${FAMILLY:0:1}" == "5" ]]
+                    then
+                        oc process -f $file --local -o yaml \
+                        -p SCOPE=$localScope \
+                        -p CLUSTER=$cn \
+                        -p ENV=$localEnv \
+                        -p VERSION=$localVersion \
+                        -p CLUSTERID=$clusterID \
+                        -p CLUSTER_REGION=$clusterRegion \
+                        -p RHN_USER=$SXCM_RHN_USER \
+                        -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
+                        | $CMD
+                    else
+                        oc process -f $file --local -o yaml \
+                        -p SCOPE=$localScope \
+                        -p CLUSTER=$cn \
+                        -p ENV=$localEnv \
+                        -p VERSION=$localVersion \
+                        | $CMD
+                    fi
                 fi
             fi
             if [[ "${UPSERT}" == "create" ]]; then

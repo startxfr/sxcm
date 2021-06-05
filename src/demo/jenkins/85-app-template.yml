@@ -30,13 +30,13 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${OPERATOR_NS}-operator
+    name: ${NS}-operator
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "${NS}"
-      app.kubernetes.io/name: "${OPERATOR_NS}-operator-application"
+      app.kubernetes.io/name: "${NS}-operator-application"
       app.kubernetes.io/part-of: ${NS}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "${NS}-app"
@@ -47,7 +47,7 @@ objects:
       - resources-finalizer.argocd.argoproj.io
   spec:
     destination:
-      namespace: "${OPERATOR_NS}"
+      namespace: "${NS}"
       server: 'https://kubernetes.default.svc'
     info:
       - name: teammail
@@ -70,7 +70,9 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "startx-jenkins"
+            value: "${NS}"
+          - name: project.project.name
+            value: "${NS}"
           - name: project.enabled
             value: "false"
           - name: project.project.requester
@@ -95,17 +97,17 @@ objects:
     ignoreDifferences:
       - group: operators.coreos.com
         kind: OperatorGroup
-        namespace: "${OPERATOR_NS}"
+        namespace: "${NS}"
         jsonPointers:
           - /metadata/annotations/olm.providedAPIs
 # - kind: Application
 #   apiVersion: argoproj.io/v1alpha1
 #   metadata:
-#     name: ${OPERATOR_NS}-instance
+#     name: ${NS}-instance
 #     namespace: "${ARGOCD_NS}"
 #     labels:
 #       <<: *basic_labels
-#       app.kubernetes.io/name: "${OPERATOR_NS}-instance-application"
+#       app.kubernetes.io/name: "${NS}-instance-application"
 #     annotations:
 #       <<: *basic_annotations
 #       # argocd.argoproj.io/manifest-generate-paths: .
@@ -113,7 +115,7 @@ objects:
 #       - resources-finalizer.argocd.argoproj.io
 #   spec:
 #     destination:
-#       namespace: "${OPERATOR_NS}"
+#       namespace: "${NS}"
 #       server: 'https://kubernetes.default.svc'
 #     info:
 #       - name: teammail
@@ -212,11 +214,6 @@ objects:
           factor: 2
           maxDuration: 20s
 parameters:
-  - name: OPERATOR_NS
-    displayName: The namespace where operator goes to
-    description: "Namespace to place objects to"
-    value: startx-jenkins
-    required: true
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"

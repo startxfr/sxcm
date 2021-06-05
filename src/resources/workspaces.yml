@@ -24,21 +24,81 @@ labels:
   template: sxv4-cluster-workspaces-template
   app.kubernetes.io/managed-by: sxcm
 objects: 
-- kind: Application
+- kind: AppProject
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-workspace-project
+    name: ${NS}
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "cluster-workspaces"
-      app.kubernetes.io/name: "startx-cluster-workspace-project-application"
+      app.kubernetes.io/name: "${NS}-appproject"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "cluster-workspaces"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
+  spec:
+    sourceRepos:
+      - '*'
+    destinations:
+      - namespace: ${NS}
+        server: '*'
+    clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+    roles:
+    - name: dev
+      description: Read-only privileges to group dev in ${NS} project
+      policies:
+      - g, dev, role:readonly
+      - p, role:startx-dev, *, get, .${NS}/*, allow
+      groups:
+      - dev
+    - name: ops
+      description: Read-only (and sync) privileges to group ops in ${NS} project
+      policies:
+      - p, role:startx-ops, clusters, get, .${NS}/*, allow
+      - p, role:startx-ops, projects, get, .${NS}/*, allow
+      - p, role:startx-ops, applications, get, .${NS}/*, allow
+      - p, role:startx-ops, applications, sync, .${NS}/*, allow
+      - p, role:startx-ops, repositories, get, .${NS}/*, allow
+      - p, role:startx-ops, repositories, sync, .${NS}/*, allow
+      - p, role:startx-ops, certificates, get, .${NS}/*, allow
+      - g, ops, role:startx-ops
+      groups:
+      - ops
+    - name: devops
+      description: Read-only privileges to group devops in ${NS} project
+      policies:
+      - p, role:startx-devops, clusters, get, .${NS}/*, allow
+      - p, role:startx-devops, projects, get, .${NS}/*, allow
+      - p, role:startx-devops, applications, get, .${NS}/*, allow
+      - p, role:startx-devops, repositories, get, .${NS}/*, allow
+      - p, role:startx-devops, certificates, get, .${NS}/*, allow
+      - g, devops, role:startx-devops
+      groups:
+      - devops
+    - name: admin
+      description: All privileges to group admin in ${NS} project
+      policies:
+      - p, role:startx-admin, *, *, ${NS}/*, allow
+      - g, system:cluster-admins, role:admin
+      groups:
+      - my-oidc-group
+      - system:cluster-admins
+      - admin
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: startx-cluster-workspace-project
+    namespace: "${ARGOCD_NS}"
+    labels:
+      <<: *basic_labels
+      app.kubernetes.io/name: "startx-cluster-workspace-project-application"
+    annotations:
+      <<: *basic_annotations
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -68,7 +128,9 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "startx-workspaces"
+            value: "${NS}"
+          - name: project.project.name
+            value: "${NS}"
           - name: project.requester
             value: "sxcm"
     syncPolicy:
@@ -90,15 +152,10 @@ objects:
     name: startx-cluster-workspace-operator
     namespace: "${ARGOCD_NS}"
     labels:
-      app.startx.fr/scope: "${SCOPE}"
-      app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "argocd"
+      <<: *basic_labels
       app.kubernetes.io/name: "startx-cluster-workspace-operator-application"
-      app.kubernetes.io/part-of: ${CLUSTER}
-      app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "argocd"
     annotations:
-      openshift.io/generated-by: sxcm
+      <<: *basic_annotations
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
@@ -128,7 +185,9 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "startx-workspaces"
+            value: "${NS}"
+          - name: project.project.name
+            value: "${NS}"
     syncPolicy:
       automated:
         prune: true
@@ -148,70 +207,6 @@ objects:
         namespace: "${NS}"
         jsonPointers:
           - /metadata/annotations/olm.providedAPIs
-- kind: Application
-  apiVersion: argoproj.io/v1alpha1
-  metadata:
-    name: startx-cluster-workspace-instance
-    namespace: "${ARGOCD_NS}"
-    labels: 
-      app.startx.fr/scope: "${SCOPE}"
-      app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "argocd"
-      app.kubernetes.io/name: "startx-cluster-workspace-instance-application"
-      app.kubernetes.io/part-of: ${CLUSTER}
-      app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "argocd"
-    annotations:
-      openshift.io/generated-by: sxcm
-      # argocd.argoproj.io/manifest-generate-paths: .
-    finalizers:
-      - resources-finalizer.argocd.argoproj.io
-  spec:
-    destination:
-      namespace: "${NS}"
-      server: 'https://kubernetes.default.svc'
-    info:
-      - name: teammail
-        value: dev@startx.fr
-    project: cluster-admin
-    source:
-      path: charts/cluster-workspace/
-      repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
-      helm:
-        releaseName: startx-workspace-instance
-        valueFiles:
-          - values-startx.yaml
-        parameters:
-          - name: context.scope
-            value: "${SCOPE}"
-          - name: context.cluster
-            value: "${CLUSTER}"
-          - name: context.environment
-            value: "${ENV}"
-          - name: context.version
-            value: "${VERSION}"
-          - name: context.app
-            value: "startx-workspaces"
-          - name: project.enabled
-            value: "false"
-          - name: operator.enabled
-            value: "false"
-          - name: cheCluster.enabled
-            value: "true"
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: false
-      syncOptions:
-        - CreateNamespace=false
-        - Validate=true
-      retry:
-        limit: 3
-        backoff:
-          duration: 50s
-          factor: 2
-          maxDuration: 300s
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
@@ -220,7 +215,7 @@ parameters:
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
-    value: openshift-workspaces
+    value: startx-workspaces
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
