@@ -6,15 +6,15 @@ This demo is based on the [cluster-s2i helm chart](https://helm-repository.readt
 
 ## Description
 
-| Field            | Content                                     |
-| ---------------- | ------------------------------------------- |
-| **Name**         | **STARTX demo s2i**                         |
-| **tags**         | `startx` `demo` `build` `s2i`               |
-| **provider**     | STARTX                                      |
-| **requirements** | [s2i cluster resource](../../resources/s2i) |
-| **format**       | openshift template with argoCD application  |
-| **content**      | 6 ArgoCD application                        |
-| **namespace**    | demo-s2i                                    |
+| Field            | Content                                    |
+| ---------------- | ------------------------------------------ |
+| **Name**         | **STARTX demo s2i**                        |
+| **tags**         | `startx` `demo` `build` `s2i`              |
+| **provider**     | STARTX                                     |
+| **requirements** | _none_                                     |
+| **format**       | openshift template with argoCD application |
+| **content**      | 6 ArgoCD application                       |
+| **namespace**    | demo-s2i                                   |
 
 ## Add to a cluster
 

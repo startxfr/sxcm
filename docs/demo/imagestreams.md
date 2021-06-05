@@ -6,15 +6,15 @@ This demo is based on the [cluster-imagestreams helm chart](https://helm-reposit
 
 ## Description
 
-| Field            | Content                                                       |
-| ---------------- | ------------------------------------------------------------- |
-| **Name**         | **STARTX demo imagestreams**                                  |
-| **tags**         | `startx` `demo` `k8s` `imagestreams`                          |
-| **provider**     | STARTX                                                        |
-| **requirements** | [imagestreams cluster resource](../../resources/imagestreams) |
-| **format**       | openshift template with argoCD application                    |
-| **content**      | 6 ArgoCD application                                          |
-| **namespace**    | demo-imagestreams                                             |
+| Field            | Content                                    |
+| ---------------- | ------------------------------------------ |
+| **Name**         | **STARTX demo imagestreams**               |
+| **tags**         | `startx` `demo` `k8s` `imagestreams`       |
+| **provider**     | STARTX                                     |
+| **requirements** | _none_                                     |
+| **format**       | openshift template with argoCD application |
+| **content**      | 6 ArgoCD application                       |
+| **namespace**    | demo-imagestreams                          |
 
 ## Add to a cluster
 

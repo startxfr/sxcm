@@ -6,15 +6,15 @@ This demo is based on the [cluster-nexus helm chart](https://helm-repository.rea
 
 ## Description
 
-| Field            | Content                                         |
-| ---------------- | ----------------------------------------------- |
-| **Name**         | **STARTX demo nexus**                           |
-| **tags**         | `startx` `demo` `storage` `nexus`               |
-| **provider**     | STARTX                                          |
-| **requirements** | [nexus cluster resource](../../resources/nexus) |
-| **format**       | openshift template with argoCD application      |
-| **content**      | 6 ArgoCD application                            |
-| **namespace**    | demo-nexus                                      |
+| Field            | Content                                    |
+| ---------------- | ------------------------------------------ |
+| **Name**         | **STARTX demo nexus**                      |
+| **tags**         | `startx` `demo` `storage` `nexus`          |
+| **provider**     | STARTX                                     |
+| **requirements** | _none_                                     |
+| **format**       | openshift template with argoCD application |
+| **content**      | 6 ArgoCD application                       |
+| **namespace**    | demo-nexus                                 |
 
 ## Add to a cluster
 

@@ -6,15 +6,15 @@ This demo is based on the [cluster-helm helm chart](https://helm-repository.read
 
 ## Description
 
-| Field            | Content                                       |
-| ---------------- | --------------------------------------------- |
-| **Name**         | **STARTX demo helm**                          |
-| **tags**         | `startx` `demo` `k8s` `helm`                  |
-| **provider**     | STARTX                                        |
-| **requirements** | [helm cluster resource](../../resources/helm) |
-| **format**       | openshift template with argoCD application    |
-| **content**      | 6 ArgoCD application                          |
-| **namespace**    | demo-helm                                     |
+| Field            | Content                                    |
+| ---------------- | ------------------------------------------ |
+| **Name**         | **STARTX demo helm**                       |
+| **tags**         | `startx` `demo` `k8s` `helm`               |
+| **provider**     | STARTX                                     |
+| **requirements** | _none_                                     |
+| **format**       | openshift template with argoCD application |
+| **content**      | 6 ArgoCD application                       |
+| **namespace**    | demo-helm                                  |
 
 ## Add to a cluster
 

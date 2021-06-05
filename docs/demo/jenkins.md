@@ -6,15 +6,15 @@ This demo is based on the [cluster-jenkins helm chart](https://helm-repository.r
 
 ## Description
 
-| Field            | Content                                             |
-| ---------------- | --------------------------------------------------- |
-| **Name**         | **STARTX demo jenkins**                             |
-| **tags**         | `startx` `demo` `build` `jenkins`  `automation`     |
-| **provider**     | STARTX                                              |
-| **requirements** | [jenkins cluster resource](../../resources/jenkins) |
-| **format**       | openshift template with argoCD application          |
-| **content**      | 6 ArgoCD application                                |
-| **namespace**    | demo-jenkins                                        |
+| Field            | Content                                         |
+| ---------------- | ----------------------------------------------- |
+| **Name**         | **STARTX demo jenkins**                         |
+| **tags**         | `startx` `demo` `build` `jenkins`  `automation` |
+| **provider**     | STARTX                                          |
+| **requirements** | _none_                                          |
+| **format**       | openshift template with argoCD application      |
+| **content**      | 6 ArgoCD application                            |
+| **namespace**    | demo-jenkins                                    |
 
 ## Add to a cluster
 

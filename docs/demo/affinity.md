@@ -6,15 +6,15 @@ This demo is based on the [cluster-affinity helm chart](https://helm-repository.
 
 ## Description
 
-| Field            | Content                                               |
-| ---------------- | ----------------------------------------------------- |
-| **Name**         | **STARTX demo affinity**                              |
-| **tags**         | `startx` `demo` `k8s` `ha` `affinity`                 |
-| **provider**     | STARTX                                                |
-| **requirements** | [affinity cluster resource](../../resources/affinity) |
-| **format**       | openshift template with argoCD application            |
-| **content**      | 6 ArgoCD application                                  |
-| **namespace**    | demo-affinity                                         |
+| Field            | Content                                    |
+| ---------------- | ------------------------------------------ |
+| **Name**         | **STARTX demo affinity**                   |
+| **tags**         | `startx` `demo` `k8s` `ha` `affinity`      |
+| **provider**     | STARTX                                     |
+| **requirements** | _none_                                     |
+| **format**       | openshift template with argoCD application |
+| **content**      | 6 ArgoCD application                       |
+| **namespace**    | demo-affinity                              |
 
 ## Add to a cluster
 

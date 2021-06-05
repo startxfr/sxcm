@@ -6,15 +6,15 @@ This demo is based on the [cluster-ansible helm chart](https://helm-repository.r
 
 ## Description
 
-| Field            | Content                                             |
-| ---------------- | --------------------------------------------------- |
-| **Name**         | **STARTX demo ansible**                             |
-| **tags**         | `startx` `demo` `automation` `ansible`              |
-| **provider**     | STARTX                                              |
-| **requirements** | [ansible cluster resource](../../resources/ansible) |
-| **format**       | openshift template with argoCD application          |
-| **content**      | 6 ArgoCD application                                |
-| **namespace**    | demo-ansible                                        |
+| Field            | Content                                    |
+| ---------------- | ------------------------------------------ |
+| **Name**         | **STARTX demo ansible**                    |
+| **tags**         | `startx` `demo` `automation` `ansible`     |
+| **provider**     | STARTX                                     |
+| **requirements** | _none_                                     |
+| **format**       | openshift template with argoCD application |
+| **content**      | 6 ArgoCD application                       |
+| **namespace**    | demo-ansible                               |
 
 ## Add to a cluster
 

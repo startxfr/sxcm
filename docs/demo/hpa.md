@@ -6,15 +6,15 @@ This demo is based on the [cluster-hpa helm chart](https://helm-repository.readt
 
 ## Description
 
-| Field            | Content                                     |
-| ---------------- | ------------------------------------------- |
-| **Name**         | **STARTX demo hpa**                         |
-| **tags**         | `startx` `demo` `k8s` `ha` `hpa`            |
-| **provider**     | STARTX                                      |
-| **requirements** | [hpa cluster resource](../../resources/hpa) |
-| **format**       | openshift template with argoCD application  |
-| **content**      | 6 ArgoCD application                        |
-| **namespace**    | demo-hpa                                    |
+| Field            | Content                                    |
+| ---------------- | ------------------------------------------ |
+| **Name**         | **STARTX demo hpa**                        |
+| **tags**         | `startx` `demo` `k8s` `ha` `hpa`           |
+| **provider**     | STARTX                                     |
+| **requirements** | _none_                                     |
+| **format**       | openshift template with argoCD application |
+| **content**      | 6 ArgoCD application                       |
+| **namespace**    | demo-hpa                                   |
 
 ## Add to a cluster
 

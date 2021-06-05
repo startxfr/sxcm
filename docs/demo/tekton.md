@@ -6,15 +6,15 @@ This demo is based on the [cluster-tekton helm chart](https://helm-repository.re
 
 ## Description
 
-| Field            | Content                                           |
-| ---------------- | ------------------------------------------------- |
-| **Name**         | **STARTX demo tekton**                            |
-| **tags**         | `startx` `demo` `pipeline` `build` `tekton`       |
-| **provider**     | STARTX                                            |
-| **requirements** | [tekton cluster resource](../../resources/tekton) |
-| **format**       | openshift template with argoCD application        |
-| **content**      | 6 ArgoCD application                              |
-| **namespace**    | demo-tekton                                       |
+| Field            | Content                                             |
+| ---------------- | --------------------------------------------------- |
+| **Name**         | **STARTX demo tekton**                              |
+| **tags**         | `startx` `demo` `pipeline` `build` `tekton`         |
+| **provider**     | STARTX                                              |
+| **requirements** | [pipeline cluster resource](../../resources/tekton) |
+| **format**       | openshift template with argoCD application          |
+| **content**      | 6 ArgoCD application                                |
+| **namespace**    | demo-tekton                                         |
 
 ## Add to a cluster
 
