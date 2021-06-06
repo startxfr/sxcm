@@ -91,6 +91,13 @@ objects:
       helpChatURL: 'https://startx-france.slack.com/chatops'
       usersAnonymousEnabled: false
       controller:
+        extraArgs:
+        - --repo-server-timeout-seconds
+        - "500"
+        - --status-processors
+        - "15"
+        - --operation-processors
+        - "5"
         appSync: 120s
         processors:
           operation: 5
@@ -152,6 +159,9 @@ objects:
           enabled: true
       repo:
         mountsatoken: true
+        env:
+          - name: "ARGOCD_EXEC_TIMEOUT"
+            value: "5m"
         resources:
           limits:
             cpu: 400m

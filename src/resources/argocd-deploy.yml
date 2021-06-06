@@ -108,9 +108,9 @@ objects:
         - --repo-server-timeout-seconds
         - "500"
         - --status-processors
-        - "10"
+        - "25"
         - --operation-processors
-        - "5"
+        - "10"
         appSync: 120s
         processors:
           operation: 10
@@ -118,12 +118,12 @@ objects:
         resources:
           limits:
             cpu: 3500m
-            ephemeral-storage: 256Mi
-            memory: 4.5Gi
+            ephemeral-storage: 512Mi
+            memory: 5Gi
           requests:
             cpu: 1200m
-            ephemeral-storage: 64Mi
-            memory: 2Gi
+            ephemeral-storage: 128Mi
+            memory: 2.5Gi
       ha:
         enabled: false
       redis:
@@ -178,13 +178,13 @@ objects:
             value: "5m"
         resources:
           limits:
-            cpu: 600m
+            cpu: 1000m
             ephemeral-storage: 800Mi
-            memory: 1024Mi
+            memory: 2500Mi
           requests:
-            cpu: 300m
+            cpu: 500m
             ephemeral-storage: 400Mi
-            memory: 712Mi
+            memory: 1500Mi
   # !!!!! warning sur les droits confies a argocd (creation de resources cluster)
   - kind: ClusterRoleBinding
     apiVersion: rbac.authorization.k8s.io/v1
