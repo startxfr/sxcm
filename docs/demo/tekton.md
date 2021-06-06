@@ -13,7 +13,7 @@ This demo is based on the [cluster-pipeline helm chart](https://helm-repository.
 | **provider**     | STARTX                                              |
 | **requirements** | [pipeline cluster resource](../../resources/tekton) |
 | **format**       | openshift template with argoCD application          |
-| **content**      | 6 ArgoCD application                                |
+| **content**      | **6** Applications + **1** AppProject               |
 | **namespace**    | demo-tekton                                         |
 
 ## Add to a cluster

@@ -13,7 +13,7 @@ This demo is based on the [cluster-ptp helm chart](https://helm-repository.readt
 | **provider**     | STARTX                                     |
 | **requirements** | _none_                                     |
 | **format**       | openshift template with argoCD application |
-| **content**      | 6 ArgoCD application                       |
+| **content**      | **6** Applications + **1** AppProject      |
 | **namespace**    | demo-ptp                                   |
 
 ## Add to a cluster

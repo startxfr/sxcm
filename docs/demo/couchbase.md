@@ -13,7 +13,7 @@ This demo is based on the [cluster-couchbase helm chart](https://helm-repository
 | **provider**     | STARTX                                                  |
 | **requirements** | [couchbase cluster resource](../../resources/couchbase) |
 | **format**       | openshift template with argoCD application              |
-| **content**      | 6 ArgoCD application                                    |
+| **content**      | **6** Applications + **1** AppProject                   |
 | **namespace**    | demo-couchbase                                          |
 
 ## Add to a cluster

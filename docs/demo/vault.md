@@ -13,7 +13,7 @@ This demo is based on the [cluster-vault helm chart](https://helm-repository.rea
 | **provider**     | STARTX                                          |
 | **requirements** | [vault cluster resource](../../resources/vault) |
 | **format**       | openshift template with argoCD application      |
-| **content**      | 6 ArgoCD application                            |
+| **content**      | **6** Applications + **1** AppProject           |
 | **namespace**    | demo-vault                                      |
 
 ## Add to a cluster

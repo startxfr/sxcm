@@ -13,7 +13,7 @@ This demo is based on the [example-imagestreams helm chart](https://helm-reposit
 | **provider**     | STARTX                                     |
 | **requirements** | _none_                                     |
 | **format**       | openshift template with argoCD application |
-| **content**      | 6 ArgoCD application                       |
+| **content**      | **2** Applications                         |
 | **namespace**    | demo-imagestreams                          |
 
 ## Add to a cluster

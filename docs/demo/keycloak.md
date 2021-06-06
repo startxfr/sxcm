@@ -11,9 +11,9 @@ This demo is based on the [example-catalog helm chart](https://helm-repository.r
 | **Name**         | **STARTX demo keycloak**                    |
 | **tags**         | `startx` `demo` `sso` `security` `keycloak` |
 | **provider**     | STARTX                                      |
-| **requirements** | _none_                                      |
+| **requirements** | [SSO cluster resource](../../resources/sso) |
 | **format**       | openshift template with argoCD application  |
-| **content**      | 6 ArgoCD application                        |
+| **content**      | **3** Applications + **1** AppProject       |
 | **namespace**    | demo-keycloak                               |
 
 ## Add to a cluster

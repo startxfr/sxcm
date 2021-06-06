@@ -13,7 +13,7 @@ This demo is based on the [example-pod helm chart](https://helm-repository.readt
 | **provider**     | STARTX                                            |
 | **requirements** | [argocd cluster resource](../../resources/argocd) |
 | **format**       | openshift template with argoCD application        |
-| **content**      | 6 ArgoCD application                              |
+| **content**      | **6** Applications + **1** AppProject             |
 | **namespace**    | demo-argocd                                       |
 
 ## Add to a cluster

@@ -13,7 +13,7 @@ This demo is based on the [cluster-kubevirt helm chart](https://helm-repository.
 | **provider**     | STARTX                                                |
 | **requirements** | [kubevirt cluster resource](../../resources/kubevirt) |
 | **format**       | openshift template with argoCD application            |
-| **content**      | 6 ArgoCD application                                  |
+| **content**      | **6** Applications + **1** AppProject                 |
 | **namespace**    | demo-kubevirt                                         |
 
 ## Add to a cluster

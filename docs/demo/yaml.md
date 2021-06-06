@@ -13,7 +13,7 @@ This demo is based on the [example-catalog helm chart](https://helm-repository.r
 | **provider**     | STARTX                                        |
 | **requirements** | [yaml cluster resource](../../resources/yaml) |
 | **format**       | openshift template with argoCD application    |
-| **content**      | 6 ArgoCD application                          |
+| **content**      | **6** Applications + **1** AppProject         |
 | **namespace**    | demo-yaml                                     |
 
 ## Add to a cluster

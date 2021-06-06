@@ -13,7 +13,7 @@ This demo is based on the [cluster-3scale helm chart](https://helm-repository.re
 | **provider**     | STARTX                                            |
 | **requirements** | [3scale cluster resource](../../resources/3scale) |
 | **format**       | openshift template with argoCD application        |
-| **content**      | 6 ArgoCD application                              |
+| **content**      | **6** Applications + **1** AppProject             |
 | **namespace**    | demo-3scale                                       |
 
 ## Add to a cluster

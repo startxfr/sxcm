@@ -13,7 +13,7 @@ This demo is based on the [cluster-knative helm chart](https://helm-repository.r
 | **provider**     | STARTX                                              |
 | **requirements** | [knative cluster resource](../../resources/knative) |
 | **format**       | openshift template with argoCD application          |
-| **content**      | 6 ArgoCD application                                |
+| **content**      | **6** Applications + **1** AppProject               |
 | **namespace**    | demo-knative                                        |
 
 ## Add to a cluster

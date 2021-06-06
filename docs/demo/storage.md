@@ -13,7 +13,7 @@ This demo is based on the [cluster-storage helm chart](https://helm-repository.r
 | **provider**     | STARTX                                              |
 | **requirements** | [storage cluster resource](../../resources/storage) |
 | **format**       | openshift template with argoCD application          |
-| **content**      | 6 ArgoCD application                                |
+| **content**      | **6** Applications + **1** AppProject               |
 | **namespace**    | demo-storage                                        |
 
 ## Add to a cluster

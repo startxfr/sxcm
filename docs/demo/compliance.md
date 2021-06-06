@@ -13,7 +13,7 @@ This demo is based on the [cluster-compliance helm chart](https://helm-repositor
 | **provider**     | STARTX                                                    |
 | **requirements** | [compliance cluster resource](../../resources/compliance) |
 | **format**       | openshift template with argoCD application                |
-| **content**      | 6 ArgoCD application                                      |
+| **content**      | **6** Applications + **1** AppProject                     |
 | **namespace**    | demo-compliance                                           |
 
 ## Add to a cluster
