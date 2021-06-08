@@ -49,6 +49,8 @@ objects:
     destinations:
       - namespace: ${NS}
         server: '*'
+      - namespace: startx-istio
+        server: '*'
     clusterResourceWhitelist:
       - group: '*'
         kind: '*'
