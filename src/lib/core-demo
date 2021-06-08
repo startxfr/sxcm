@@ -81,9 +81,117 @@ function listDemos {
     local COUNT=$(echo $LIST | wc -w)
     if [[ $COUNT -gt 0 ]]; then
         for demo in $LIST; do
-            foo=${demo#"$path/"}
-            foo=${foo%".yml"}
-            echo "${foo}"
+            filename=${demo#"$path/"}
+            filename=${filename%".yml"}
+            echo "${filename}"
+        done
+    fi
+}
+
+# create demos
+function applyClusterDemo {
+    local UPSERT=$1
+    local cn=$2
+    local rn=$3
+    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    local localEnv=${SXCM_ENV:-dev}
+    local localVersion=${SXCM_VERSION:-beta}
+    local localScope=${SXCM_CLUSTER_SCOPE:-scope}
+    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterConfDirDemo=$clusterConfDir/$SXCM_USER_CONF_DIR_DEMOS
+    local clusterRegion=$(extractOCPInstallAWSRegion $clusterConfOCPInstallFile)
+    local clusterProfile=$(extractOCPInstallProfile $clusterConfOCPInstallFile)
+    local clusterID=$(oc get machineset -n openshift-machine-api -o jsonpath="{.items[0].metadata.labels}" | cut -d \" -f 4)
+    local clusterName=$(echo $SXCM_CLUSTER_URL | sed -e 's|https://||g')
+    clusterName=$(echo $clusterName | sed -e 's|\.|-|g')
+    local CLUSTERTIMEOUT=5
+    local CMD="oc apply $SXCM_OCAPPLY_OPTS --cluster=$clusterName -f -"
+    if [[ $UPSERT == "delete" ]]
+    then
+        CMD="oc delete -f -"
+    fi
+    local LIST=$(ls $clusterConfDirDemo/$rn 2>/dev/null)
+    local COUNT=$(echo $LIST | wc -w)
+    if [[ $COUNT -gt 0 ]]; then
+        for demo in $LIST; do
+            local file="$clusterConfDirDemo/$rn/${demo}"
+            local CLUSTERTIMEOUT=4
+            local filename=${demo#"$clusterConfDirDemo/$rn/"}; filename=${filename%"/"}
+            local oldifs="$IFS"; IFS="-"; tab=($filename); IFS="$oldifs"
+            local FAMILLY="${tab[0]}"
+            # 1x. Admin template without params
+            # 2x. Admin template with default, rhn and aws params
+            # 3x. Admin template with default params and script enabled
+            # 4x. Admin template (reserved)
+            # 5x. Admin template (reserved)
+            # 6x. Developer template without params
+            # 7x. Developer template with default, rhn and aws params
+            # 8x. Developer template with default params and script enabled
+            # 9x. Developer template (reserved)
+            if [[ -x $file ]]
+            then
+                if [[ $filename != "sxcm.sh" ]]
+                then
+                    echo -e "${UPSERT} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
+                    . $file $UPSERT "$cn" "$localScope" "$localEnv" "$localVersion" "$cn" "$clusterName"
+                fi
+            else
+                if [[ "${file: -3}" == ".sh" ]]
+                then
+                echo -e "${UPSERT} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${demo}\e[0m skipped"
+                else
+                    echo -e "${UPSERT} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
+                    if [[ "${FAMILLY:0:1}" == "2" ]]
+                    then
+                        oc process -f $file --local -o yaml \
+                        -p SCOPE=$localScope \
+                        -p CLUSTER=$cn \
+                        -p ENV=$localEnv \
+                        -p VERSION=$localVersion \
+                        -p RHN_USER=$SXCM_RHN_USER \
+                        -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
+                        | $CMD
+                    elif [[ "${FAMILLY:0:1}" == "4" ]]
+                    then
+                        oc process -f $file --local -o yaml \
+                        -p SCOPE=$localScope \
+                        -p CLUSTER=$cn \
+                        -p ENV=$SXCM_ENV \
+                        -p VERSION=$localVersion \
+                        -p AWS_ZONE=$SXCM_AWS_ZONE \
+                        -p AWS_ACCESS_ID=$SXCM_AWS_ID \
+                        -p AWS_ACCESS_KEY=$SXCM_AWS_KEY \
+                        -p AWS_SMTP_USER=$SXCM_AWS_SMTP_USER \
+                        -p AWS_SMTP_PASSWORD=$SXCM_AWS_SMTP_PASSWORD \
+                        -p AWS_SMTP_ZONE=$SXCM_AWS_SMTPZONE \
+                        -p AWS_SMTP_FROM=$SXCM_AWS_SMTPFROM \
+                        | $CMD
+                    elif [[ "${FAMILLY:0:1}" == "5" ]]
+                    then
+                        oc process -f $file --local -o yaml \
+                        -p SCOPE=$localScope \
+                        -p CLUSTER=$cn \
+                        -p ENV=$localEnv \
+                        -p VERSION=$localVersion \
+                        -p CLUSTERID=$clusterID \
+                        -p CLUSTER_REGION=$clusterRegion \
+                        -p RHN_USER=$SXCM_RHN_USER \
+                        -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
+                        | $CMD
+                    else
+                        oc process -f $file --local -o yaml \
+                        -p SCOPE=$localScope \
+                        -p CLUSTER=$cn \
+                        -p ENV=$localEnv \
+                        -p VERSION=$localVersion \
+                        | $CMD
+                    fi
+                fi
+            fi
+            if [[ "${UPSERT}" == "create" ]]; then
+                echo -e "wait ${CLUSTERTIMEOUT}sec for deployment dependencies start"
+                temporize $CLUSTERTIMEOUT 2
+            fi
         done
     fi
 }

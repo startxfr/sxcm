@@ -121,6 +121,114 @@ function extractResourceTimeout {
     echo "$CLUSTERTIMEOUT"
 }
 
+# create cluster resources
+function applyClusterResource {
+    local UPSERT=$1
+    local cn=$2
+    local rn=$3
+    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    local localEnv=${SXCM_ENV:-dev}
+    local localVersion=${SXCM_VERSION:-beta}
+    local localScope=${SXCM_CLUSTER_SCOPE:-scope}
+    local localToken=${SXCM_CLUSTER_ADMIN_TOKEN:-mytoken} 
+    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterConfDirResource=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
+    local clusterRegion=$(extractOCPInstallAWSRegion $clusterConfOCPInstallFile)
+    local clusterProfile=$(extractOCPInstallProfile $clusterConfOCPInstallFile)
+    local clusterID=$(oc get machineset -n openshift-machine-api -o jsonpath="{.items[0].metadata.labels}" | cut -d \" -f 4)
+    local clusterName=$(echo $SXCM_CLUSTER_URL | sed -e 's|https://||g')
+    clusterName=$(echo $clusterName | sed -e 's|\.|-|g')
+    local CLUSTERTIMEOUT=5
+    local CMD="oc apply $SXCM_OCAPPLY_OPTS --token=$localToken --cluster=$clusterName -f -"
+    if [[ $UPSERT == "delete" ]]
+    then
+        CMD="oc delete -f -"
+    fi
+    if [[ -r $clusterConfDirResource/$rn.yml ]]
+    then
+        CLUSTERTIMEOUT=$(extractResourceTimeout $clusterConfDirResource/$rn.yml)
+        echo -e "${UPSERT} \e[1m$rn\e[0m cluster \e[1mresource\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${rn}.yml\e[0m \e[93m(admin)\e[0m"
+        if [[ 
+              "$rn" == "quay" || 
+              "$rn" == "3scale" || 
+              "$rn" == "argocd-apps" 
+            ]]
+        then
+            oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
+            -p SCOPE=$localScope \
+            -p CLUSTER=$cn \
+            -p ENV=$localEnv \
+            -p VERSION=$localVersion \
+            -p CLUSTER_PROFILE=$clusterProfile \
+            -p RHN_USER=$SXCM_RHN_USER \
+            -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
+            | $CMD
+        elif [[ 
+              "$rn" == "argocd-deploy" || 
+              "$rn" == "argocd-deploy-small" 
+            ]]
+        then
+            oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
+            -p SCOPE=$localScope \
+            -p CLUSTER=$cn \
+            -p ENV=$SXCM_ENV \
+            -p VERSION=$localVersion \
+            -p AWS_ZONE=$SXCM_AWS_ZONE \
+            -p AWS_ACCESS_ID=$SXCM_AWS_ID \
+            -p AWS_ACCESS_KEY=$SXCM_AWS_KEY \
+            -p AWS_SMTP_USER=$SXCM_AWS_SMTP_USER \
+            -p AWS_SMTP_PASSWORD=$SXCM_AWS_SMTP_PASSWORD \
+            -p AWS_SMTP_ZONE=$SXCM_AWS_SMTPZONE \
+            -p AWS_SMTP_FROM=$SXCM_AWS_SMTPFROM \
+            -p CLUSTER_PROFILE=$clusterProfile \
+            | $CMD
+        elif [[ "$rn" == "machine" ]]
+        then
+            oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
+            -p SCOPE=$localScope \
+            -p CLUSTER=$cn \
+            -p ENV=$localEnv \
+            -p VERSION=$localVersion \
+            -p CLUSTERID=$clusterID \
+            -p CLUSTER_REGION=$clusterRegion \
+            -p CLUSTER_PROFILE=$clusterProfile \
+            -p RHN_USER=$SXCM_RHN_USER \
+            -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
+            | $CMD
+        else
+            oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
+            -p SCOPE=$localScope \
+            -p CLUSTER=$cn \
+            -p ENV=$localEnv \
+            -p VERSION=$localVersion \
+            -p CLUSTER_PROFILE=$clusterProfile \
+            | $CMD
+        fi
+        if [[ "${UPSERT}" == "create" ]]; then
+            echo -e "wait ${CLUSTERTIMEOUT}sec for operator dependencies start"
+            temporize $CLUSTERTIMEOUT 5
+        else
+            echo -e "wait 5sec for operator dependencies update"
+            temporize 2 1
+        fi
+    fi
+    if [[ -d $clusterConfDirResource/$rn ]]
+    then
+        local ressscript="upsert.sh"
+        if [[ -x $clusterConfDirResource/$rn/$ressscript ]]
+        then
+            echo -e "${UPSERT} \e[1m$rn\e[0m cluster \e[1mresource\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${ressscript}\e[0m \e[93m(admin)\e[0m"
+            . $clusterConfDirResource/$rn/$ressscript "$cn" "$localScope" "$localEnv" "$localVersion" "$localToken" "$cn" "$clusterName"
+            if [[ "${UPSERT}" == "create" ]]; then
+                echo -e "wait ${CLUSTERTIMEOUT}sec for deployment dependencies start"
+                temporize 10 2
+            fi
+        else 
+            echo -e "No \e[1m$rn\e[0m cluster \e[1mresource\e[0m found at \e[1m$clusterConfDirResource/$rn/$ressscript\e[0 or is executable"
+        fi
+    fi
+}
+
 ##################
 
 # create cluster resource configuration
