@@ -229,6 +229,43 @@ function doDemoEdit {
     fi
 }
 
+# update demo configuration
+function doDemoUpdate {
+    local rn=$1
+    local cn=$2
+    if [[ "$rn" == "" ]]; then
+        echo -en "Demo name [mydemo] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="mydemo"
+        fi
+    fi
+    if [[ $cn == '' ]]; then
+        cn=$(getActiveCluster)
+    fi
+    local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
+    local clusterDemoDir=$clusterDemosDir/$rn
+    local demoIsFoundInDemoDir="false"
+    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    local IsDeployed=false
+    if [[ ! -d $clusterDir ]]; then
+        echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterDir\e[0m for enabling the \e[1m$rn\e[0m demos"
+    else
+        echo -e "\e[1m\e[96mUpdate\e[0m the demo \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
+        if [[ -r $clusterDir/metadata.json || -r $clusterDir/terraform.tfstate ]] && [[ -r $clusterDir/deployed ]]
+        then
+            IsDeployed=true
+        fi
+        if [[ "$IsDeployed" == "true" ]]
+        then
+            applyClusterDemo "update" $cn $rn
+        else
+            echo -e "Could not \e[1mupdate $rn\e[0m demo on cluster \e[1m$cn\e[0m because cluster is \e[1m\e[35mnot deployed\e[0m"
+        fi
+    fi
+}
+
 # information demo configuration
 function doDemoInfo {
     local rn=$1
@@ -431,6 +468,34 @@ function doDemoDisable {
 
 ###################
 
+# sub-menu for update command
+function menuDemoUpdate {
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm demo update sub-command to update a demo into the running cluster
+
+# Usage
+
+[user@localhost]$ sxcm demo update DEMONAME [CLUSTERNAME]
+
+
+# Examples
+
+# Update the mydemo demo in the currently active cluster
+sxcm demo update mydemo
+# Update the mydemo demo in the mycluster cluster
+sxcm demo update mydemo mycluster
+
+
+EOF
+    else
+        doDemoUpdate $1 $2
+    fi
+}
+
 # sub-menu for info command
 function menuDemoInfo {
     isPametersContainHelpers $1 $2 $3 $4
@@ -497,9 +562,9 @@ sxcm demo associate sub-command to add a demo into a cluster configuration
 
 # Examples
 
-# Associate the mydemo demo (local or shared) with the currently active cluster
+# Associate the mydemo demo with the currently active cluster
 sxcm demo associate mydemo
-# Associate the mydemo demo (local or shared) with the mycluster cluster
+# Associate the mydemo demo with the mycluster cluster
 sxcm demo associate mydemo mycluster
 
 EOF
@@ -524,9 +589,9 @@ sxcm demo dissociate sub-command to remove a demo into a cluster configuration
 
 # Examples
 
-# Dissociate the mydemo demo (local or shared) with the currently active cluster
+# Dissociate the mydemo demo with the currently active cluster
 sxcm demo dissociate mydemo
-# Dissociate the mydemo demo (local or shared) with the mycluster cluster
+# Dissociate the mydemo demo with the mycluster cluster
 sxcm demo dissociate mydemo mycluster
 
 EOF
@@ -551,9 +616,9 @@ sxcm demo enable sub-command to add a demo into a cluster configuration and the 
 
 # Examples
 
-# Enable the mydemo demo (local or shared) with the currently active cluster
+# Enable the mydemo demo with the currently active cluster
 sxcm demo enable mydemo
-# Enable the mydemo demo (local or shared) with the mycluster cluster
+# Enable the mydemo demo with the mycluster cluster
 sxcm demo enable mydemo mycluster
 
 
@@ -579,9 +644,9 @@ sxcm demo disable sub-command to remove a demo into a cluster configuration and 
 
 # Examples
 
-# Disable the mydemo demo (local or shared) with the currently active cluster
+# Disable the mydemo demo with the currently active cluster
 sxcm demo disable mydemo
-# Disable the mydemo demo (local or shared) with the mycluster cluster
+# Disable the mydemo demo with the mycluster cluster
 sxcm demo disable mydemo mycluster
 
 
@@ -652,11 +717,12 @@ function menuDemo {
     case $1 in
     info) menuDemoInfo ${2} ${3} ${4} ;;
     edit) menuDemoEdit ${2} ${3} ${4} ;;
+    update) menuDemoUpdate ${2} ${3} ${4} ;;
     list) menuDemos ${2} ${3} ${4} ;;
     associate) menuDemoAssociate ${2} ${3} ${4} ;;
     dissociate) menuDemoDissociate ${2} ${3} ${4} ;;
     enable) menuDemoEnable ${2} ${3} ${4} ;;
-    disable) menuDemoDisable ${2} ${3} ${4} ;;
+    disable | delete) menuDemoDisable ${2} ${3} ${4} ;;
     *) menuDemoUsage ;;
     esac
 }
