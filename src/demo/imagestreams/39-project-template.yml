@@ -70,11 +70,17 @@ objects:
             value: "${VERSION}"
     syncPolicy:
       automated:
-        prune: true
-        selfHeal: true
+        prune: false
+        selfHeal: false
       syncOptions:
         - CreateNamespace=false
         - Validate=false
+    ignoreDifferences:
+      - group: image.openshift.io/v1
+        kind: ImageStream
+        namespace: "${NS}"
+        jsonPointers:
+          - /spec/tags
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -123,7 +129,7 @@ objects:
         kind: ImageStream
         namespace: "${NS}"
         jsonPointers:
-          - /spec/*
+          - /spec/tags
 parameters:
   - name: NS
     displayName: Openshift namespace

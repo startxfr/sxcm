@@ -212,6 +212,8 @@ objects:
         app.kubernetes.io/name: "default-appproject"
       annotations: 
         openshift.io/generated-by: sxcm
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
     spec:
       sourceRepos:
         - '*'
@@ -277,6 +279,8 @@ objects:
         app.kubernetes.io/name: "cluster-admin-appproject"
       annotations: 
         openshift.io/generated-by: sxcm
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
     spec:
       sourceRepos:
         - '*'

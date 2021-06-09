@@ -39,6 +39,8 @@ objects:
       app.kubernetes.io/component: "cluster-workspaces"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
   spec:
     sourceRepos:
       - '*'

@@ -108,7 +108,7 @@ function applyClusterDemo {
     local CMD="oc apply $SXCM_OCAPPLY_OPTS --cluster=$clusterName -f -"
     if [[ $UPSERT == "delete" ]]
     then
-        CMD="oc delete -f -"
+        CMD="oc delete --wait=false -f -"
     fi
     local LIST=$(ls $clusterConfDirDemo/$rn 2>/dev/null)
     local COUNT=$(echo $LIST | wc -w)

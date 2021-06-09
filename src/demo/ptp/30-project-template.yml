@@ -21,7 +21,7 @@ message: |-
   Scope          : ${SCOPE}
   Environment    : ${ENV}
   Service        : ptp
-  Project        : ${NS}
+  Project        : ${NS}, ${OPERATOR_NS}
 
 labels:
   template: sxcm-demo-ptp-project-template
@@ -71,8 +71,12 @@ objects:
           - name: argocd_project.enabled
             value: "true"
           - name: argocd_project.list[0].name
-            value: "${NS}"
+            value: "${OPERATOR_NS}"
           - name: argocd_project.list[0].namespace
+            value: "${OPERATOR_NS}"
+          - name: argocd_project.list[1].name
+            value: "${NS}"
+          - name: argocd_project.list[1].namespace
             value: "${NS}"
           - name: project.project.name
             value: "${ARGOCD_NS}"
@@ -80,6 +84,132 @@ objects:
       automated:
         prune: true
         selfHeal: true
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${OPERATOR_NS}-project
+    namespace: "${ARGOCD_NS}"
+    labels:
+      <<: *basic_labels
+      app.kubernetes.io/name: "${OPERATOR_NS}-project-application"
+    annotations:
+      <<: *basic_annotations
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${OPERATOR_NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-ptp/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-startx.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "demo-ptp"
+          - name: project.enabled
+            value: "true"
+          - name: project.project.requester
+            value: "sxcm"
+          - name: operator.enabled
+            value: "false"
+          - name: ptp.enabled
+            value: "false"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${OPERATOR_NS}-operator
+    namespace: "${ARGOCD_NS}"
+    labels:
+      <<: *basic_labels
+      app.kubernetes.io/name: "${OPERATOR_NS}-operator-application"
+    annotations:
+      <<: *basic_annotations
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${OPERATOR_NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-ptp/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-startx.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "demo-ptp"
+          - name: project.enabled
+            value: "false"
+          - name: project.project.requester
+            value: "sxcm"
+          - name: operator.enabled
+            value: "true"
+          - name: ptp.enabled
+            value: "false"
+    syncPolicy:
+      automated:
+        prune: false
+        selfHeal: false
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+    ignoreDifferences:
+      - group: operators.coreos.com
+        kind: OperatorGroup
+        namespace: "${OPERATOR_NS}"
+        jsonPointers:
+          - /metadata/annotations/olm.providedAPIs
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -140,72 +270,26 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 5m
-- kind: Application
-  apiVersion: argoproj.io/v1alpha1
-  metadata:
-    name: ${NS}-operator
-    namespace: "${ARGOCD_NS}"
-    labels:
-      <<: *basic_labels
-      app.kubernetes.io/name: "${NS}-operator-application"
-    annotations:
-      <<: *basic_annotations
-      # argocd.argoproj.io/manifest-generate-paths: .
-    finalizers:
-      - resources-finalizer.argocd.argoproj.io
-  spec:
-    destination:
-      namespace: "${NS}"
-      server: 'https://kubernetes.default.svc'
-    info:
-      - name: teammail
-        value: dev@startx.fr
-    project: cluster-admin
-    source:
-      path: charts/cluster-ptp/
-      repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
-      helm:
-        valueFiles:
-          - values-demo.yaml
-        parameters:
-          - name: context.scope
-            value: "${SCOPE}"
-          - name: context.cluster
-            value: "${CLUSTER}"
-          - name: context.environment
-            value: "${ENV}"
-          - name: context.version
-            value: "${VERSION}"
-          - name: context.app
-            value: "demo-ptp"
-          - name: project.enabled
-            value: "false"
-          - name: project.project.requester
-            value: "sxcm"
-          - name: operator.enabled
-            value: "true"
-          - name: ptp.enabled
-            value: "false"
-    syncPolicy:
-      automated:
-        prune: false
-        selfHeal: false
-      syncOptions:
-        - CreateNamespace=false
-        - Validate=true
-      retry:
-        limit: 5
-        backoff:
-          duration: 5s
-          factor: 2
-          maxDuration: 5m
-    ignoreDifferences:
-      - group: operators.coreos.com
-        kind: OperatorGroup
-        namespace: "${NS}"
-        jsonPointers:
-          - /metadata/annotations/olm.providedAPIs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # - kind: Application
 #   apiVersion: argoproj.io/v1alpha1
 #   metadata:
@@ -330,6 +414,11 @@ parameters:
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
     value: demo-ptp
+    required: true
+  - name: OPERATOR_NS
+    displayName: The namespace where operator goes to
+    description: "Namespace to place operator to"
+    value: openshift-ptp
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
