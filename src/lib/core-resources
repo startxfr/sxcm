@@ -395,6 +395,7 @@ function doResourceAssociate {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     localConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     localResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
     local resourceIsFoundInOCPInstall="false"
@@ -465,6 +466,7 @@ function doResourceDissociate {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     localConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     localResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
     local resourceIsFoundInOCPInstall="false"
@@ -509,6 +511,7 @@ function doResourceEnable {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     localConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     localResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
     local resourceIsFoundInOCPInstall="false"
@@ -553,6 +556,7 @@ function doResourceDisable {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     localConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     localResourceDir=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
     local resourceIsFoundInOCPInstall="false"

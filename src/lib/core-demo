@@ -102,10 +102,10 @@ function applyClusterDemo {
     local clusterRegion=$(extractOCPInstallAWSRegion $clusterConfOCPInstallFile)
     local clusterProfile=$(extractOCPInstallProfile $clusterConfOCPInstallFile)
     local clusterID=$(oc get machineset -n openshift-machine-api -o jsonpath="{.items[0].metadata.labels}" | cut -d \" -f 4)
-    local clusterName=$(echo $SXCM_CLUSTER_URL | sed -e 's|https://||g')
-    clusterName=$(echo $clusterName | sed -e 's|\.|-|g')
+    local clusterK8s=$(echo $SXCM_CLUSTER_URL | sed -e 's|https://||g')
+    clusterK8s=$(echo $clusterK8s | sed -e 's|\.|-|g')
     local CLUSTERTIMEOUT=5
-    local CMD="oc apply $SXCM_OCAPPLY_OPTS --cluster=$clusterName -f -"
+    local CMD="oc apply $SXCM_OCAPPLY_OPTS --cluster=$clusterK8s -f -"
     if [[ $UPSERT == "delete" ]]
     then
         CMD="oc delete --wait=false -f -"
@@ -130,10 +130,10 @@ function applyClusterDemo {
             # 9x. Developer template (reserved)
             if [[ -x $file ]]
             then
-                if [[ $filename != "sxcm.sh" ]]
+                if [[ $filename != "sxcm-demo.sh" ]]
                 then
                     echo -e "${UPSERT} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
-                    . $file $UPSERT "$cn" "$localScope" "$localEnv" "$localVersion" "$cn" "$clusterName"
+                    . $file $UPSERT "$cn" "$localScope" "$localEnv" "$localVersion" "$cn" "$clusterK8s"
                 fi
             else
                 if [[ "${file: -3}" == ".sh" ]]
@@ -212,6 +212,7 @@ function doDemoEdit {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     echo -e "\e[1m\e[33mEditing\e[0m the demo \e[1m$rn\e[0m in cluster \e[1m$cn\e[0m"
     local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
@@ -243,6 +244,7 @@ function doDemoUpdate {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
     local clusterDemoDir=$clusterDemosDir/$rn
@@ -339,38 +341,39 @@ function doDemoRun {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
-
-            echo "Test rn: $rn"
-            echo "Test cn: $cn"
-            echo "Test action: $action"
-            echo "Test option: $option"
-            exit
-
-
-
-    local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
-    local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
-    local clusterDemoDir=$clusterDemosDir/$rn
+    reloadIndividualClusterConf $cn
     local demoIsFoundInDemoDir="false"
     local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    local localEnv=${SXCM_ENV:-dev}
+    local localVersion=${SXCM_VERSION:-beta}
+    local localScope=${SXCM_CLUSTER_SCOPE:-scope}
+    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterConfDirDemo=$clusterConfDir/$SXCM_USER_CONF_DIR_DEMOS
+    local clusterDemoDir=$clusterConfDirDemo/$rn
     local IsDeployed=false
-    if [[ ! -d $clusterDir ]]; then
-        echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterDir\e[0m for enabling the \e[1m$rn\e[0m demos"
+    if [[ ! -d $clusterConfDir ]]; then
+        echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterConfDir\e[0m for enabling the \e[1m$rn\e[0m demos"
     else
         echo -e "\e[1m\e[96mRun\e[0m the demo \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
-        if [[ -r $clusterDir/metadata.json || -r $clusterDir/terraform.tfstate ]] && [[ -r $clusterDir/deployed ]]
+        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]] && [[ -r $clusterConfDir/deployed ]]
         then
             IsDeployed=true
         fi
         if [[ "$IsDeployed" == "true" ]]
         then
-        
-            echo "TODO : implement actions"
-            exit
-
-
-
-
+            local clusterRegion=$(extractOCPInstallAWSRegion $clusterConfOCPInstallFile)
+            local clusterProfile=$(extractOCPInstallProfile $clusterConfOCPInstallFile)
+            local clusterID=$(oc get machineset -n openshift-machine-api -o jsonpath="{.items[0].metadata.labels}" | cut -d \" -f 4)
+            local clusterK8s=$(echo $SXCM_CLUSTER_URL | sed -e 's|https://||g')
+            clusterK8s=$(echo $clusterK8s | sed -e 's|\.|-|g')
+            local demoScript="$clusterDemoDir/sxcm-demo.sh"
+            if [[ -x $demoScript ]]
+            then
+                echo -e "${action} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1msxcm-demo.sh\e[0m \e[93m(admin)\e[0m"
+                . $demoScript $action "$rn" "$cn" "$localScope" "$localEnv" "$localVersion" "$clusterK8s" "$option"
+            else
+                echo -e "${action} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1msxcm-demo.sh\e[0m \e[93m(admin)\e[0m"
+            fi
         else
             echo -e "Could not \e[1mrun $rn\e[0m demo on cluster \e[1m$cn\e[0m because cluster is \e[1m\e[35mnot deployed\e[0m"
         fi
@@ -391,6 +394,7 @@ function doDemoAssociate {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
     local clusterDemoDir=$clusterDemosDir/$rn
@@ -436,6 +440,7 @@ function doDemoDissociate {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
     local clusterDemoDir=$clusterDemosDir/$rn
@@ -466,6 +471,7 @@ function doDemoEnable {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
     local clusterDemoDir=$clusterDemosDir/$rn
@@ -509,6 +515,7 @@ function doDemoDisable {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
     local clusterDemoDir=$clusterDemosDir/$rn

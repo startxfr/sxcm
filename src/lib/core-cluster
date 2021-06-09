@@ -493,6 +493,7 @@ function doClusterConfigurationImport {
     if [[ $branch == '' ]]; then
         branch="$cn"
     fi
+    reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local gitBranch=$branch
     if [[ -d $clusterConfDir ]]; then
@@ -581,6 +582,7 @@ function doClusterConfigurationInfo {
         echo -e "or get a list of available cluster configuration with \e[90;4msxcm list\e[0m" ;
         exit 1;
     fi
+    reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ -r $clusterConfDir/$SXCM_USER_CONF_FILE ]]; then
         . $clusterConfDir/$SXCM_USER_CONF_FILE;
@@ -654,6 +656,7 @@ function doClusterConfigurationHistory {
         echo -e "or get a list of available cluster configuration with \e[90;4msxcm list\e[0m" ;
         exit 1;
     fi
+    reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ -r $clusterConfDir/$SXCM_USER_CONF_FILE ]]; then
         . $clusterConfDir/$SXCM_USER_CONF_FILE;
@@ -685,6 +688,7 @@ function doClusterConfigurationEdit {
     else 
         cn=`getActiveCluster`
     fi
+    reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ $cn == '' ]]; then
         echo -e "You must give a \e[1mcluster configuration name\e[0m"
@@ -738,6 +742,7 @@ function doClusterConfigurationUpdate {
     else 
         cn=`getActiveCluster`
     fi
+    reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ $cn == '' ]]; then
         echo -e "You must give a \e[1mcluster configuration name\e[0m"
@@ -778,6 +783,7 @@ function doClusterConfigurationDelete {
     else 
         cn=`getActiveCluster`
     fi
+    reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     echo $clusterConfDir
     if [[ $cn == '' ]]; then
@@ -877,6 +883,7 @@ function doClusterConfigurationClone {
     if [[ $source == '' ]]; then
         source=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $source
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ -d $clusterConfDir ]]; then
         echo -e "  Cluster \e[1m$cn\e[0m is \e[31m already managed\e[0m. Could not clone \e[1m$cn\e[0m"
@@ -885,6 +892,7 @@ function doClusterConfigurationClone {
         if [[ -d $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$source ]]; then
             cp -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$source $clusterConfDir
             cd $clusterConfDir  &> /dev/null
+            reloadIndividualClusterConf $cn
             git branch $cn &> /dev/null
             git checkout $cn &> /dev/null
             if [[ ! -r install-config.yaml && -r install-config.yaml.back ]]
