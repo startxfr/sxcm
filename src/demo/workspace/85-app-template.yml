@@ -105,7 +105,7 @@ objects:
       - resources-finalizer.argocd.argoproj.io
   spec:
     destination:
-      namespace: "${NS}"
+      namespace: "${OPERATOR_NS}"
       server: 'https://kubernetes.default.svc'
     info:
       - name: teammail
@@ -160,7 +160,7 @@ parameters:
   - name: OPERATOR_NS
     displayName: demo namespace for che operator
     description: "Name of the che operator namespace"
-    value: startx-workspaces
+    value: openshift-workspaces
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to

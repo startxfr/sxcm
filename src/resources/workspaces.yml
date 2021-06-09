@@ -217,7 +217,7 @@ parameters:
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
-    value: startx-workspaces
+    value: openshift-workspaces
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"

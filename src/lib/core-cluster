@@ -399,9 +399,18 @@ function doClusterConfigurationCreate {
         local SSH_PUBLICKEY=$(cat $clusterConfDir/id_rsa.pub)
         sed -i "s|__ocpSshPublickey__|${SSH_PUBLICKEY}|g" $clusterConfDir/install-config.yaml
         cp $clusterConfDir/install-config.yaml $clusterConfDir/install-config.yaml.back &> /dev/null
+        openshift-install create install-config &> /dev/null
+        git add . &> /dev/null
+        git commit -m "[$cn] Record cluster config file for cluster $cn" &> /dev/null
+        openshift-install create manifests &> /dev/null
+        git add . &> /dev/null
+        git commit -m "[$cn] Record the cluster manifest for cluster $cn" &> /dev/null
+        openshift-install create ignition-configs &> /dev/null
+        git add . &> /dev/null
+        git commit -m "[$cn] Record the cluster ignition files for cluster $cn" &> /dev/null
         doClusterConfigurationCreateUpdateResources $cn 
         git add . &> /dev/null
-        git commit -am "[$cn] Create the $cn cluster" &> /dev/null
+        git commit -am "[$cn] Record resources files for cluster $cn" &> /dev/null
         git push origin $cn &> /dev/null
         cd - &> /dev/null
         echo -e "  \e[32mrecorded\e[0m cluster configuration based on \e[1m$PROFILE\e[0m profile"
@@ -468,9 +477,17 @@ function doClusterConfigurationCreate {
             cd $clusterConfDir &> /dev/null
             git checkout $cn &> /dev/null
             openshift-install create install-config &> /dev/null
+            git add . &> /dev/null
+            git commit -m "[$cn] Record cluster config file for cluster $cn" &> /dev/null
+            openshift-install create manifests &> /dev/null
+            git add . &> /dev/null
+            git commit -m "[$cn] Record the cluster manifest for cluster $cn" &> /dev/null
+            openshift-install create ignition-configs &> /dev/null
+            git add . &> /dev/null
+            git commit -m "[$cn] Record the cluster ignition files for cluster $cn" &> /dev/null
             doClusterConfigurationCreateUpdateResources $cn 
             git add . &> /dev/null
-            git commit -m "[$cn] Record the $cn cluster config" &> /dev/null
+            git commit -am "[$cn] Record resources files for cluster $cn" &> /dev/null
             git push origin $cn &> /dev/null
             cd - &> /dev/null
         fi

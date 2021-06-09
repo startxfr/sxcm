@@ -83,6 +83,12 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 20s
+    ignoreDifferences:
+      - group: batch
+        kind: Job
+        namespace: "${NS}"
+        jsonPointers:
+          - /spec/ttlSecondsAfterFinished
 parameters:
   - name: NS
     displayName: The namespace where objects goes to

@@ -183,7 +183,7 @@ objects:
       targetRevision: devel
       helm:
         valueFiles:
-          - values-startx.yaml
+          - values-demo.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
