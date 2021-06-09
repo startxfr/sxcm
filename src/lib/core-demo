@@ -203,7 +203,7 @@ function doDemoEdit {
     local rn=$1
     local cn=$2
     if [[ "$rn" == "" ]]; then
-        echo -en "Demo name [mydemo] : "
+        echo -en "Which demo do you wan't to use [mydemo] : "
         read rn
         if [[ $rn == '' ]]; then
             rn="mydemo"
@@ -234,7 +234,7 @@ function doDemoUpdate {
     local rn=$1
     local cn=$2
     if [[ "$rn" == "" ]]; then
-        echo -en "Demo name [mydemo] : "
+        echo -en "Which demo do you wan't to use [mydemo] : "
         read rn
         if [[ $rn == '' ]]; then
             rn="mydemo"
@@ -270,7 +270,7 @@ function doDemoUpdate {
 function doDemoInfo {
     local rn=$1
     if [[ "$rn" == "" ]]; then
-        echo -en "Demo name [mydemo] : "
+        echo -en "Which demo do you wan't to use [mydemo] : "
         read rn
         if [[ $rn == '' ]]; then
             rn="mydemo"
@@ -306,12 +306,83 @@ function doDemoInfo {
     exit
 }
 
+# run demo configuration
+function doDemoRun {
+    local rn=$1
+    local action=$2
+    local option=$3
+    local cn=$4
+    if [[ "$rn" == "" ]]; then
+        echo -en "Which demo do you wan't to use [mydemo] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="mydemo"
+        fi
+    fi
+    if [[ $action != 'begin' && $action != 'step' && $action != 'end' ]]; then
+        echo -en "Which action do you wan't to perform (begin,step,end) [begin] : "
+        read action
+        if [[ $action == '' ]]; then
+            action="begin"
+        fi
+    fi
+    if [[ $action == 'begin' || $action == 'end' ]]; then
+        cn=$option
+    fi
+    if [[ $action == 'step' && $option == "" ]]; then
+        echo -en "Which step do you wan't to reach (1,2,3,...) [1] : "
+        read option
+        if [[ $option == '' ]]; then
+            option="1"
+        fi
+    fi
+    if [[ $cn == '' ]]; then
+        cn=$(getActiveCluster)
+    fi
+
+            echo "Test rn: $rn"
+            echo "Test cn: $cn"
+            echo "Test action: $action"
+            echo "Test option: $option"
+            exit
+
+
+
+    local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
+    local clusterDemoDir=$clusterDemosDir/$rn
+    local demoIsFoundInDemoDir="false"
+    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    local IsDeployed=false
+    if [[ ! -d $clusterDir ]]; then
+        echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterDir\e[0m for enabling the \e[1m$rn\e[0m demos"
+    else
+        echo -e "\e[1m\e[96mRun\e[0m the demo \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
+        if [[ -r $clusterDir/metadata.json || -r $clusterDir/terraform.tfstate ]] && [[ -r $clusterDir/deployed ]]
+        then
+            IsDeployed=true
+        fi
+        if [[ "$IsDeployed" == "true" ]]
+        then
+        
+            echo "TODO : implement actions"
+            exit
+
+
+
+
+        else
+            echo -e "Could not \e[1mrun $rn\e[0m demo on cluster \e[1m$cn\e[0m because cluster is \e[1m\e[35mnot deployed\e[0m"
+        fi
+    fi
+}
+
 # associate demo configuration
 function doDemoAssociate {
     local rn=$1
     local cn=$2
     if [[ "$rn" == "" ]]; then
-        echo -en "Demo name [mydemo] : "
+        echo -en "Which demo do you wan't to use [mydemo] : "
         read rn
         if [[ $rn == '' ]]; then
             rn="mydemo"
@@ -356,7 +427,7 @@ function doDemoDissociate {
     local rn=$1
     local cn=$2
     if [[ "$rn" == "" ]]; then
-        echo -en "Demo name [mydemo] : "
+        echo -en "Which demo do you wan't to use [mydemo] : "
         read rn
         if [[ $rn == '' ]]; then
             rn="mydemo"
@@ -386,7 +457,7 @@ function doDemoEnable {
     local rn=$1
     local cn=$2
     if [[ "$rn" == "" ]]; then
-        echo -en "Demo name [mydemo] : "
+        echo -en "Which demo do you wan't to use [mydemo] : "
         read rn
         if [[ $rn == '' ]]; then
             rn="mydemo"
@@ -429,7 +500,7 @@ function doDemoDisable {
     local rn=$1
     local cn=$2
     if [[ "$rn" == "" ]]; then
-        echo -en "Demo name [mydemo] : "
+        echo -en "Which demo do you wan't to use [mydemo] : "
         read rn
         if [[ $rn == '' ]]; then
             rn="mydemo"
@@ -493,6 +564,38 @@ sxcm demo update mydemo mycluster
 EOF
     else
         doDemoUpdate $1 $2
+    fi
+}
+
+# sub-menu for run command
+function menuDemoRun {
+    isPametersContainHelpers $1 $2 $3 $4 $5
+    if [[ $? == "0" || "$1" == "" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm demo run sub-command to run a demo into the given cluster (default is active cluster)
+
+# Usage
+
+[user@localhost]$ sxcm demo run DEMONAME [CLUSTERNAME]
+
+
+# Examples
+
+# Run the mydemo demo in the currently active cluster
+sxcm demo run mydemo
+# Start to run the mydemo demo in the currently active cluster
+sxcm demo run mydemo start
+# Start to run the mydemo demo in the mycluster cluster
+sxcm demo run mydemo start mycluster
+# Run the mydemo demo in the mycluster cluster
+sxcm demo run mydemo mycluster
+
+
+EOF
+    else
+        doDemoRun $1 $2 $3 $4
     fi
 }
 
@@ -718,6 +821,7 @@ function menuDemo {
     info) menuDemoInfo ${2} ${3} ${4} ;;
     edit) menuDemoEdit ${2} ${3} ${4} ;;
     update) menuDemoUpdate ${2} ${3} ${4} ;;
+    run) menuDemoRun ${2} ${3} ${4} ${5};;
     list) menuDemos ${2} ${3} ${4} ;;
     associate) menuDemoAssociate ${2} ${3} ${4} ;;
     dissociate) menuDemoDissociate ${2} ${3} ${4} ;;
