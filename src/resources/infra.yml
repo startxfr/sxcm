@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-infra-template
+  name: sxcm-cluster-infra-template
   annotations:
     openshift.io/display-name: STARTX cluster Infra (admin)
     description: Deploy cluster-wide resources to configure cluster infrastructure according to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,infra
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "10"
+    sxcm_console_timeout: "10"
   labels:
-    template: sxv4-cluster-infra-template
-    app.kubernetes.io/name: "sxv4-cluster-infra-template"
+    template: sxcm-cluster-infra-template
+    app.kubernetes.io/name: "sxcm-cluster-infra-template"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster configuration is now ready
@@ -20,7 +20,7 @@ message: |-
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
 labels:
-  template: sxv4-cluster-infra-template
+  template: sxcm-cluster-infra-template
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -278,7 +278,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: "sxv4"
+    value: "startx"
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"

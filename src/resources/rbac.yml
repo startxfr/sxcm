@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-rbac-template
+  name: sxcm-cluster-rbac-template
   annotations:
     openshift.io/display-name: STARTX cluster RBAC (admin)
     description: Deploy cluster-wide resources to configure user permissions according to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,rbac
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "5"
+    sxcm_console_timeout: "5"
   labels:
-    template: sxv4-cluster-rbac-template
-    app.kubernetes.io/name: "sxv4-cluster-rbac-template"
+    template: sxcm-cluster-rbac-template
+    app.kubernetes.io/name: "sxcm-cluster-rbac-template"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide RBAC are configured.
@@ -20,7 +20,7 @@ message: |-
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
 labels:
-  template: sxv4-cluster-rbac-template
+  template: sxcm-cluster-rbac-template
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -92,7 +92,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"

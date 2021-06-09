@@ -23,11 +23,11 @@ fi
 
 echo "Install installer dependencies"
 echo -e "Update \e[1m$PKGLIST\e[0m rpm packages \e[1m(root)\e[0m"
-$PKGMNG update -y $PKGLIST &> /dev/null
+$PKGMNG update -y $PKGLIST
 echo -e "Update \e[1m$SNAPLIST\e[0m snap packages \e[1m(root)\e[0m"
-$SNAPMNG refresh $SNAPLIST &> /dev/null
+$SNAPMNG refresh $SNAPLIST
 echo -e "Install \e[1m$PIPLIST\e[0m packages \e[1m(user)\e[0m"
-$PIPMNG install $PIPLIST --upgrade &> /dev/null
+$PIPMNG install $PIPLIST --upgrade
 echo "Move to /tmp"
 cd /tmp/
 echo "Download $SXCM_ARCHIVE_URL"

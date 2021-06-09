@@ -2,7 +2,7 @@
 
 The **keycloak** [demo](../../5-demos) use the [keycloak cluster resource](../../resources/keycloak) to deploy multiple Keycloak cluster using the keycloak operator with several example applications working with them.
 
-This demo is based on the [cluster-keycloak helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-keycloak) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-catalog helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-catalog) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 
@@ -11,9 +11,9 @@ This demo is based on the [cluster-keycloak helm chart](https://helm-repository.
 | **Name**         | **STARTX demo keycloak**                    |
 | **tags**         | `startx` `demo` `sso` `security` `keycloak` |
 | **provider**     | STARTX                                      |
-| **requirements** | _none_                                      |
+| **requirements** | [SSO cluster resource](../../resources/sso) |
 | **format**       | openshift template with argoCD application  |
-| **content**      | 6 ArgoCD application                        |
+| **content**      | **3** Applications + **1** AppProject       |
 | **namespace**    | demo-keycloak                               |
 
 ## Add to a cluster

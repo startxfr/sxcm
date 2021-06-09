@@ -2,7 +2,7 @@
 
 The **tekton** [demo](../../5-demos) use the [tekton cluster resource](../../resources/tekton) to deploy multiple Tekton cluster using the tekton operator with several example applications working with them.
 
-This demo is based on the [cluster-tekton helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-tekton) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [cluster-pipeline helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-pipeline) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 
@@ -13,7 +13,7 @@ This demo is based on the [cluster-tekton helm chart](https://helm-repository.re
 | **provider**     | STARTX                                              |
 | **requirements** | [pipeline cluster resource](../../resources/tekton) |
 | **format**       | openshift template with argoCD application          |
-| **content**      | 6 ArgoCD application                                |
+| **content**      | **6** Applications + **1** AppProject               |
 | **namespace**    | demo-tekton                                         |
 
 ## Add to a cluster

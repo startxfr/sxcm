@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-argocd-template
+  name: sxcm-cluster-argocd-template
   annotations:
     openshift.io/display-name: STARTX ArgoCD (gitops)
     description: Deploy ArgoCD gitops environment to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,argocd,gitops
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "20"
+    sxcm_console_timeout: "20"
   labels:
-    template: sxv4-cluster-argocd-template
-    app.kubernetes.io/name: "sxv4-cluster-argocd-template"
+    template: sxcm-cluster-argocd-template
+    app.kubernetes.io/name: "sxcm-cluster-argocd-template"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your ArgoCD gitops project is now configured
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : red-hat-argocd.v3.3.2-20200903
 labels:
-  template: sxv4-cluster-argocd-template
+  template: sxcm-cluster-argocd-template
   app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: Project
@@ -53,9 +53,9 @@ objects:
     spec:
       hard:
         limits.cpu: "12000m"
-        limits.memory: "12Gi"
-        requests.cpu: "2500m"
-        requests.memory: "4Gi"
+        limits.memory: "16Gi"
+        requests.cpu: "4000m"
+        requests.memory: "10Gi"
         requests.storage: "0"
         persistentvolumeclaims: "0"
         ephemeral-storage: "10Gi"
@@ -85,15 +85,15 @@ objects:
         ocs-storagecluster-ceph-rbd.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
         openshift-storage.noobaa.io.storageclass.storage.k8s.io/requests.storage: "0"
         openshift-storage.noobaa.io.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
-        pods: "15"
-        services: "15"
+        pods: "20"
+        services: "20"
         services.loadbalancers: "0"
         services.nodeports: "0"
-        secrets: "45"
-        configmaps: "40"
-        replicationcontrollers: "0"
+        secrets: "75"
+        configmaps: "50"
+        replicationcontrollers: "5"
         openshift.io/imagestreams: "0"
-        count/replicasets.apps: "30"
+        count/replicasets.apps: "40"
         count/daemonsets.apps: "0"
         count/deployments.apps: "15"
   - kind: LimitRange
@@ -114,8 +114,8 @@ objects:
             memory: 32Mi
           max:
             cpu: "6000m"
-            ephemeral-storage: 712Mi
-            memory: "4Gi"
+            ephemeral-storage: 1Gi
+            memory: "5Gi"
         - type: "Container"
           defaultRequest:
             cpu: 100m
@@ -125,12 +125,11 @@ objects:
             memory: 256Mi
           min:
             cpu: 20m
-            # ephemeral-storage: 32Mi
             memory: 32Mi
           max:
             cpu: "6000m"
-            ephemeral-storage: 512Mi
-            memory: "4Gi"
+            ephemeral-storage: 1Gi
+            memory: "5Gi"
   - kind: RoleBinding
     apiVersion: rbac.authorization.k8s.io/v1
     metadata:
@@ -251,7 +250,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"

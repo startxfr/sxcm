@@ -2,7 +2,7 @@
 
 The **taintoleration** [demo](../../5-demos) use the [taintoleration cluster resource](../../resources/taintoleration) to deploy multiple Tain and Toleration cluster using the taintoleration operator with several example applications working with them.
 
-This demo is based on the [cluster-taintoleration helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-taintoleration) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-catalog helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-catalog) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 
@@ -13,7 +13,7 @@ This demo is based on the [cluster-taintoleration helm chart](https://helm-repos
 | **provider**     | STARTX                                      |
 | **requirements** | _none_                                      |
 | **format**       | openshift template with argoCD application  |
-| **content**      | 6 ArgoCD application                        |
+| **content**      | **6** Applications + **1** AppProject       |
 | **namespace**    | demo-taintoleration                         |
 
 ## Add to a cluster

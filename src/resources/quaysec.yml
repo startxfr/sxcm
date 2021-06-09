@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-quaysec-template
+  name: sxcm-cluster-quaysec-template
   annotations:
     openshift.io/display-name: STARTX cluster Quay (admin)
     description: Deploy cluster-wide resources to enable Quay registry support according to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,quay,security,scan
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "10"
+    sxcm_console_timeout: "10"
   labels:
-    template: sxv4-cluster-quaysec-template
-    app.kubernetes.io/name: "sxv4-cluster-quaysec-template"
+    template: sxcm-cluster-quaysec-template
+    app.kubernetes.io/name: "sxcm-cluster-quaysec-template"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster enterprise registry support is now enabled
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : container-security-operator.v1.0.5
 labels:
-  template: sxv4-cluster-quaysec-template
+  template: sxcm-cluster-quaysec-template
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -187,7 +187,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"

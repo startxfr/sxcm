@@ -2,7 +2,7 @@
 
 The **nexus** [demo](../../5-demos) use the [nexus cluster resource](../../resources/nexus) to deploy multiple Nexus cluster using the nexus operator with several example applications working with them.
 
-This demo is based on the [cluster-nexus helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-nexus) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-catalog helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-catalog) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 
@@ -13,7 +13,7 @@ This demo is based on the [cluster-nexus helm chart](https://helm-repository.rea
 | **provider**     | STARTX                                     |
 | **requirements** | _none_                                     |
 | **format**       | openshift template with argoCD application |
-| **content**      | 6 ArgoCD application                       |
+| **content**      | **6** Applications + **1** AppProject      |
 | **namespace**    | demo-nexus                                 |
 
 ## Add to a cluster

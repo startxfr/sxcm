@@ -81,9 +81,117 @@ function listDemos {
     local COUNT=$(echo $LIST | wc -w)
     if [[ $COUNT -gt 0 ]]; then
         for demo in $LIST; do
-            foo=${demo#"$path/"}
-            foo=${foo%".yml"}
-            echo "${foo}"
+            filename=${demo#"$path/"}
+            filename=${filename%".yml"}
+            echo "${filename}"
+        done
+    fi
+}
+
+# create demos
+function applyClusterDemo {
+    local UPSERT=$1
+    local cn=$2
+    local rn=$3
+    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    local localEnv=${SXCM_ENV:-dev}
+    local localVersion=${SXCM_VERSION:-beta}
+    local localScope=${SXCM_CLUSTER_SCOPE:-scope}
+    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterConfDirDemo=$clusterConfDir/$SXCM_USER_CONF_DIR_DEMOS
+    local clusterRegion=$(extractOCPInstallAWSRegion $clusterConfOCPInstallFile)
+    local clusterProfile=$(extractOCPInstallProfile $clusterConfOCPInstallFile)
+    local clusterID=$(oc get machineset -n openshift-machine-api -o jsonpath="{.items[0].metadata.labels}" | cut -d \" -f 4)
+    local clusterK8s=$(echo $SXCM_CLUSTER_URL | sed -e 's|https://||g')
+    clusterK8s=$(echo $clusterK8s | sed -e 's|\.|-|g')
+    local CLUSTERTIMEOUT=5
+    local CMD="oc apply $SXCM_OCAPPLY_OPTS --cluster=$clusterK8s -f -"
+    if [[ $UPSERT == "delete" ]]
+    then
+        CMD="oc delete --wait=false -f -"
+    fi
+    local LIST=$(ls $clusterConfDirDemo/$rn 2>/dev/null)
+    local COUNT=$(echo $LIST | wc -w)
+    if [[ $COUNT -gt 0 ]]; then
+        for demo in $LIST; do
+            local file="$clusterConfDirDemo/$rn/${demo}"
+            local CLUSTERTIMEOUT=4
+            local filename=${demo#"$clusterConfDirDemo/$rn/"}; filename=${filename%"/"}
+            local oldifs="$IFS"; IFS="-"; tab=($filename); IFS="$oldifs"
+            local FAMILLY="${tab[0]}"
+            # 1x. Admin template without params
+            # 2x. Admin template with default, rhn and aws params
+            # 3x. Admin template with default params and script enabled
+            # 4x. Admin template (reserved)
+            # 5x. Admin template (reserved)
+            # 6x. Developer template without params
+            # 7x. Developer template with default, rhn and aws params
+            # 8x. Developer template with default params and script enabled
+            # 9x. Developer template (reserved)
+            if [[ -x $file ]]
+            then
+                if [[ $filename != "sxcm-demo.sh" ]]
+                then
+                    echo -e "${UPSERT} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
+                    . $file $UPSERT "$cn" "$localScope" "$localEnv" "$localVersion" "$cn" "$clusterK8s"
+                fi
+            else
+                if [[ "${file: -3}" == ".sh" ]]
+                then
+                echo -e "${UPSERT} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${demo}\e[0m skipped"
+                else
+                    echo -e "${UPSERT} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
+                    if [[ "${FAMILLY:0:1}" == "2" ]]
+                    then
+                        oc process -f $file --local -o yaml \
+                        -p SCOPE=$localScope \
+                        -p CLUSTER=$cn \
+                        -p ENV=$localEnv \
+                        -p VERSION=$localVersion \
+                        -p RHN_USER=$SXCM_RHN_USER \
+                        -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
+                        | $CMD
+                    elif [[ "${FAMILLY:0:1}" == "4" ]]
+                    then
+                        oc process -f $file --local -o yaml \
+                        -p SCOPE=$localScope \
+                        -p CLUSTER=$cn \
+                        -p ENV=$SXCM_ENV \
+                        -p VERSION=$localVersion \
+                        -p AWS_ZONE=$SXCM_AWS_ZONE \
+                        -p AWS_ACCESS_ID=$SXCM_AWS_ID \
+                        -p AWS_ACCESS_KEY=$SXCM_AWS_KEY \
+                        -p AWS_SMTP_USER=$SXCM_AWS_SMTP_USER \
+                        -p AWS_SMTP_PASSWORD=$SXCM_AWS_SMTP_PASSWORD \
+                        -p AWS_SMTP_ZONE=$SXCM_AWS_SMTPZONE \
+                        -p AWS_SMTP_FROM=$SXCM_AWS_SMTPFROM \
+                        | $CMD
+                    elif [[ "${FAMILLY:0:1}" == "5" ]]
+                    then
+                        oc process -f $file --local -o yaml \
+                        -p SCOPE=$localScope \
+                        -p CLUSTER=$cn \
+                        -p ENV=$localEnv \
+                        -p VERSION=$localVersion \
+                        -p CLUSTERID=$clusterID \
+                        -p CLUSTER_REGION=$clusterRegion \
+                        -p RHN_USER=$SXCM_RHN_USER \
+                        -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
+                        | $CMD
+                    else
+                        oc process -f $file --local -o yaml \
+                        -p SCOPE=$localScope \
+                        -p CLUSTER=$cn \
+                        -p ENV=$localEnv \
+                        -p VERSION=$localVersion \
+                        | $CMD
+                    fi
+                fi
+            fi
+            if [[ "${UPSERT}" == "create" ]]; then
+                echo -e "wait ${CLUSTERTIMEOUT}sec for deployment dependencies start"
+                temporize $CLUSTERTIMEOUT 2
+            fi
         done
     fi
 }
@@ -95,7 +203,7 @@ function doDemoEdit {
     local rn=$1
     local cn=$2
     if [[ "$rn" == "" ]]; then
-        echo -en "Demo name [mydemo] : "
+        echo -en "Which demo do you wan't to use [mydemo] : "
         read rn
         if [[ $rn == '' ]]; then
             rn="mydemo"
@@ -104,6 +212,7 @@ function doDemoEdit {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     echo -e "\e[1m\e[33mEditing\e[0m the demo \e[1m$rn\e[0m in cluster \e[1m$cn\e[0m"
     local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
@@ -121,11 +230,49 @@ function doDemoEdit {
     fi
 }
 
+# update demo configuration
+function doDemoUpdate {
+    local rn=$1
+    local cn=$2
+    if [[ "$rn" == "" ]]; then
+        echo -en "Which demo do you wan't to use [mydemo] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="mydemo"
+        fi
+    fi
+    if [[ $cn == '' ]]; then
+        cn=$(getActiveCluster)
+    fi
+    reloadIndividualClusterConf $cn
+    local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
+    local clusterDemoDir=$clusterDemosDir/$rn
+    local demoIsFoundInDemoDir="false"
+    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    local IsDeployed=false
+    if [[ ! -d $clusterDir ]]; then
+        echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterDir\e[0m for enabling the \e[1m$rn\e[0m demos"
+    else
+        echo -e "\e[1m\e[96mUpdate\e[0m the demo \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
+        if [[ -r $clusterDir/metadata.json || -r $clusterDir/terraform.tfstate ]] && [[ -r $clusterDir/deployed ]]
+        then
+            IsDeployed=true
+        fi
+        if [[ "$IsDeployed" == "true" ]]
+        then
+            applyClusterDemo "update" $cn $rn
+        else
+            echo -e "Could not \e[1mupdate $rn\e[0m demo on cluster \e[1m$cn\e[0m because cluster is \e[1m\e[35mnot deployed\e[0m"
+        fi
+    fi
+}
+
 # information demo configuration
 function doDemoInfo {
     local rn=$1
     if [[ "$rn" == "" ]]; then
-        echo -en "Demo name [mydemo] : "
+        echo -en "Which demo do you wan't to use [mydemo] : "
         read rn
         if [[ $rn == '' ]]; then
             rn="mydemo"
@@ -161,12 +308,84 @@ function doDemoInfo {
     exit
 }
 
+# run demo configuration
+function doDemoRun {
+    local rn=$1
+    local action=$2
+    local option=$3
+    local cn=$4
+    if [[ "$rn" == "" ]]; then
+        echo -en "Which demo do you wan't to use [mydemo] : "
+        read rn
+        if [[ $rn == '' ]]; then
+            rn="mydemo"
+        fi
+    fi
+    if [[ $action != 'begin' && $action != 'step' && $action != 'end' ]]; then
+        echo -en "Which action do you wan't to perform (begin,step,end) [begin] : "
+        read action
+        if [[ $action == '' ]]; then
+            action="begin"
+        fi
+    fi
+    if [[ $action == 'begin' || $action == 'end' ]]; then
+        cn=$option
+    fi
+    if [[ $action == 'step' && $option == "" ]]; then
+        echo -en "Which step do you wan't to reach (1,2,3,...) [1] : "
+        read option
+        if [[ $option == '' ]]; then
+            option="1"
+        fi
+    fi
+    if [[ $cn == '' ]]; then
+        cn=$(getActiveCluster)
+    fi
+    reloadIndividualClusterConf $cn
+    local demoIsFoundInDemoDir="false"
+    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
+    local localEnv=${SXCM_ENV:-dev}
+    local localVersion=${SXCM_VERSION:-beta}
+    local localScope=${SXCM_CLUSTER_SCOPE:-scope}
+    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
+    local clusterConfDirDemo=$clusterConfDir/$SXCM_USER_CONF_DIR_DEMOS
+    local clusterDemoDir=$clusterConfDirDemo/$rn
+    local IsDeployed=false
+    if [[ ! -d $clusterConfDir ]]; then
+        echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterConfDir\e[0m for enabling the \e[1m$rn\e[0m demos"
+    else
+        echo -e "\e[1m\e[96mRun\e[0m the demo \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
+        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]] && [[ -r $clusterConfDir/deployed ]]
+        then
+            IsDeployed=true
+        fi
+        if [[ "$IsDeployed" == "true" ]]
+        then
+            local clusterRegion=$(extractOCPInstallAWSRegion $clusterConfOCPInstallFile)
+            local clusterProfile=$(extractOCPInstallProfile $clusterConfOCPInstallFile)
+            local clusterID=$(oc get machineset -n openshift-machine-api -o jsonpath="{.items[0].metadata.labels}" | cut -d \" -f 4)
+            local clusterK8s=$(echo $SXCM_CLUSTER_URL | sed -e 's|https://||g')
+            clusterK8s=$(echo $clusterK8s | sed -e 's|\.|-|g')
+            local demoScript="$clusterDemoDir/sxcm-demo.sh"
+            if [[ -x $demoScript ]]
+            then
+                echo -e "${action} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1msxcm-demo.sh\e[0m \e[93m(admin)\e[0m"
+                . $demoScript $action "$rn" "$cn" "$localScope" "$localEnv" "$localVersion" "$clusterK8s" "$option"
+            else
+                echo -e "${action} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1msxcm-demo.sh\e[0m \e[93m(admin)\e[0m"
+            fi
+        else
+            echo -e "Could not \e[1mrun $rn\e[0m demo on cluster \e[1m$cn\e[0m because cluster is \e[1m\e[35mnot deployed\e[0m"
+        fi
+    fi
+}
+
 # associate demo configuration
 function doDemoAssociate {
     local rn=$1
     local cn=$2
     if [[ "$rn" == "" ]]; then
-        echo -en "Demo name [mydemo] : "
+        echo -en "Which demo do you wan't to use [mydemo] : "
         read rn
         if [[ $rn == '' ]]; then
             rn="mydemo"
@@ -175,6 +394,7 @@ function doDemoAssociate {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
     local clusterDemoDir=$clusterDemosDir/$rn
@@ -211,7 +431,7 @@ function doDemoDissociate {
     local rn=$1
     local cn=$2
     if [[ "$rn" == "" ]]; then
-        echo -en "Demo name [mydemo] : "
+        echo -en "Which demo do you wan't to use [mydemo] : "
         read rn
         if [[ $rn == '' ]]; then
             rn="mydemo"
@@ -220,6 +440,7 @@ function doDemoDissociate {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
     local clusterDemoDir=$clusterDemosDir/$rn
@@ -241,7 +462,7 @@ function doDemoEnable {
     local rn=$1
     local cn=$2
     if [[ "$rn" == "" ]]; then
-        echo -en "Demo name [mydemo] : "
+        echo -en "Which demo do you wan't to use [mydemo] : "
         read rn
         if [[ $rn == '' ]]; then
             rn="mydemo"
@@ -250,6 +471,7 @@ function doDemoEnable {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
     local clusterDemoDir=$clusterDemosDir/$rn
@@ -284,7 +506,7 @@ function doDemoDisable {
     local rn=$1
     local cn=$2
     if [[ "$rn" == "" ]]; then
-        echo -en "Demo name [mydemo] : "
+        echo -en "Which demo do you wan't to use [mydemo] : "
         read rn
         if [[ $rn == '' ]]; then
             rn="mydemo"
@@ -293,6 +515,7 @@ function doDemoDisable {
     if [[ $cn == '' ]]; then
         cn=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $cn
     local clusterDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterDemosDir=$clusterDir/$SXCM_USER_CONF_DIR_DEMOS
     local clusterDemoDir=$clusterDemosDir/$rn
@@ -322,6 +545,66 @@ function doDemoDisable {
 }
 
 ###################
+
+# sub-menu for update command
+function menuDemoUpdate {
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" || "$1" == "" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm demo update sub-command to update a demo into the running cluster
+
+# Usage
+
+[user@localhost]$ sxcm demo update DEMONAME [CLUSTERNAME]
+
+
+# Examples
+
+# Update the mydemo demo in the currently active cluster
+sxcm demo update mydemo
+# Update the mydemo demo in the mycluster cluster
+sxcm demo update mydemo mycluster
+
+
+EOF
+    else
+        doDemoUpdate $1 $2
+    fi
+}
+
+# sub-menu for run command
+function menuDemoRun {
+    isPametersContainHelpers $1 $2 $3 $4 $5
+    if [[ $? == "0" || "$1" == "" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm demo run sub-command to run a demo into the given cluster (default is active cluster)
+
+# Usage
+
+[user@localhost]$ sxcm demo run DEMONAME [CLUSTERNAME]
+
+
+# Examples
+
+# Run the mydemo demo in the currently active cluster
+sxcm demo run mydemo
+# Start to run the mydemo demo in the currently active cluster
+sxcm demo run mydemo start
+# Start to run the mydemo demo in the mycluster cluster
+sxcm demo run mydemo start mycluster
+# Run the mydemo demo in the mycluster cluster
+sxcm demo run mydemo mycluster
+
+
+EOF
+    else
+        doDemoRun $1 $2 $3 $4
+    fi
+}
 
 # sub-menu for info command
 function menuDemoInfo {
@@ -389,9 +672,9 @@ sxcm demo associate sub-command to add a demo into a cluster configuration
 
 # Examples
 
-# Associate the mydemo demo (local or shared) with the currently active cluster
+# Associate the mydemo demo with the currently active cluster
 sxcm demo associate mydemo
-# Associate the mydemo demo (local or shared) with the mycluster cluster
+# Associate the mydemo demo with the mycluster cluster
 sxcm demo associate mydemo mycluster
 
 EOF
@@ -416,9 +699,9 @@ sxcm demo dissociate sub-command to remove a demo into a cluster configuration
 
 # Examples
 
-# Dissociate the mydemo demo (local or shared) with the currently active cluster
+# Dissociate the mydemo demo with the currently active cluster
 sxcm demo dissociate mydemo
-# Dissociate the mydemo demo (local or shared) with the mycluster cluster
+# Dissociate the mydemo demo with the mycluster cluster
 sxcm demo dissociate mydemo mycluster
 
 EOF
@@ -443,9 +726,9 @@ sxcm demo enable sub-command to add a demo into a cluster configuration and the 
 
 # Examples
 
-# Enable the mydemo demo (local or shared) with the currently active cluster
+# Enable the mydemo demo with the currently active cluster
 sxcm demo enable mydemo
-# Enable the mydemo demo (local or shared) with the mycluster cluster
+# Enable the mydemo demo with the mycluster cluster
 sxcm demo enable mydemo mycluster
 
 
@@ -471,9 +754,9 @@ sxcm demo disable sub-command to remove a demo into a cluster configuration and 
 
 # Examples
 
-# Disable the mydemo demo (local or shared) with the currently active cluster
+# Disable the mydemo demo with the currently active cluster
 sxcm demo disable mydemo
-# Disable the mydemo demo (local or shared) with the mycluster cluster
+# Disable the mydemo demo with the mycluster cluster
 sxcm demo disable mydemo mycluster
 
 
@@ -544,11 +827,13 @@ function menuDemo {
     case $1 in
     info) menuDemoInfo ${2} ${3} ${4} ;;
     edit) menuDemoEdit ${2} ${3} ${4} ;;
+    update) menuDemoUpdate ${2} ${3} ${4} ;;
+    run) menuDemoRun ${2} ${3} ${4} ${5};;
     list) menuDemos ${2} ${3} ${4} ;;
     associate) menuDemoAssociate ${2} ${3} ${4} ;;
     dissociate) menuDemoDissociate ${2} ${3} ${4} ;;
     enable) menuDemoEnable ${2} ${3} ${4} ;;
-    disable) menuDemoDisable ${2} ${3} ${4} ;;
+    disable | delete) menuDemoDisable ${2} ${3} ${4} ;;
     *) menuDemoUsage ;;
     esac
 }

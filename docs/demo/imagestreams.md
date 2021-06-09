@@ -2,7 +2,7 @@
 
 The **imagestreams** [demo](../../5-demos) use the [imagestreams cluster resource](../../resources/imagestreams) to deploy multiple Images-streams cluster using the imagestreams operator with several example applications working with them.
 
-This demo is based on the [cluster-imagestreams helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-imagestreams) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-imagestreams helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-imagestreams) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
 
 ## Description
 
@@ -13,7 +13,7 @@ This demo is based on the [cluster-imagestreams helm chart](https://helm-reposit
 | **provider**     | STARTX                                     |
 | **requirements** | _none_                                     |
 | **format**       | openshift template with argoCD application |
-| **content**      | 6 ArgoCD application                       |
+| **content**      | **2** Applications                         |
 | **namespace**    | demo-imagestreams                          |
 
 ## Add to a cluster

@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-vault-template
+  name: sxcm-cluster-vault-template
   annotations:
     openshift.io/display-name: STARTX cluster Vault (admin)
     description: Deploy cluster-wide resources to enable Vault 0.7.0 according to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,sec,vault
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "20"
+    sxcm_console_timeout: "20"
   labels:
-    template: sxv4-cluster-vault-template
-    app.kubernetes.io/name: "sxv4-cluster-vault-template"
+    template: sxcm-cluster-vault-template
+    app.kubernetes.io/name: "sxcm-cluster-vault-template"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your vault environment is configured.
@@ -22,7 +22,7 @@ message: |-
   Vault project     : ${NS}
   Vault version     : 0.5.0
 labels:
-  template: sxv4-cluster-vault-template
+  template: sxcm-cluster-vault-template
   app.kubernetes.io/managed-by: sxcm
 objects: 
 - kind: Application
@@ -153,7 +153,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"

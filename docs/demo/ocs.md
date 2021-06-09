@@ -13,7 +13,7 @@ This demo is based on the [cluster-ocs helm chart](https://helm-repository.readt
 | **provider**     | STARTX                                      |
 | **requirements** | [ocs cluster resource](../../resources/ocs) |
 | **format**       | openshift template with argoCD application  |
-| **content**      | 6 ArgoCD application                        |
+| **content**      | **6** Applications + **1** AppProject       |
 | **namespace**    | demo-ocs                                    |
 
 ## Add to a cluster

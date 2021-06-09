@@ -1,0 +1,134 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxcm-kustomize-app-template
+  annotations:
+    openshift.io/display-name: Demo STARTX - Kustomize samples
+    openshift.io/documentation-url: https://github.com/startxfr/sxcm/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
+    openshift.io/generated-by: sxcm
+    openshift.io/provider-display-name: STARTX
+    description:
+      Template for deploying ArgoCD samples
+    iconClass: icon-nodejs
+    tags: startx,nodejs,kustomize,gitops,sxcm,demo,dev
+  labels:
+    component: demo
+    template: sxcm-kustomize-app-template
+message: |-
+  Your kustomize demo applications will be soon deployed in project ${SCOPE}-kustomize.
+  Monitor the deployement for application availability and
+  Follow created route to browse running application
+
+  Scope          : ${SCOPE}
+  Environment    : ${ENV}
+  Project        : ${NS}
+
+labels:
+  template: sxcm-kustomize-app-template
+  app.kubernetes.io/managed-by: sxcm
+objects:
+  - kind: Application
+    apiVersion: argoproj.io/v1alpha1
+    metadata:
+      name: demo-kustomize-pod
+      namespace: "${ARGOCD_NS}"
+      annotations: &basic_annotations
+        openshift.io/generated-by: sxcm
+      labels: &basic_labels
+        app: "kustomize-app"
+        version: "${VERSION}"
+        app.startx.fr/scope: "${SCOPE}"
+        app.startx.fr/cluster: "${CLUSTER}"
+        app.startx.fr/env: "${ENV}"
+        app.startx.fr/component: "kustomize"
+        app.kubernetes.io/name: "demo-kustomize-pod-application"
+        app.kubernetes.io/part-of: kustomize-app
+        app.kubernetes.io/version: "${VERSION}"
+        app.kubernetes.io/component: "kustomize"
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      destination:
+        namespace: demo-kustomize
+        server: 'https://kubernetes.default.svc'
+      info:
+        - name: teammail
+          value: dev@startx.fr
+      project: demo-kustomize
+      source:
+        kustomize:
+          namePrefix: kustomize-
+        path: kustomizes/demo-pod/overlays/default
+        repoURL: 'https://github.com/startxfr/kustomize-repository.git'
+        targetRevision: HEAD
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+  - kind: Application
+    apiVersion: argoproj.io/v1alpha1
+    metadata:
+      name: demo-kustomize-deployment
+      namespace: "${ARGOCD_NS}"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "demo-kustomize-deployment-application"
+      annotations:
+        <<: *basic_annotations
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      destination:
+        namespace: demo-kustomize
+        server: 'https://kubernetes.default.svc'
+      info:
+        - name: teammail
+          value: dev@startx.fr
+      project: demo-kustomize
+      source:
+        kustomize:
+          namePrefix: kustomize-
+        path: kustomizes/demo-deployment/overlays/default
+        repoURL: 'https://github.com/startxfr/kustomize-repository.git'
+        targetRevision: HEAD
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+parameters:
+  - name: NS
+    displayName: SXAPI namespace for kustomize instance
+    description: "Name of the kustomize namespace"
+    value: demo-kustomize
+    required: true
+  - name: ARGOCD_NS
+    displayName: The namespace where kustomize server goes to
+    description: "Namespace to place kustomize server to"
+    value: startx-argocd
+    required: true
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: sxv4)"
+    value: demo
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
+    required: true
+  - name: COMPONENT
+    displayName: Project service
+    description: "Project service"
+    value: demo
+    required: true

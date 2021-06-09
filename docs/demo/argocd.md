@@ -2,7 +2,7 @@
 
 The **argocd** [demo](../../5-demos) use the [argocd cluster resource](../../resources/argocd) to deploy multiple ArgoCD cluster using the argocd operator with several example applications working with them.
 
-This demo is based on the [cluster-argocd helm chart](https://helm-repository.readthedocs.io/en/latest/charts/cluster-argocd) defined in [startx helm-repository](https://helm-repository.readthedocs.io).
+This demo is based on the [example-pod helm chart](https://helm-repository.readthedocs.io/en/latest/charts/example-pod) defined in [startx helm-repository](https://helm-repository.readthedocs.io) and [startx kustomize-repository](https://kustomize-repository.readthedocs.io).
 
 ## Description
 
@@ -13,7 +13,7 @@ This demo is based on the [cluster-argocd helm chart](https://helm-repository.re
 | **provider**     | STARTX                                            |
 | **requirements** | [argocd cluster resource](../../resources/argocd) |
 | **format**       | openshift template with argoCD application        |
-| **content**      | 6 ArgoCD application                              |
+| **content**      | **6** Applications + **1** AppProject             |
 | **namespace**    | demo-argocd                                       |
 
 ## Add to a cluster

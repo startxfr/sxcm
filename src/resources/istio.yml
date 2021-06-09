@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-istio-operator-template
+  name: sxcm-cluster-istio-operator-template
   annotations:
     openshift.io/display-name: STARTX cluster Istio-operator (admin)
     description: Deploy cluster-wide resources to enable istio according to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,istio
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "30"
+    sxcm_console_timeout: "30"
   labels:
-    template: sxv4-cluster-istio-operator-template
-    app.kubernetes.io/name: "sxv4-cluster-istio-operator-template"
+    template: sxcm-cluster-istio-operator-template
+    app.kubernetes.io/name: "sxcm-cluster-istio-operator-template"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster component mesh support is now enabled
@@ -24,7 +24,7 @@ message: |-
   Resources NS      : ${NS}
   Resources         : elasticsearch, kiali, servicemesh
 labels:
-  template: sxv4-cluster-istio-operator-template
+  template: sxcm-cluster-istio-operator-template
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -259,7 +259,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"

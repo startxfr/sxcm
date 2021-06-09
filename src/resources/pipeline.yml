@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-pipeline-template
+  name: sxcm-cluster-pipeline-template
   annotations:
     openshift.io/display-name: STARTX cluster Pipeline (admin)
     description: Deploy cluster-wide resources to enable Pipeline support according to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,cicd,pipeline
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "10"
+    sxcm_console_timeout: "10"
   labels:
-    template: sxv4-cluster-pipeline-template
-    app.kubernetes.io/name: "sxv4-cluster-pipeline-template"
+    template: sxcm-cluster-pipeline-template
+    app.kubernetes.io/name: "sxcm-cluster-pipeline-template"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide pipeline capacities are enabled.
@@ -22,7 +22,7 @@ message: |-
   Technology        : tekton
   Operator          : openshift-pipelines-operator.v1.0.1
 labels:
-  template: sxv4-cluster-pipeline-template
+  template: sxcm-cluster-pipeline-template
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -100,7 +100,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"

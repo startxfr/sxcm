@@ -1,0 +1,260 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxcm-demo-compliance-app-template
+  annotations:
+    openshift.io/display-name: Demo STARTX - 3Scale App
+    openshift.io/documentation-url: https://github.com/startxfr/sxcm/blob/dev/README.md
+    openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
+    openshift.io/generated-by: sxcm
+    openshift.io/provider-display-name: STARTX
+    description:
+      Deployment of a compliance infra and a sample application using this infrastructure to 
+      demonstrate the API management capacities of 3Scale solution running under an 
+      openshift 4 environment
+    iconClass: icon-compliance
+    tags: startx,compliance,demo,dev
+  labels:
+    template: sxcm-demo-compliance-app-template
+message: |-
+  Your demo application ${NS} for compliance technology is now created.
+
+  Scope          : ${SCOPE}
+  Environment    : ${ENV}
+  Project        : ${NS}
+
+labels:
+  template: sxcm-demo-compliance-app-template
+  app.kubernetes.io/managed-by: sxcm
+objects:
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${OPERATOR_NS}-operator
+    namespace: "${ARGOCD_NS}"
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "${NS}"
+      app.kubernetes.io/name: "${OPERATOR_NS}-operator-application"
+      app.kubernetes.io/part-of: ${NS}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "${NS}-project"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxcm
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${OPERATOR_NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-compliance/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-startx.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "${OPERATOR_NS}"
+          - name: project.enabled
+            value: "false"
+          - name: project.project.requester
+            value: "sxcm"
+          - name: operator.enabled
+            value: "true"
+          - name: compliance.enabled
+            value: "false"
+    syncPolicy:
+      automated:
+        prune: false
+        selfHeal: false
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+    ignoreDifferences:
+      - group: operators.coreos.com
+        kind: OperatorGroup
+        namespace: "${OPERATOR_NS}"
+        jsonPointers:
+          - /metadata/annotations/olm.providedAPIs
+# - kind: Application
+#   apiVersion: argoproj.io/v1alpha1
+#   metadata:
+#     name: ${OPERATOR_NS}-instance
+#     namespace: "${ARGOCD_NS}"
+#     labels:
+#       <<: *basic_labels
+#       app.kubernetes.io/name: "${OPERATOR_NS}-instance-application"
+#     annotations:
+#       <<: *basic_annotations
+#       # argocd.argoproj.io/manifest-generate-paths: .
+#     finalizers:
+##       - resources-finalizer.argocd.argoproj.io
+#   spec:
+#     destination:
+#       namespace: "${OPERATOR_NS}"
+#       server: 'https://kubernetes.default.svc'
+#     info:
+#       - name: teammail
+#         value: dev@startx.fr
+#     project: cluster-admin
+#     source:
+#       path: charts/cluster-compliance/
+#       repoURL: 'https://github.com/startxfr/helm-repository.git'
+#       targetRevision: devel
+#       helm:
+#         valueFiles:
+#           - values-startx.yaml
+#         parameters:
+#           - name: context.scope
+#             value: "${SCOPE}"
+#           - name: context.cluster
+#             value: "${CLUSTER}"
+#           - name: context.environment
+#             value: "${ENV}"
+#           - name: context.version
+#             value: "${VERSION}"
+#           - name: context.app
+#             value: "${OPERATOR_NS}"
+#           - name: project.enabled
+#             value: "false"
+#           - name: project.project.requester
+#             value: "sxcm"
+#           - name: operator.enabled
+#             value: "false"
+#           - name: compliance.enabled
+#             value: "true"
+#     syncPolicy:
+#       automated:
+#         prune: true
+#         selfHeal: true
+#       syncOptions:
+#         - CreateNamespace=false
+#         - Validate=true
+#       retry:
+#         limit: 3
+#         backoff:
+#           duration: 60s
+#           factor: 1
+#           maxDuration: 60s
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${NS}-manpage
+    namespace: "${ARGOCD_NS}"
+    labels:
+      <<: *basic_labels
+      app.kubernetes.io/name: "${NS}-manpage-application"
+    annotations:
+      <<: *basic_annotations
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: ${NS}
+    source:
+      path: charts/example-html/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-demo-compliance-manpage.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "manpage"
+          - name: html.namespace
+            value: "${NS}"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 20s
+parameters:
+  - name: NS
+    displayName: demo namespace for compliance instance
+    description: "Name of the compliance namespace"
+    value: demo-compliance
+    required: true
+  - name: OPERATOR_NS
+    displayName: The namespace where operator goes to
+    description: "Namespace to place objects to"
+    value: startx-compliance
+    required: true
+  - name: ARGOCD_NS
+    displayName: The namespace where argocd server goes to
+    description: "Namespace to place argocd server to"
+    value: startx-argocd
+    required: true
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: sxv4)"
+    value: demo
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
+    required: true
+  - name: COMPONENT
+    displayName: Project service
+    description: "Project service"
+    value: demo
+    required: true
+  - name: RANDRUN
+    displayName: Random string for job execution
+    description: Random string suffix to use for job uniqueness
+    from: "[a-z0-9]{10}"
+    generate: expression
+    required: true
