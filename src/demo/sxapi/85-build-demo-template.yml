@@ -32,13 +32,13 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${NS}-sxapi-build-app
+    name: ${NS}-sxapi-app
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "${NS}"
-      app.kubernetes.io/name: "${NS}-sxapi-build-application"
+      app.kubernetes.io/name: "${NS}-sxapi-application"
       app.kubernetes.io/part-of: ${NS}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "${NS}-project"

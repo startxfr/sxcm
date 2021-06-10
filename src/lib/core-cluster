@@ -405,9 +405,9 @@ function doClusterConfigurationCreate {
         openshift-install create manifests &> /dev/null
         git add . &> /dev/null
         git commit -m "[$cn] Record the cluster manifest for cluster $cn" &> /dev/null
-        openshift-install create ignition-configs &> /dev/null
-        git add . &> /dev/null
-        git commit -m "[$cn] Record the cluster ignition files for cluster $cn" &> /dev/null
+        # openshift-install create ignition-configs &> /dev/null
+        # git add . &> /dev/null
+        # git commit -m "[$cn] Record the cluster ignition files for cluster $cn" &> /dev/null
         doClusterConfigurationCreateUpdateResources $cn 
         git add . &> /dev/null
         git commit -am "[$cn] Record resources files for cluster $cn" &> /dev/null
@@ -482,6 +482,9 @@ function doClusterConfigurationCreate {
             openshift-install create manifests &> /dev/null
             git add . &> /dev/null
             git commit -m "[$cn] Record the cluster manifest for cluster $cn" &> /dev/null
+            # openshift-install create ignition-configs &> /dev/null
+            # git add . &> /dev/null
+            # git commit -m "[$cn] Record the cluster ignition files for cluster $cn" &> /dev/null
             doClusterConfigurationCreateUpdateResources $cn 
             git add . &> /dev/null
             git commit -am "[$cn] Record resources files for cluster $cn" &> /dev/null
