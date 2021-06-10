@@ -314,24 +314,24 @@ objects:
 #       limits:
 #         - type: "Pod"
 #           min:
-#             cpu: 50m
-#             memory: 32Mi
+#             cpu: "50m"
+#             memory: "32Mi"
 #           max:
-#             cpu: 800m
-#             memory: 1Gi
+#             cpu: 1
+#             memory: "1Gi"
 #         - type: "Container"
 #           default:
-#             cpu: 300m
-#             memory: 512Mi
+#             cpu: "300m"
+#             memory: "512Mi"
 #           defaultRequest:
-#             cpu: 100m
-#             memory: 128Mi
+#             cpu: "100m"
+#             memory: "128Mi"
 #           min:
-#             cpu: 50m
-#             memory: 32Mi
+#             cpu: "50m"
+#             memory: "32Mi"
 #           max:
-#             cpu: 1000m
-#             memory: 1Gi
+#             cpu: 1
+#             memory: "1Gi"
 #   - kind: RoleBinding
 #     apiVersion: rbac.authorization.k8s.io/v1
 #     metadata:

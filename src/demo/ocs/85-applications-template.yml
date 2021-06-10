@@ -51,7 +51,7 @@ objects:
     info:
       - name: teammail
         value: dev@startx.fr
-    project: ${NS}
+    project: ${NS}-ocs
     source:
       path: charts/example-catalog/
       repoURL: 'https://github.com/startxfr/helm-repository.git'

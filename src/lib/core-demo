@@ -153,6 +153,10 @@ function applyClusterDemo {
                         | $CMD
                     elif [[ "${FAMILLY:0:1}" == "4" ]]
                     then
+                        # -p AWS_SMTP_USER=$SXCM_AWS_SMTP_USER \
+                        # -p AWS_SMTP_PASSWORD=$SXCM_AWS_SMTP_PASSWORD \
+                        # -p AWS_SMTP_ZONE=$SXCM_AWS_SMTPZONE \
+                        # -p AWS_SMTP_FROM=$SXCM_AWS_SMTPFROM \
                         oc process -f $file --local -o yaml \
                         -p SCOPE=$localScope \
                         -p CLUSTER=$cn \
@@ -161,10 +165,6 @@ function applyClusterDemo {
                         -p AWS_ZONE=$SXCM_AWS_ZONE \
                         -p AWS_ACCESS_ID=$SXCM_AWS_ID \
                         -p AWS_ACCESS_KEY=$SXCM_AWS_KEY \
-                        -p AWS_SMTP_USER=$SXCM_AWS_SMTP_USER \
-                        -p AWS_SMTP_PASSWORD=$SXCM_AWS_SMTP_PASSWORD \
-                        -p AWS_SMTP_ZONE=$SXCM_AWS_SMTPZONE \
-                        -p AWS_SMTP_FROM=$SXCM_AWS_SMTPFROM \
                         | $CMD
                     elif [[ "${FAMILLY:0:1}" == "5" ]]
                     then

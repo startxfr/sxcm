@@ -110,25 +110,25 @@ objects:
       limits:
         - type: "Pod"
           min:
-            cpu: 20m
-            memory: 32Mi
+            cpu: "20m"
+            memory: "32Mi"
           max:
-            cpu: "6000m"
-            ephemeral-storage: 1Gi
+            cpu: 6
+            ephemeral-storage: "1Gi"
             memory: "5Gi"
         - type: "Container"
           defaultRequest:
-            cpu: 100m
-            memory: 128Mi
+            cpu: "100m"
+            memory: "128Mi"
           default:
-            cpu: 200m
-            memory: 256Mi
+            cpu: "200m"
+            memory: "256Mi"
           min:
-            cpu: 20m
-            memory: 32Mi
+            cpu: "20m"
+            memory: "32Mi"
           max:
-            cpu: "6000m"
-            ephemeral-storage: 1Gi
+            cpu: 6
+            ephemeral-storage: "1Gi"
             memory: "5Gi"
   - kind: RoleBinding
     apiVersion: rbac.authorization.k8s.io/v1

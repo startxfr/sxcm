@@ -31,10 +31,12 @@ function myDemoStep {
     case $option in
         "1") 
             echo "---- Nothing special to perform for this step"
+            echo "---- Display main resource deployed in this project"
             $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
         ;;
         "2")
             echo "---- Nothing special to perform for this step"
+            echo "---- Display main resource deployed in this project"
             $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
         ;;
         *)

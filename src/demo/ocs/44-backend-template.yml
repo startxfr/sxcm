@@ -21,12 +21,77 @@ message: |-
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
-  Project        : ${NS}
+  Project        : ${NS}-ocs
 
 labels:
   template: sxcm-demo-storage-ocs-backend-template
   app.kubernetes.io/managed-by: sxcm
 objects:
+- kind: AppProject
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${NS}-ocs
+    namespace: "${ARGOCD_NS}"
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "${NS}-ocs"
+      app.kubernetes.io/name: "${NS}-ocs-context-application"
+      app.kubernetes.io/part-of: ${NS}-ocs
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "${NS}-ocs-project"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxcm
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    sourceRepos:
+      - '*'
+    destinations:
+      - namespace: ${NS}
+        server: '*'
+      - namespace: ${STORAGE_NS}
+        server: '*'
+    clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+    roles:
+    - name: dev
+      description: Read-only privileges to group dev in ${NS}-ocs project
+      policies:
+      - g, dev, role:readonly
+      - p, role:startx-dev, *, get, .${NS}/*, allow
+      groups:
+      - dev
+    - name: ops
+      description: Read-only (and sync) privileges to group ops in ${NS} project
+      policies:
+      - p, role:startx-ops, *, get, .${NS}/*, allow
+      - p, role:startx-ops, *, sync, .${NS}/*, allow
+      - p, role:startx-ops, applications, get, .${STORAGE_NS}/*, allow
+      - p, role:startx-ops, repositories, get, .${STORAGE_NS}/*, allow
+      - g, ops, role:startx-ops
+      groups:
+      - ops
+    - name: devops
+      description: Read-only privileges to group devops in ${NS} project
+      policies:
+      - p, role:startx-devops, *, get, .${NS}/*, allow
+      - p, role:startx-devops, applications, sync, .${NS}/*, allow
+      - p, role:startx-devops, repositories, sync, .${NS}/*, allow
+      - g, devops, role:startx-devops
+      groups:
+      - devops
+    - name: admin
+      description: All privileges to group admin in ${NS} project
+      policies:
+      - p, role:startx-admin, *, *, ${NS}/*, allow
+      - p, role:startx-admin, *, *, ${STORAGE_NS}/*, allow
+      - g, system:cluster-admins, role:admin
+      groups:
+      - my-oidc-group
+      - system:cluster-admins
+      - admin
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -35,23 +100,23 @@ objects:
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "${NS}"
+      app.startx.fr/component: "${NS}-ocs"
       app.kubernetes.io/name: "${NS}-ocs-context-application"
-      app.kubernetes.io/part-of: ${NS}
+      app.kubernetes.io/part-of: ${NS}-ocs
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "${NS}-project"
+      app.kubernetes.io/component: "${NS}-ocs-project"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
     finalizers:
       - resources-finalizer.argocd.argoproj.io
   spec:
     destination:
-      namespace: "${NS}"
+      namespace: "${STORAGE_NS}"
       server: 'https://kubernetes.default.svc'
     info:
       - name: teammail
         value: dev@startx.fr
-    project: ${NS}
+    project: "${NS}-ocs"
     source:
       path: charts/example-catalog/
       repoURL: 'https://github.com/startxfr/helm-repository.git'

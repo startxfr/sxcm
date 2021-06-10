@@ -65,24 +65,17 @@ objects:
     - name: ops
       description: Read-only (and sync) privileges to group ops in ${NS} project
       policies:
-      - p, role:startx-ops, clusters, get, .${NS}/*, allow
-      - p, role:startx-ops, projects, get, .${NS}/*, allow
-      - p, role:startx-ops, applications, get, .${NS}/*, allow
-      - p, role:startx-ops, applications, sync, .${NS}/*, allow
-      - p, role:startx-ops, repositories, get, .${NS}/*, allow
-      - p, role:startx-ops, repositories, sync, .${NS}/*, allow
-      - p, role:startx-ops, certificates, get, .${NS}/*, allow
+      - p, role:startx-ops, *, get, .${NS}/*, allow
+      - p, role:startx-ops, *, sync, .${NS}/*, allow
       - g, ops, role:startx-ops
       groups:
       - ops
     - name: devops
       description: Read-only privileges to group devops in ${NS} project
       policies:
-      - p, role:startx-devops, clusters, get, .${NS}/*, allow
-      - p, role:startx-devops, projects, get, .${NS}/*, allow
-      - p, role:startx-devops, applications, get, .${NS}/*, allow
-      - p, role:startx-devops, repositories, get, .${NS}/*, allow
-      - p, role:startx-devops, certificates, get, .${NS}/*, allow
+      - p, role:startx-devops, *, get, .${NS}/*, allow
+      - p, role:startx-devops, applications, sync, .${NS}/*, allow
+      - p, role:startx-devops, repositories, sync, .${NS}/*, allow
       - g, devops, role:startx-devops
       groups:
       - devops
@@ -224,6 +217,7 @@ objects:
         namespace: "${NS}"
         jsonPointers:
           - /spec/template/spec/domain/machine/type
+          - /spec/dataVolumeTemplates
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -280,11 +274,11 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${NS}-kubevirt-app
+    name: ${NS}-app
     namespace: "${ARGOCD_NS}"
     labels:
       <<: *basic_labels
-      app.kubernetes.io/name: "${NS}-kubevirt-application"
+      app.kubernetes.io/name: "${NS}-application"
     annotations:
       <<: *basic_annotations
     finalizers:
@@ -330,6 +324,13 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 20s
+    ignoreDifferences:
+      - group: kubevirt.io
+        kind: VirtualMachine
+        namespace: "${NS}"
+        jsonPointers:
+          - /spec/template/spec/domain/machine/type
+          - /spec/dataVolumeTemplates
 parameters:
   - name: NS
     displayName: The namespace where objects goes to
