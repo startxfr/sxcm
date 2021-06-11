@@ -38,15 +38,11 @@ function myDemoStep {
             echo "---- Add demotain repulse for node $NODE1"
             oc adm taint nodes $NODE1 demotain=repulse:NoSchedule
             oc adm taint nodes $NODE1 demotain=repulse:NoExecute
-            echo "---- Display main resource deployed in this project"
-            $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
         ;;
         "2")
             echo "---- Add demotain otherval for node $NODE2"
             oc adm taint nodes $NODE2 demotain=otherval:NoSchedule
             oc adm taint nodes $NODE2 demotain=otherval:NoExecute
-            echo "---- Display main resource deployed in this project"
-            $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
         ;;
         *)
             echo "This step number is not implemented in this demo"
@@ -70,6 +66,11 @@ function myDemoEnd {
 # Actions for the end of the demo scenario
 function myDemoUsage {
     echo "Choose an action between begin, step or end"
+}
+
+# Get information about the demo scenario
+function myDemoInfo {
+    echo "TODO : Add a description for this demo in sxcm-demo.sh"
 }
 
 ####

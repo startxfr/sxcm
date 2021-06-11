@@ -56,6 +56,11 @@ function myDemoUsage {
     echo "Choose an action between begin, step or end"
 }
 
+# Get information about the demo scenario
+function myDemoInfo {
+    echo "TODO : Add a description for this demo in sxcm-demo.sh"
+}
+
 ####
 
 # main menu for the cluster sub-command
