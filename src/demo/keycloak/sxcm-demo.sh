@@ -58,7 +58,12 @@ function myDemoUsage {
 
 # Get information about the demo scenario
 function myDemoInfo {
-    echo "TODO : Add a description for this demo in sxcm-demo.sh"
+    cat <<EOF
+Description : Deployment of a Keycloak infrastructure and 2 samples application using this infrastructure to 
+              demonstrate the SSO capacities of 3Scale solution running under an 
+              openshift 4 environment
+Require     : knative
+EOF
 }
 
 ####
@@ -68,5 +73,6 @@ case $action in
     begin) myDemoBegin;;
     step) myDemoStep;;
     end) myDemoEnd;;
+    info) myDemoInfo ;;
     *) myDemoUsage ;;
 esac

@@ -9,8 +9,8 @@ metadata:
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of an Istio infrastructure and a sample application using this infrastructure to 
-      demonstrate the service mesh capacities of Istio solution running under an 
+      Deployment of micro-service application (multi-version) using istio infrastructure to 
+      demonstrate how to use the service mesh capacities of Istio solution running under an 
       openshift 4 environment
     iconClass: icon-load-balancer
     tags: startx,istio,demo,dev

@@ -9,8 +9,9 @@ metadata:
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of a codeless application with toleration rules applied to
-      demonstrate the placement and fault tolerance capacity of openshift 4
+      Deployment of various applications using PVC consuming startx storage class
+      persistent storage to demonstrate how to run stateful application under
+      an openshift 4 infrastructure
     iconClass: icon-nodejs
     tags: startx,storage,demo,dev
   labels:

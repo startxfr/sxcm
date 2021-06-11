@@ -9,8 +9,8 @@ metadata:
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of a KubeVirt infrastructure and a sample application using this infrastructure to 
-      demonstrate the Virtual Machine management capacities of KubeVirt solution running under an 
+      Deployment of a sample application using this infrastructure to demonstrate the 
+      Virtual Machine management capacities of KubeVirt solution running under an 
       openshift 4 environment
     iconClass: icon-kubevirt
     tags: startx,kubevirt,demo,dev

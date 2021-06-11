@@ -9,8 +9,9 @@ metadata:
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of an Nexus and a sample application using this infrastructure to 
-      demonstrate the Nexus capacities running under an openshift 4 environment
+      Deployment of the compliance operator and a demo report. This allow 
+      demostrator to show how Openshift 4 infrastructure could report status of
+      compliancy again private or public policies
     iconClass: icon-load-balancer
     tags: startx,compliance,demo,dev
   labels:

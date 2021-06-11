@@ -278,30 +278,41 @@ function doDemoInfo {
             rn="mydemo"
         fi
     fi
-    echo -e "\e[1m\e[34mInfo\e[0m about the demo \e[1m$rn\e[0m"
+    echo -e "Title       : \e[1m\e[34mDEMO ${rn^^}\e[0m"
     local demoDirLocal=$SXCM_DEMOS_PATH
     local LIST=$(listClusterConfigs)
     local COUNT=$(echo $LIST | wc -w)
     if [[ -d $demoDirLocal/$rn ]]; then
-        echo "location   :  $demoDirLocal/$rn"
-        echo "content    : " "$(ls $demoDirLocal/$rn/*.yml 2>/dev/null | wc -l) yaml, $(ls $demoDirLocal/$rn/*.sh 2>/dev/null | wc -l) bash"
+        local demoScript="$demoDirLocal/$rn/sxcm-demo.sh"
+        if [[ -x $demoScript ]]
+        then
+            . $demoScript info "$rn"
+        fi
+        echo "Location    : $demoDirLocal/$rn"
+        echo "Content     : " "$(ls $demoDirLocal/$rn/*.yml 2>/dev/null | wc -l) yaml, $(ls $demoDirLocal/$rn/*.sh 2>/dev/null | wc -l) bash"
     else
         echo -e "\e[1m\e[31mCould not read\e[0m directory \e[1m$rn\e[0m in $demoDirLocal"
         exit 1
     fi
     if [[ $COUNT -gt 0 ]]; then
+        local first="true"
         for cluster in $LIST
         do
             local demoIsFoundInOCPInstall="false"
+            local prefix="           "
             for demo in $(listDemosCluster $cluster); do
                 if [[ "$demo" == "$rn" ]]; then
                     demoIsFoundInOCPInstall="true"
                 fi
             done
+            if [[ "$first" == "true" ]]; then
+                first="false"
+                prefix="Clusters   "
+            fi
             if [[ "$demoIsFoundInOCPInstall" == "true" ]]; then
-                echo -e "- \e[1m\e[96menabled\e[0m  in cluster \e[1m$cluster\e[0m"
+                echo -e "$prefix - \e[1m\e[96menabled\e[0m  in cluster \e[1m$cluster\e[0m"
             else
-                echo -e "- \e[95mdisabled\e[0m in cluster \e[1m$cluster\e[0m"
+                echo -e "$prefix - \e[95mdisabled\e[0m in cluster \e[1m$cluster\e[0m"
             fi
         done
     fi

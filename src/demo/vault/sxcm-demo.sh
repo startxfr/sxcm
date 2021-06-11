@@ -58,7 +58,12 @@ function myDemoUsage {
 
 # Get information about the demo scenario
 function myDemoInfo {
-    echo "TODO : Add a description for this demo in sxcm-demo.sh"
+    cat <<EOF
+Description : Deployment of a Vault service and a sample application using this Vault service to 
+              demonstrate the Secret management capacities of Vault solution running under an 
+              openshift 4 environment
+Require     : vault
+EOF
 }
 
 ####
@@ -68,5 +73,6 @@ case $action in
     begin) myDemoBegin;;
     step) myDemoStep;;
     end) myDemoEnd;;
+    info) myDemoInfo ;;
     *) myDemoUsage ;;
 esac

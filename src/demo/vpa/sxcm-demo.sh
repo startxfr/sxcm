@@ -58,7 +58,12 @@ function myDemoUsage {
 
 # Get information about the demo scenario
 function myDemoInfo {
-    echo "TODO : Add a description for this demo in sxcm-demo.sh"
+    cat <<EOF
+Description : Deployment of the VerticalPodAutoscaler operator and a sample application 
+              using this operator to demonstrate the vertical autoscaling capacities 
+              running under an openshift 4 environment
+Require     : none
+EOF
 }
 
 ####
@@ -68,5 +73,6 @@ case $action in
     begin) myDemoBegin;;
     step) myDemoStep;;
     end) myDemoEnd;;
+    info) myDemoInfo ;;
     *) myDemoUsage ;;
 esac

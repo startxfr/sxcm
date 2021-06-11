@@ -58,7 +58,13 @@ function myDemoUsage {
 
 # Get information about the demo scenario
 function myDemoInfo {
-    echo "TODO : Add a description for this demo in sxcm-demo.sh"
+    cat <<EOF
+Description : Deployment of multiple samples application using various YAML syntaxs to 
+              demonstrate the flexibility and extensibility of YAML format combined under an 
+              openshift 4 environment. Could also be used to illustrate interactions
+              with the K8S resources controllers and declarative paradigm.
+Require     : none
+EOF
 }
 
 ####
@@ -68,5 +74,6 @@ case $action in
     begin) myDemoBegin;;
     step) myDemoStep;;
     end) myDemoEnd;;
+    info) myDemoInfo ;;
     *) myDemoUsage ;;
 esac

@@ -9,7 +9,7 @@ metadata:
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of a 3scale infra and a sample application using this infrastructure to 
+      Deployment of a sample application using the startx 3scale infrastructure to
       demonstrate the API management capacities of 3Scale solution running under an 
       openshift 4 environment
     iconClass: icon-3scale

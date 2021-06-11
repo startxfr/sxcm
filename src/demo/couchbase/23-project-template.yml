@@ -9,8 +9,10 @@ metadata:
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of multiple samples application using various Couchbase topics covered by
-      the v1 operator running under the Openshift v3 or v4 platform
+      Deployment of multiple couchbase cluster using the couchbase operator. 
+      Theses clusters holds several buckets loaded with sample data. 
+      This demo also deploy multiple applications using theses backends to show 
+      various scenarios for full-stack resiliency
     iconClass: icon-database
     tags: startx,couchbase,demo,dev
   labels:

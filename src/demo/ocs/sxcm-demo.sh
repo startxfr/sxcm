@@ -29,18 +29,18 @@ function myDemoBegin {
 function myDemoStep {
     echo "-- Demo $demo - step $option"
     case $option in
-        "1") 
-            echo "---- Nothing special to perform for this step"
-            echo "---- Display main resource deployed in this project"
-            $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
+    "1")
+        echo "---- Nothing special to perform for this step"
+        echo "---- Display main resource deployed in this project"
+        $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
         ;;
-        "2")
-            echo "---- Nothing special to perform for this step"
-            echo "---- Display main resource deployed in this project"
-            $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
+    "2")
+        echo "---- Nothing special to perform for this step"
+        echo "---- Display main resource deployed in this project"
+        $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
         ;;
-        *)
-            echo "This step number is not implemented in this demo"
+    *)
+        echo "This step number is not implemented in this demo"
         ;;
     esac
 }
@@ -58,15 +58,22 @@ function myDemoUsage {
 
 # Get information about the demo scenario
 function myDemoInfo {
-    echo "TODO : Add a description for this demo in sxcm-demo.sh"
+    cat <<EOF
+Description : Complete demo to illustrate how to persist data within an hyper-converged openshift 4 environment
+              Deployment of multiple statefull applications using block and fs with various storage class
+              backed by OCS (EBS hardware). Also include statefull applications using various ObjectBucketClaim
+              backed with AWS S3 and EBS hardware. Show mirriring or spreading configurations.
+Require     : storage,ocs
+EOF
 }
 
 ####
 
 # main menu for the cluster sub-command
 case $action in
-    begin) myDemoBegin;;
-    step) myDemoStep;;
-    end) myDemoEnd;;
-    *) myDemoUsage ;;
+begin) myDemoBegin ;;
+step) myDemoStep ;;
+end) myDemoEnd ;;
+info) myDemoInfo ;;
+*) myDemoUsage ;;
 esac

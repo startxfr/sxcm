@@ -9,9 +9,10 @@ metadata:
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of a HUGO infrastructure and a sample application using this infrastructure to 
-      demonstrate the Serverless capacities of HUGO solution integrated with an 
-      openshift 4 environment
+      Deployment of a CI build pipeline using HUGO framework to build a static website
+      generated using markdown input, transformed to HTML content. If static containerized content 
+      is deployable, CD workflow will deployent application under the same projecct and exposed 
+      using openshift 4 router
     iconClass: icon-nodejs
     tags: startx,hugo,knative,demo,dev
   labels:

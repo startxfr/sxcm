@@ -29,18 +29,18 @@ function myDemoBegin {
 function myDemoStep {
     echo "-- Demo $demo - step $option"
     case $option in
-        "1") 
-            echo "---- Nothing special to perform for this step"
-            echo "---- Display main resource deployed in this project"
-            $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
+    "1")
+        echo "---- Nothing special to perform for this step"
+        echo "---- Display main resource deployed in this project"
+        $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
         ;;
-        "2")
-            echo "---- Nothing special to perform for this step"
-            echo "---- Display main resource deployed in this project"
-            $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
+    "2")
+        echo "---- Nothing special to perform for this step"
+        echo "---- Display main resource deployed in this project"
+        $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
         ;;
-        *)
-            echo "This step number is not implemented in this demo"
+    *)
+        echo "This step number is not implemented in this demo"
         ;;
     esac
 }
@@ -58,15 +58,21 @@ function myDemoUsage {
 
 # Get information about the demo scenario
 function myDemoInfo {
-    echo "TODO : Add a description for this demo in sxcm-demo.sh"
+    cat <<EOF
+Description : Deployment of micro-service application (multi-version) using istio infrastructure to 
+              demonstrate how to use the service mesh capacities of Istio solution running under an 
+              openshift 4 environment
+Require     : istio
+EOF
 }
 
 ####
 
 # main menu for the cluster sub-command
 case $action in
-    begin) myDemoBegin;;
-    step) myDemoStep;;
-    end) myDemoEnd;;
-    *) myDemoUsage ;;
+begin) myDemoBegin ;;
+step) myDemoStep ;;
+end) myDemoEnd ;;
+info) myDemoInfo ;;
+*) myDemoUsage ;;
 esac

@@ -9,8 +9,8 @@ metadata:
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of a HELM infrastructure and a sample application using this infrastructure to 
-      demonstrate the Serverless capacities of HELM solution integrated with an 
+      Deployment of multiple samples applications using OCP Helm support to 
+      demonstrate how to use helm chart to paackage and deploy applications under an
       openshift 4 environment
     iconClass: icon-nodejs
     tags: startx,helm,knative,demo,dev
