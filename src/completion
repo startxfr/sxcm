@@ -85,7 +85,13 @@ _sxcm_all() {
             available2="$(listClusterConfigs)"
         elif [[ "${COMP_WORDS[2]}" == "run" ]] && [[ "${COMP_CWORD}" == "4" ]]; then
             available2=$availableServiceDemoRun
-        elif [[ "${COMP_WORDS[2]}" == "run" ]] && [[ "${COMP_CWORD}" == "5" || "${COMP_CWORD}" == "6" ]]; then
+        elif [[ "${COMP_WORDS[2]}" == "run" ]] && [[ "${COMP_CWORD}" == "5" ]]; then
+            if [[ "${COMP_WORDS[4]}" == "step" ]] && [[ "${COMP_CWORD}" == "5" ]]; then
+                available2="1 2 3 4 5 6 7 8 9"
+            else
+                available2="$(listClusterConfigs)"
+            fi
+        elif [[ "${COMP_WORDS[2]}" == "run" ]] && [[ "${COMP_WORDS[4]}" == "step" || "${COMP_CWORD}" == "6" ]]; then
             available2="$(listClusterConfigs)"
         elif [[ "${COMP_CWORD}" == "3" ]] && [[ "${COMP_WORDS[2]}" == "list" ]]; then
             available2=""
