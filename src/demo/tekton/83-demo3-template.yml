@@ -4,7 +4,7 @@ metadata:
   name: sxcm-demo-tekton-demo3-template
   annotations:
     openshift.io/display-name: Demo tekton of a simple task
-    openshift.io/documentation-url: https://github.com/startxfr/sxcm/blob/dev/README.md
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/tekton
     openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX

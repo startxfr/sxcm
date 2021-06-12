@@ -1,47 +1,45 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-affinity-template
+  name: sxcm-demo-imagestreams-template
   annotations:
-    openshift.io/display-name: Demo STARTX - Node affinity
-    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/affinity
+    openshift.io/display-name: Demo STARTX - Images Streams
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/imagestreams
     openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of severals codeless application with node & pod affinity and anti-affinity 
-      directives applied to demonstrate the placement capacity of openshift 4
-    iconClass: icon-nodejs
-    tags: startx,affinity,node-anti-affinity,node-affinity,demo,dev
+      Import STARTX Images Streams catalog into an openshift 4 environment
+    iconClass: icon-load-balancer
+    tags: startx,imagestreams,demo,dev
   labels:
-    component: demo
-    template: sxcm-demo-affinity-template
+    template: sxcm-demo-imagestreams-template
 message: |-
-  Your demo-affinity demo will be soon deployed in project ${SCOPE}-affinity.
-  Monitor the deployement for application availability and
-  Follow created route to browse running application
+  Your STARTX imagestreams catalog is now loaded into ${NS} namespace.
 
-  Scope          : ${SCOPE}
-  Environment    : ${ENV}
-  Project        : ${NS}
+  Scope             : ${SCOPE}
+  Cluster           : ${CLUSTER}
+  Environment       : ${ENV}
+  Image project     : ${NS}
+  Image base repo   : ${BASE_REPO}
 
 labels:
-  template: sxcm-demo-affinity-template
+  template: sxcm-demo-imagestreams-template
   app.kubernetes.io/managed-by: sxcm
-objects: 
+objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${NS}-app
+    name: demo-startx-imagestreams
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "${NS}"
-      app.kubernetes.io/name: "${NS}-application"
-      app.kubernetes.io/part-of: ${NS}
+      app.startx.fr/component: "startx"
+      app.kubernetes.io/name: "demo-startx-imagestreams-application"
+      app.kubernetes.io/part-of: "startx"
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "${NS}-project"
+      app.kubernetes.io/component: "startx"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
     finalizers:
@@ -53,14 +51,14 @@ objects:
     info:
       - name: teammail
         value: dev@startx.fr
-    project: ${NS}
+    project: cluster-admin
     source:
-      path: charts/example-catalog/
+      path: charts/example-imagestreams/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: devel
       helm:
         valueFiles:
-          - values-affinity.yaml
+          - values-startx.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -70,33 +68,39 @@ objects:
             value: "${ENV}"
           - name: context.version
             value: "${VERSION}"
-          - name: context.app
-            value: "affinity"
-          - name: demo.affinity.namespace
-            value: "${NS}"
     syncPolicy:
       automated:
-        prune: true
-        selfHeal: true
+        prune: false
+        selfHeal: false
       syncOptions:
         - CreateNamespace=false
-        - Validate=true
-      retry:
-        limit: 5
-        backoff:
-          duration: 5s
-          factor: 2
-          maxDuration: 20s
+        - Validate=false
+    ignoreDifferences:
+      - group: image.openshift.io/v1
+        kind: ImageStream
+        namespace: "${NS}"
+        jsonPointers:
+          - /spec/tags
 parameters:
   - name: NS
-    displayName: SXAPI namespace for affinity instance
-    description: "Name of the affinity namespace"
-    value: demo-affinity
+    displayName: Openshift namespace
+    description: "Openshift namespace"
+    value: openshift
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
     description: "Namespace to place argocd server to"
     value: startx-argocd
+    required: true
+  - name: BASE_REPO
+    displayName: Base repository
+    description: "Base repository for STARTX images"
+    value: quay.io/startx
+    required: true
+  - name: BASE_SAMPLE_REPO
+    displayName: Base sample repository
+    description: "Base sample repository for STARTX images"
+    value: https://github.com/startxfr/docker-images-example
     required: true
   - name: SCOPE
     displayName: Project scope
