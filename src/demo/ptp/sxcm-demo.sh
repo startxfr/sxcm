@@ -59,7 +59,7 @@ function myDemoUsage {
 # Get information about the demo scenario
 function myDemoInfo {
     cat <<EOF
-Description : Deployment of an PrecisionTimeProtocol and a sample application using this infrastructure to 
+Description : Deployment of the PrecisionTimeProtocol operator and a sample application using this infrastructure to 
               demonstrate the PrecisionTimeProtocol capacities running under an openshift 4 environment
 Require     : none
 EOF

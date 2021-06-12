@@ -29,7 +29,7 @@ function myDemoBegin {
     echo "---- List of the exposed route to use"
     $k8cmdGet route -n ${namespace} --no-headers=true
     echo "---- List of the nodes and taint applyed"
-    $k8cmdGet nodes -o go-template='{{printf "%-50s %-12s\n" "Node" "Taint"}}{{- range .items}}{{- if $taint := (index .spec "taints") }}{{- .metadata.name }}{{ "\t" }}{{- range $taint }}{{- .key }}={{ .value }}:{{ .effect }}{{ "\t" }}{{- end }}{{- "\n" }}{{- end}}{{- end}}'
+    $k8cmdGet nodes -o go-project='{{printf "%-50s %-12s\n" "Node" "Taint"}}{{- range .items}}{{- if $taint := (index .spec "taints") }}{{- .metadata.name }}{{ "\t" }}{{- range $taint }}{{- .key }}={{ .value }}:{{ .effect }}{{ "\t" }}{{- end }}{{- "\n" }}{{- end}}{{- end}}'
     echo "---- Nothing special to perform to begin this demo scenario"
 }
 
@@ -63,7 +63,7 @@ function myDemoEnd {
     oc adm taint nodes $NODE2 demotain=otherval:NoSchedule-
     oc adm taint nodes $NODE2 demotain=otherval:NoExecute-
     echo "---- List of the nodes and taint applyed"
-    $k8cmdGet nodes -o go-template='{{printf "%-50s %-12s\n" "Node" "Taint"}}{{- range .items}}{{- if $taint := (index .spec "taints") }}{{- .metadata.name }}{{ "\t" }}{{- range $taint }}{{- .key }}={{ .value }}:{{ .effect }}{{ "\t" }}{{- end }}{{- "\n" }}{{- end}}{{- end}}'
+    $k8cmdGet nodes -o go-project='{{printf "%-50s %-12s\n" "Node" "Taint"}}{{- range .items}}{{- if $taint := (index .spec "taints") }}{{- .metadata.name }}{{ "\t" }}{{- range $taint }}{{- .key }}={{ .value }}:{{ .effect }}{{ "\t" }}{{- end }}{{- "\n" }}{{- end}}{{- end}}'
 }
 
 # Actions for the end of the demo scenario

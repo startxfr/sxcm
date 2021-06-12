@@ -1,0 +1,260 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: sxcm-demo-awx-operator
+  annotations:
+    openshift.io/display-name: Demo STARTX - AWX
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/ansible
+    openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
+    openshift.io/generated-by: sxcm
+    openshift.io/provider-display-name: STARTX
+    description:
+      Deployment of a AWX infrastructure and 1 application using this infrastructure to 
+      demonstrate the CI/CD integration inside an openshift 4 environment
+    iconClass: icon-sso
+    tags: startx,sso,demo,dev
+  labels:
+    template: sxcm-demo-awx-operator
+message: |-
+  Your demo project ${NS} for AWX technology is now created.
+
+  Scope          : ${SCOPE}
+  Environment    : ${ENV}
+  Service        : awx
+  Project        : ${NS}
+
+labels:
+  template: sxcm-demo-awx-operator
+  app.kubernetes.io/managed-by: sxcm
+objects:
+# - kind: ClusterRole
+#   apiVersion: rbac.authorization.k8s.io/v1
+#   metadata:
+#     name: tower-operator
+#     namespace: ${NS}
+#   rules:
+#     - apiGroups:
+#         - route.openshift.io
+#       resources:
+#         - routes
+#       verbs:
+#         - '*'
+#     - apiGroups:
+#         - ""
+#       resources:
+#         - pods
+#         - services
+#         - services/finalizers
+#         - endpoints
+#         - persistentvolumeclaims
+#         - events
+#         - configmaps
+#         - secrets
+#       verbs:
+#         - '*'
+#     - apiGroups:
+#         - apps
+#         - extensions
+#       resources:
+#         - deployments
+#         - daemonsets
+#         - replicasets
+#         - statefulsets
+#         - ingresses
+#       verbs:
+#         - '*'
+#     - apiGroups:
+#         - monitoring.coreos.com
+#       resources:
+#         - servicemonitors
+#       verbs:
+#         - get
+#         - create
+#     - apiGroups:
+#         - apps
+#       resourceNames:
+#         - tower-operator
+#       resources:
+#         - deployments/finalizers
+#       verbs:
+#         - update
+#     - apiGroups:
+#         - ""
+#       resources:
+#         - pods/exec
+#       verbs:
+#         - create
+#         - get
+#     - apiGroups:
+#         - apps
+#       resources:
+#         - replicasets
+#       verbs:
+#         - get
+#     - apiGroups:
+#         - tower.ansible.com
+#       resources:
+#         - '*'
+#       verbs:
+#         - '*'
+# - kind: ClusterRoleBinding
+#   apiVersion: rbac.authorization.k8s.io/v1
+#   metadata:
+#     name: tower-operator
+#     namespace: ${NS}
+#   subjects:
+#     - kind: ServiceAccount
+#       name: tower-operator
+#       namespace: ${NS}
+#   roleRef:
+#     kind: ClusterRole
+#     name: tower-operator
+#     apiGroup: rbac.authorization.k8s.io
+# - kind: ServiceAccount
+#   apiVersion: v1
+#   metadata:
+#     name: tower-operator
+#     namespace: ${NS}
+# - kind: Deployment
+#   apiVersion: apps/v1
+#   metadata:
+#     name: tower-operator
+#     namespace: ${NS}
+#   spec:
+#     replicas: 1
+#     selector:
+#       matchLabels:
+#         name: tower-operator
+#     template:
+#       metadata:
+#         labels:
+#           name: tower-operator
+#       spec:
+#         serviceAccountName: tower-operator
+#         containers:
+#           - name: ansible
+#             command:
+#               - /usr/local/bin/ao-logs
+#               - /tmp/ansible-operator/runner
+#               - stdout
+#             image: "geerlingguy/tower-operator:0.2.5"
+#             imagePullPolicy: "Always"
+#             volumeMounts:
+#               - mountPath: /tmp/ansible-operator/runner
+#                 name: runner
+#                 readOnly: true
+#           - name: operator
+#             image: "geerlingguy/tower-operator:0.2.5"
+#             imagePullPolicy: "Always"
+#             volumeMounts:
+#               - mountPath: /tmp/ansible-operator/runner
+#                 name: runner
+#             env:
+#               # Watch all namespaces (cluster-scoped).
+#               - name: WATCH_NAMESPACE
+#                 value: ""
+#               - name: POD_NAME
+#                 valueFrom:
+#                   fieldRef:
+#                     fieldPath: metadata.name
+#               - name: OPERATOR_NAME
+#                 value: tower-operator
+#         volumes:
+#           - name: runner
+#             emptyDir: {}
+# - kind: CustomResourceDefinition
+#   apiVersion: apiextensions.k8s.io/v1beta1
+#   metadata:
+#     name: towers.tower.ansible.com
+#     namespace: ${NS}
+#   spec:
+#     group: tower.ansible.com
+#     names:
+#       kind: Tower
+#       listKind: TowerList
+#       plural: towers
+#       singular: tower
+#     scope: Namespaced
+#     subresources:
+#       status: {}
+#     version: v1alpha1
+#     versions:
+#       - name: v1alpha1
+#         served: true
+#         storage: true
+# - kind: Tower
+#   apiVersion: tower.ansible.com/v1alpha1
+#   metadata:
+#     name: tower
+#     namespace: ${NS}
+#   spec:
+#     tower_hostname: tower.mycompany.com
+#     tower_secret_key: aabbcc
+#     tower_admin_user: test
+#     tower_admin_email: test@example.com
+#     tower_admin_password: changeme
+# - kind: Tower
+#   apiVersion: tower.ansible.com/v1alpha1
+#   metadata:
+#     name: awx
+#     namespace: ${NS}
+#   spec:
+#     tower_hostname: tower.mycompany.com
+#     tower_secret_key: aabbcc
+#     tower_admin_user: test
+#     tower_admin_email: test@example.com
+#     tower_admin_password: changeme
+#     tower_task_image: ansible/awx_task:9.2.0
+#     tower_web_image: ansible/awx_web:9.2.0
+#     tower_ingress_type: Route
+#     # tower_postgres_storage_class: generic-retain
+parameters:
+  - name: NS
+    displayName: AWX namespace for awx instance
+    description: "Name of the awx namespace"
+    value: demo-awx
+    required: true
+  - name: ARGOCD_NS
+    displayName: The namespace where argocd server goes to
+    description: "Namespace to place argocd server to"
+    value: startx-argocd
+    required: true
+  - name: SCOPE
+    displayName: Project scope
+    description: "Project scope (ex: demo)"
+    value: demo
+    required: true
+  - name: CLUSTER
+    displayName: Cluster name
+    description: "Name of the current cluster  (ex: sxsf)"
+    value: sxsf
+    required: true
+  - name: ENV
+    displayName: Project environment
+    description: "Project environment (ex: dev, factory, preprod or prod)"
+    value: dev
+    required: true
+  - name: VERSION
+    displayName: Project version
+    description: "Project deployed release"
+    value: "1.0.0-dev"
+    required: true
+  - name: COMPONENT
+    displayName: Project service
+    description: "Project service"
+    value: demo
+    required: true
+  - name: MARKETPLACE_NS
+    displayName: The operator marketplace namespace where objects goes to
+    description: "operator marketplace namespace to place objects to"
+    value: openshift-marketplace
+    required: true
+  - name: RHN_USER
+    displayName: RHN container access user
+    description: Redhat Network access user to the RH container catalog
+    required: true
+  - name: RHN_PASSWORD
+    displayName: RHN container access password
+    description: Redhat Network access password to the Rh container catalog
+    required: true
+
