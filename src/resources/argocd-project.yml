@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-argocd-template
+  name: sxcm-cluster-argocd-project
   annotations:
     openshift.io/display-name: STARTX ArgoCD (gitops)
     description: Deploy ArgoCD gitops environment to sxcm definitions
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "20"
   labels:
-    template: sxcm-cluster-argocd-template
-    app.kubernetes.io/name: "sxcm-cluster-argocd-template"
+    template: sxcm-cluster-argocd-project
+    app.kubernetes.io/name: "sxcm-cluster-argocd-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your ArgoCD gitops project is now configured
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : red-hat-argocd.v3.3.2-20200903
 labels:
-  template: sxcm-cluster-argocd-template
+  template: sxcm-cluster-argocd-project
   app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: Project

@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-machine-template
+  name: sxcm-cluster-machine-project
   annotations:
     openshift.io/display-name: STARTX Cluster Machine config (admin)
     description: Configure machine ressource to sxcm cluster configuration
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "10"
   labels:
-    template: sxcm-cluster-machine-template
-    app.kubernetes.io/name: "sxcm-cluster-machine-template"
+    template: sxcm-cluster-machine-project
+    app.kubernetes.io/name: "sxcm-cluster-machine-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide machine support is now configured.
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : machine-operator.4.4.0
 labels:
-  template: sxcm-cluster-machine-template
+  template: sxcm-cluster-machine-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application

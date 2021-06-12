@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-workspaces-template
+  name: sxcm-cluster-workspaces-project
   annotations:
     openshift.io/display-name: STARTX cluster CodeReadyWorkspaces (admin)
     description: Deploy cluster-wide resources to enable CodeReadyWorkspaces according to sxcm definitions
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "20"
   labels:
-    template: sxcm-cluster-workspaces-template
-    app.kubernetes.io/name: "sxcm-cluster-workspaces-template"
+    template: sxcm-cluster-workspaces-project
+    app.kubernetes.io/name: "sxcm-cluster-workspaces-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your code ready workspaces is now enabled
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : crwoperator.v2.3.0
 labels:
-  template: sxcm-cluster-workspaces-template
+  template: sxcm-cluster-workspaces-project
   app.kubernetes.io/managed-by: sxcm
 objects: 
 - kind: AppProject

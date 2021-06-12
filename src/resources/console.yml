@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-console-template
+  name: sxcm-cluster-console-project
   annotations:
     openshift.io/display-name: STARTX cluster Console (admin)
     description: Deploy cluster-wide resources to personnalize OCP web console according to sxcm definitions
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "5"
   labels:
-    template: sxcm-cluster-console-template
-    app.kubernetes.io/name: "sxcm-cluster-console-template"
+    template: sxcm-cluster-console-project
+    app.kubernetes.io/name: "sxcm-cluster-console-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your console personnalisation for project ${SCOPE}-${ENV} is done.
@@ -20,7 +20,7 @@ message: |-
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
 labels:
-  template: sxcm-cluster-console-template
+  template: sxcm-cluster-console-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application

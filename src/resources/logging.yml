@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-logging-template
+  name: sxcm-cluster-logging-project
   annotations:
     openshift.io/display-name: STARTX cluster Logging (admin)
     description: Deploy cluster-wide resources to enable logs aggregation support according to sxcm definitions
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "40"
   labels:
-    template: sxcm-cluster-logging-template
-    app.kubernetes.io/name: "sxcm-cluster-logging-template"
+    template: sxcm-cluster-logging-project
+    app.kubernetes.io/name: "sxcm-cluster-logging-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide logs aggregation support is now enabled.
@@ -22,7 +22,7 @@ message: |-
   Elasticsearch     : elasticsearch-operator.4.6
   Operator          : clusterlogging.4.3.5
 labels:
-  template: sxcm-cluster-logging-template
+  template: sxcm-cluster-logging-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application

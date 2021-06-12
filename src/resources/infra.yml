@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-infra-template
+  name: sxcm-cluster-infra-project
   annotations:
     openshift.io/display-name: STARTX cluster Infra (admin)
     description: Deploy cluster-wide resources to configure cluster infrastructure according to sxcm definitions
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "10"
   labels:
-    template: sxcm-cluster-infra-template
-    app.kubernetes.io/name: "sxcm-cluster-infra-template"
+    template: sxcm-cluster-infra-project
+    app.kubernetes.io/name: "sxcm-cluster-infra-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster configuration is now ready
@@ -20,7 +20,7 @@ message: |-
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
 labels:
-  template: sxcm-cluster-infra-template
+  template: sxcm-cluster-infra-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application

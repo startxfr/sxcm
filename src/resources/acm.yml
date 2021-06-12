@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-acm-template
+  name: sxcm-cluster-acm-project
   annotations:
     openshift.io/display-name: STARTX Advanced Cluster Management (admin)
     description: Deploy cluster-wide resources to enable ACM support for multi-cluster management
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "30"
   labels:
-    template: sxcm-cluster-acm-template
-    app.kubernetes.io/name: "sxcm-cluster-acm-template"
+    template: sxcm-cluster-acm-project
+    app.kubernetes.io/name: "sxcm-cluster-acm-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide ACM support for multi-cluster management is now enabled.
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : advanced-cluster-management.2.1.2
 labels:
-  template: sxcm-cluster-acm-template
+  template: sxcm-cluster-acm-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application

@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-quay-template
+  name: sxcm-cluster-quay-project
   annotations:
     openshift.io/display-name: STARTX cluster Quay (admin)
     description: Deploy cluster-wide resources to enable Quay registry support according to sxcm definitions
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "20"
   labels:
-    template: sxcm-cluster-quay-template
-    app.kubernetes.io/name: "sxcm-cluster-quay-template"
+    template: sxcm-cluster-quay-project
+    app.kubernetes.io/name: "sxcm-cluster-quay-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster enterprise registry support is now enabled
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : container-security-operator.v1.0.5,red-hat-quay.v3.3.0
 labels:
-  template: sxcm-cluster-quay-template
+  template: sxcm-cluster-quay-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application

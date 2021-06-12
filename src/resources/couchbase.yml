@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-couchbase-template
+  name: sxcm-cluster-couchbase-project
   annotations:
     openshift.io/display-name: STARTX Couchbase cluster (admin)
     description: Deploy cluster-wide resources to enable couchbase support for NoSQL database to sxcm definitions
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "10"
   labels:
-    template: sxcm-cluster-couchbase-template
-    app.kubernetes.io/name: "sxcm-cluster-couchbase-template"
+    template: sxcm-cluster-couchbase-project
+    app.kubernetes.io/name: "sxcm-cluster-couchbase-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide couchbase support for NoSQL is now enabled.
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : couchbase-operator.4.4.0
 labels:
-  template: sxcm-cluster-couchbase-template
+  template: sxcm-cluster-couchbase-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application

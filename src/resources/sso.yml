@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-sso-template
+  name: sxcm-cluster-sso-project
   annotations:
     openshift.io/display-name: STARTX cluster KeyCloak (admin)
     description: Deploy cluster-wide resources to enable KeyCloak support according to sxcm definitions
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "15"
   labels:
-    template: sxcm-cluster-sso-template
-    app.kubernetes.io/name: "sxcm-cluster-sso-template"
+    template: sxcm-cluster-sso-project
+    app.kubernetes.io/name: "sxcm-cluster-sso-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster serverless support is now enabled
@@ -23,7 +23,7 @@ message: |-
   Project           : ${KEYCLOAK_NS}
   Services          : sso,freeipa
 labels:
-  template: sxcm-cluster-sso-template
+  template: sxcm-cluster-sso-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
