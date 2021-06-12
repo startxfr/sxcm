@@ -13,8 +13,11 @@ namespace="demo-$demo"
 k8cmd="oc $SXCM_OCAPPLY_OPTS --cluster=$clusterK8s"
 k8cmdGet="oc $SXCM_OCAPPLY_OPTS --cluster=$clusterK8s -o wide get "
 
-NODE1=$(oc get node -o name -l node-role.kubernetes.io/worker | head -n 1)
-NODE2=$(oc get node -o name -l node-role.kubernetes.io/worker | head -n 2 | tail -n 1)
+if [[ $action != "info" ]]
+then
+    NODE1=$(oc get node -o name -l node-role.kubernetes.io/worker | head -n 1)
+    NODE2=$(oc get node -o name -l node-role.kubernetes.io/worker | head -n 2 | tail -n 1)
+fi
 
 #### Functions for this demo
 
