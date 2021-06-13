@@ -1,45 +1,47 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-imagestreams-project
+  name: sxcm-demo-priority-project
   annotations:
-    openshift.io/display-name: Demo STARTX - Images Streams
-    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/imagestreams
+    openshift.io/display-name: Demo STARTX - Node priority
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/priority
     openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Import STARTX Images Streams catalog into an openshift 4 environment
-    iconClass: icon-load-balancer
-    tags: startx,imagestreams,demo,dev
+      Deployment of severals codeless application using pod priority and PriorityClass 
+      directives applied to demonstrate the placement capacity of openshift 4
+    iconClass: icon-nodejs
+    tags: startx,priority,node-anti-priority,node-priority,demo,dev
   labels:
-    template: sxcm-demo-imagestreams-project
+    component: demo
+    template: sxcm-demo-priority-project
 message: |-
-  Your STARTX imagestreams catalog is now loaded into ${NS} namespace.
+  Your demo-priority demo will be soon deployed in project ${SCOPE}-priority.
+  Monitor the deployement for application availability and
+  Follow created route to browse running application
 
-  Scope             : ${SCOPE}
-  Cluster           : ${CLUSTER}
-  Environment       : ${ENV}
-  Image project     : ${NS}
-  Image base repo   : ${BASE_REPO}
+  Scope          : ${SCOPE}
+  Environment    : ${ENV}
+  Project        : ${NS}
 
 labels:
-  template: sxcm-demo-imagestreams-project
+  template: sxcm-demo-priority-project
   app.kubernetes.io/managed-by: sxcm
-objects:
+objects: 
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: demo-startx-imagestreams
+    name: ${NS}-app
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "startx"
-      app.kubernetes.io/name: "demo-startx-imagestreams-application"
-      app.kubernetes.io/part-of: "startx"
+      app.startx.fr/component: "${NS}"
+      app.kubernetes.io/name: "${NS}-application"
+      app.kubernetes.io/part-of: ${NS}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "startx"
+      app.kubernetes.io/component: "${NS}-project"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
     finalizers:
@@ -51,14 +53,14 @@ objects:
     info:
       - name: teammail
         value: dev@startx.fr
-    project: cluster-admin
+    project: ${NS}
     source:
-      path: charts/example-imagestreams/
+      path: charts/example-catalog/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: devel
       helm:
         valueFiles:
-          - values-startx.yaml
+          - values-priority.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -68,38 +70,33 @@ objects:
             value: "${ENV}"
           - name: context.version
             value: "${VERSION}"
+          - name: context.app
+            value: "priority"
+          - name: demo.priority.namespace
+            value: "${NS}"
     syncPolicy:
       automated:
-        prune: false
-        selfHeal: false
+        prune: true
+        selfHeal: true
       syncOptions:
         - CreateNamespace=false
-        - Validate=false
-    ignoreDifferences:
-      - group: image.openshift.io
-        kind: ImageStream
-        jsonPointers:
-          - /spec
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 20s
 parameters:
   - name: NS
-    displayName: Openshift namespace
-    description: "Openshift namespace"
-    value: openshift
+    displayName: SXAPI namespace for priority instance
+    description: "Name of the priority namespace"
+    value: demo-priority
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
     description: "Namespace to place argocd server to"
     value: startx-argocd
-    required: true
-  - name: BASE_REPO
-    displayName: Base repository
-    description: "Base repository for STARTX images"
-    value: quay.io/startx
-    required: true
-  - name: BASE_SAMPLE_REPO
-    displayName: Base sample repository
-    description: "Base sample repository for STARTX images"
-    value: https://github.com/startxfr/docker-images-example
     required: true
   - name: SCOPE
     displayName: Project scope
