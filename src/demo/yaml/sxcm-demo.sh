@@ -30,14 +30,41 @@ function myDemoStep {
     echo "-- Demo $demo - step $option"
     case $option in
         "1") 
-            echo "---- Nothing special to perform for this step"
-            echo "---- Display main resource deployed in this project"
-            $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
+            echo "---- Start step 1"
+            echo "Here is the list of the various configMap defined fo this demo :"
+            $k8cmdGet cm -n ${namespace}
         ;;
-        "2")
-            echo "---- Nothing special to perform for this step"
-            echo "---- Display main resource deployed in this project"
-            $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
+        "2") 
+            echo "---- Start step 2"
+            echo "Here is the list of the various configMap defined fo this demo :"
+            $k8cmdGet cm -n ${namespace}
+            echo "Yous can run the following command for each configMap to read the defined values :"
+            echo "oc get -o yaml cm basic-config"
+            echo "oc get -o yaml cm abstract-config"
+            echo "oc get -o yaml cm child-abc-config"
+            echo "oc get -o yaml cm child-bc-config"
+            echo "oc get -o yaml cm child-c-config"
+        ;;
+        "3")
+            echo "---- Start step 3"
+            echo "Yous can run the following command for each configMap to change the defined values :"
+            echo "oc edit cm basic-config"
+            echo "oc edit cm abstract-config"
+            echo "oc edit cm child-abc-config"
+            echo "oc edit cm child-bc-config"
+            echo "oc edit cm child-c-config"
+        ;;
+        "4")
+            echo "---- Start step 4"
+            echo "Yous can run the following to apply change to your deployment :"
+            echo "oc get job -l app=yaml -o json | kubectl replace --force -f -"
+        ;;
+        "5")
+            echo "---- Start step 5"
+            echo "Yous can run the following to export you resources :"
+            echo "oc get cm basic-config -o json"
+            echo "oc get cm abstract-config -o yaml"
+            echo "oc get pod -o yaml"
         ;;
         *)
             echo "This step number is not implemented in this demo"

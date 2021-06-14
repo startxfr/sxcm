@@ -203,3 +203,7 @@ parameters:
   - name: RHN_PASSWORD
     displayName: RHN container access password
     description: Redhat Network access password to the Rh container catalog
+  - name: DOCKERHUB_TOKEN
+    displayName: Token to use for pulling images from the dockerhub registry
+    description: "The token to use for pulling images from the dockerhub registry"
+    value: XXXXXXXXXXXXXXXXXXXX

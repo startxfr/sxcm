@@ -398,4 +398,7 @@ parameters:
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
-
+  - name: DOCKERHUB_TOKEN
+    displayName: Token to use for pulling images from the dockerhub registry
+    description: "The token to use for pulling images from the dockerhub registry"
+    value: XXXXXXXXXXXXXXXXXXXX

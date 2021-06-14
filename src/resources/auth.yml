@@ -112,5 +112,7 @@ parameters:
     displayName: Name of the personnalisation to perform
     description: "The name of the personnalisation to execute (could be manutan, cisval, lumiplan, monaco)"
     value: startx
-
-
+  - name: DOCKERHUB_TOKEN
+    displayName: Token to use for pulling images from the dockerhub registry
+    description: "The token to use for pulling images from the dockerhub registry"
+    value: XXXXXXXXXXXXXXXXXXXX

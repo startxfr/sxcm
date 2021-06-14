@@ -159,6 +159,7 @@ function applyClusterResource {
             -p CLUSTER=$cn \
             -p ENV=$localEnv \
             -p VERSION=$localVersion \
+            -p DOCKERHUB_TOKEN=$SXCM_DOCKER_TOKEN \
             -p CLUSTER_PROFILE=$clusterProfile \
             -p RHN_USER=$SXCM_RHN_USER \
             -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
@@ -173,6 +174,7 @@ function applyClusterResource {
             -p CLUSTER=$cn \
             -p ENV=$SXCM_ENV \
             -p VERSION=$localVersion \
+            -p DOCKERHUB_TOKEN=$SXCM_DOCKER_TOKEN \
             -p AWS_ZONE=$SXCM_AWS_ZONE \
             -p AWS_ACCESS_ID=$SXCM_AWS_ID \
             -p AWS_ACCESS_KEY=$SXCM_AWS_KEY \
@@ -189,6 +191,7 @@ function applyClusterResource {
             -p CLUSTER=$cn \
             -p ENV=$localEnv \
             -p VERSION=$localVersion \
+            -p DOCKERHUB_TOKEN=$SXCM_DOCKER_TOKEN \
             -p CLUSTERID=$clusterID \
             -p CLUSTER_REGION=$clusterRegion \
             -p CLUSTER_PROFILE=$clusterProfile \
@@ -201,6 +204,7 @@ function applyClusterResource {
             -p CLUSTER=$cn \
             -p ENV=$localEnv \
             -p VERSION=$localVersion \
+            -p DOCKERHUB_TOKEN=$SXCM_DOCKER_TOKEN \
             -p CLUSTER_PROFILE=$clusterProfile \
             | $CMD
         fi
@@ -218,7 +222,7 @@ function applyClusterResource {
         if [[ -x $clusterConfDirResource/$rn/$ressscript ]]
         then
             echo -e "${UPSERT} \e[1m$rn\e[0m cluster \e[1mresource\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${ressscript}\e[0m \e[93m(admin)\e[0m"
-            . $clusterConfDirResource/$rn/$ressscript "$cn" "$localScope" "$localEnv" "$localVersion" "$localToken" "$cn" "$clusterName"
+            . $clusterConfDirResource/$rn/$ressscript "$cn" "$localScope" "$localEnv" "$localVersion" "$localToken" "$cn" "$clusterName" "$SXCM_DOCKER_TOKEN"
             if [[ "${UPSERT}" == "create" ]]; then
                 echo -e "wait ${CLUSTERTIMEOUT}sec for deployment dependencies start"
                 temporize 10 2

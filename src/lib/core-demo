@@ -133,7 +133,7 @@ function applyClusterDemo {
                 if [[ $filename != "sxcm-demo.sh" ]]
                 then
                     echo -e "${UPSERT} \e[1m$rn\e[0m \e[1mdemo\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
-                    . $file $UPSERT "$cn" "$localScope" "$localEnv" "$localVersion" "$cn" "$clusterK8s"
+                    . $file $UPSERT "$cn" "$localScope" "$localEnv" "$localVersion" "$cn" "$clusterK8s" "$SXCM_DOCKER_TOKEN"
                 fi
             else
                 if [[ "${file: -3}" == ".sh" ]]
@@ -148,6 +148,7 @@ function applyClusterDemo {
                         -p CLUSTER=$cn \
                         -p ENV=$localEnv \
                         -p VERSION=$localVersion \
+                        -p DOCKERHUB_TOKEN=$SXCM_DOCKER_TOKEN \
                         -p RHN_USER=$SXCM_RHN_USER \
                         -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
                         | $CMD
@@ -162,6 +163,7 @@ function applyClusterDemo {
                         -p CLUSTER=$cn \
                         -p ENV=$SXCM_ENV \
                         -p VERSION=$localVersion \
+                        -p DOCKERHUB_TOKEN=$SXCM_DOCKER_TOKEN \
                         -p AWS_ZONE=$SXCM_AWS_ZONE \
                         -p AWS_ACCESS_ID=$SXCM_AWS_ID \
                         -p AWS_ACCESS_KEY=$SXCM_AWS_KEY \
@@ -173,6 +175,7 @@ function applyClusterDemo {
                         -p CLUSTER=$cn \
                         -p ENV=$localEnv \
                         -p VERSION=$localVersion \
+                        -p DOCKERHUB_TOKEN=$SXCM_DOCKER_TOKEN \
                         -p CLUSTERID=$clusterID \
                         -p CLUSTER_REGION=$clusterRegion \
                         -p RHN_USER=$SXCM_RHN_USER \
@@ -184,6 +187,7 @@ function applyClusterDemo {
                         -p CLUSTER=$cn \
                         -p ENV=$localEnv \
                         -p VERSION=$localVersion \
+                        -p DOCKERHUB_TOKEN=$SXCM_DOCKER_TOKEN \
                         | $CMD
                     fi
                 fi
