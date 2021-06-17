@@ -31,10 +31,12 @@ function myDemoStep {
     case $option in
         "1") 
             echo "---- Nothing special to perform for this step"
+            echo "---- Display main resource deployed in this project"
             $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
         ;;
         "2")
             echo "---- Nothing special to perform for this step"
+            echo "---- Display main resource deployed in this project"
             $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
         ;;
         *)
@@ -54,6 +56,16 @@ function myDemoUsage {
     echo "Choose an action between begin, step or end"
 }
 
+# Get information about the demo scenario
+function myDemoInfo {
+    cat <<EOF
+Description : Deployment of a Keycloak infrastructure and 2 samples application using this infrastructure to 
+              demonstrate the SSO capacities of 3Scale solution running under an 
+              openshift 4 environment
+Require     : knative
+EOF
+}
+
 ####
 
 # main menu for the cluster sub-command
@@ -61,5 +73,6 @@ case $action in
     begin) myDemoBegin;;
     step) myDemoStep;;
     end) myDemoEnd;;
+    info) myDemoInfo ;;
     *) myDemoUsage ;;
 esac

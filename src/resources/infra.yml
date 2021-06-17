@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-infra-template
+  name: sxcm-cluster-infra-project
   annotations:
     openshift.io/display-name: STARTX cluster Infra (admin)
     description: Deploy cluster-wide resources to configure cluster infrastructure according to sxcm definitions
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "10"
   labels:
-    template: sxcm-cluster-infra-template
-    app.kubernetes.io/name: "sxcm-cluster-infra-template"
+    template: sxcm-cluster-infra-project
+    app.kubernetes.io/name: "sxcm-cluster-infra-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster configuration is now ready
@@ -20,7 +20,7 @@ message: |-
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
 labels:
-  template: sxcm-cluster-infra-template
+  template: sxcm-cluster-infra-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -69,7 +69,7 @@ objects:
             value: "startx-infra"
           - name: autoscaling.enabled
             value: "false"
-          - name: clusterversion.enabled
+          - name: clusterversion.enabled 
             value: "false"
           - name: alertmanager.enabled
             value: "false"
@@ -81,16 +81,10 @@ objects:
             value: "true"
           - name: imageprunner.schedule
             value: "30 * * * *"
-          - name: imageprunner.suspend
-            value: "false" 
           - name: projecttemplate.enabled
             value: "true" 
           - name: redhat.operators
-            value: "false" 
-          - name: operatorElastic.enabled
-            value: "false" 
-          - name: operatorGlobal.enabled
-            value: "false" 
+            value: "true" 
           - name: helm_reposistory.enabled
             value: "true" 
     syncPolicy:
@@ -150,24 +144,10 @@ objects:
             value: "${VERSION}"
           - name: context.app
             value: "startx-infra"
-          - name: autoscaling.enabled
-            value: "false"
-          - name: clusterversion.enabled
-            value: "false"
-          - name: alertmanager.enabled
-            value: "false"
-          - name: imageprunner.enabled
-            value: "false"
-          - name: projecttemplate.enabled
-            value: "false" 
           - name: redhat.operators
             value: "true" 
           - name: operatorElastic.enabled
             value: "true" 
-          - name: operatorGlobal.enabled
-            value: "false" 
-          - name: helm_reposistory.enabled
-            value: "false" 
     syncPolicy:
       automated:
         prune: false
@@ -232,24 +212,8 @@ objects:
             value: "${VERSION}"
           - name: context.app
             value: "startx-infra"
-          - name: autoscaling.enabled
-            value: "false"
-          - name: clusterversion.enabled
-            value: "false"
-          - name: alertmanager.enabled
-            value: "false"
-          - name: imageprunner.enabled
-            value: "false"
-          - name: projecttemplate.enabled
-            value: "false" 
-          - name: redhat.operators
-            value: "false" 
-          - name: operatorElastic.enabled
-            value: "false" 
           - name: operatorGlobal.enabled
-            value: "true" 
-          - name: helm_reposistory.enabled
-            value: "false" 
+            value: "true"
     syncPolicy:
       automated:
         prune: false
@@ -295,4 +259,19 @@ parameters:
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
-
+  - name: DOCKERHUB_LOGIN
+    displayName: Login to use for pulling images from the dockerhub registry
+    description: "The login to use for pulling images from the dockerhub registry"
+    value: myDockerhubLogin
+  - name: DOCKERHUB_PWD
+    displayName: Password to use for pulling images from the dockerhub registry
+    description: "The Password coresponding to the login for pulling images from the dockerhub registry"
+    value: myDockerhubPassword
+  - name: QUAYIO_LOGIN
+    displayName: Login to use for pulling images from the quay.io registry
+    description: "The login to use for pulling images from the quay.io registry"
+    value: myQuayioLogin
+  - name: QUAYIO_PWD
+    displayName: Password to use for pulling images from the quay.io registry
+    description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
+    value: myQuayioPassword

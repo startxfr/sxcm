@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-vault-template
+  name: sxcm-cluster-vault-project
   annotations:
     openshift.io/display-name: STARTX cluster Vault (admin)
     description: Deploy cluster-wide resources to enable Vault 0.7.0 according to sxcm definitions
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "20"
   labels:
-    template: sxcm-cluster-vault-template
-    app.kubernetes.io/name: "sxcm-cluster-vault-template"
+    template: sxcm-cluster-vault-project
+    app.kubernetes.io/name: "sxcm-cluster-vault-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your vault environment is configured.
@@ -22,7 +22,7 @@ message: |-
   Vault project     : ${NS}
   Vault version     : 0.5.0
 labels:
-  template: sxcm-cluster-vault-template
+  template: sxcm-cluster-vault-project
   app.kubernetes.io/managed-by: sxcm
 objects: 
 - kind: Application
@@ -170,4 +170,19 @@ parameters:
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
-
+  - name: DOCKERHUB_LOGIN
+    displayName: Login to use for pulling images from the dockerhub registry
+    description: "The login to use for pulling images from the dockerhub registry"
+    value: myDockerhubLogin
+  - name: DOCKERHUB_PWD
+    displayName: Password to use for pulling images from the dockerhub registry
+    description: "The Password coresponding to the login for pulling images from the dockerhub registry"
+    value: myDockerhubPassword
+  - name: QUAYIO_LOGIN
+    displayName: Login to use for pulling images from the quay.io registry
+    description: "The login to use for pulling images from the quay.io registry"
+    value: myQuayioLogin
+  - name: QUAYIO_PWD
+    displayName: Password to use for pulling images from the quay.io registry
+    description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
+    value: myQuayioPassword

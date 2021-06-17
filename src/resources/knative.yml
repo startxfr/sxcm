@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-knative-template
+  name: sxcm-cluster-knative-project
   annotations:
     openshift.io/display-name: STARTX cluster KNative (admin)
     description: Deploy cluster-wide resources to enable KNative support according to sxcm definitions
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "30"
   labels:
-    template: sxcm-cluster-knative-template
-    app.kubernetes.io/name: "sxcm-cluster-knative-template"
+    template: sxcm-cluster-knative-project
+    app.kubernetes.io/name: "sxcm-cluster-knative-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster serverless support is now enabled
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : serverless-operator.v1.7.0
 labels:
-  template: sxcm-cluster-knative-template
+  template: sxcm-cluster-knative-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -272,4 +272,19 @@ parameters:
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
-
+  - name: DOCKERHUB_LOGIN
+    displayName: Login to use for pulling images from the dockerhub registry
+    description: "The login to use for pulling images from the dockerhub registry"
+    value: myDockerhubLogin
+  - name: DOCKERHUB_PWD
+    displayName: Password to use for pulling images from the dockerhub registry
+    description: "The Password coresponding to the login for pulling images from the dockerhub registry"
+    value: myDockerhubPassword
+  - name: QUAYIO_LOGIN
+    displayName: Login to use for pulling images from the quay.io registry
+    description: "The login to use for pulling images from the quay.io registry"
+    value: myQuayioLogin
+  - name: QUAYIO_PWD
+    displayName: Password to use for pulling images from the quay.io registry
+    description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
+    value: myQuayioPassword

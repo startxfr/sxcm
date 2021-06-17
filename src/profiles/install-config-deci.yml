@@ -7,7 +7,7 @@ metadata:
     description: "3 master + worker (16Vcpu, 64Go RAM, 100Go io1  100iop) - [AWS Mumbai]"
     descriptionTab: "| 3  | 16 | 64  | 100 | io1 | 100  |    |    |     |     |     |      | AWS Mumbai"
     descriptionClusterconfig: argocd,pipeline,istio,quaysec
-    clusterconfig: argocd-project,argocd-deploy-small,infra,auth,rbac,console,storage,pipeline,istio,quaysec
+    clusterconfig: argocd-project,argocd-deploy-small,startx,infra,auth,rbac,console,storage,pipeline,istio,quaysec
 compute:
   - name: worker
     hyperthreading: Enabled

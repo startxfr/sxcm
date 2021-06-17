@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-pipeline-template
+  name: sxcm-cluster-pipeline-project
   annotations:
     openshift.io/display-name: STARTX cluster Pipeline (admin)
     description: Deploy cluster-wide resources to enable Pipeline support according to sxcm definitions
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "10"
   labels:
-    template: sxcm-cluster-pipeline-template
-    app.kubernetes.io/name: "sxcm-cluster-pipeline-template"
+    template: sxcm-cluster-pipeline-project
+    app.kubernetes.io/name: "sxcm-cluster-pipeline-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide pipeline capacities are enabled.
@@ -22,7 +22,7 @@ message: |-
   Technology        : tekton
   Operator          : openshift-pipelines-operator.v1.0.1
 labels:
-  template: sxcm-cluster-pipeline-template
+  template: sxcm-cluster-pipeline-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -117,4 +117,19 @@ parameters:
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
-
+  - name: DOCKERHUB_LOGIN
+    displayName: Login to use for pulling images from the dockerhub registry
+    description: "The login to use for pulling images from the dockerhub registry"
+    value: myDockerhubLogin
+  - name: DOCKERHUB_PWD
+    displayName: Password to use for pulling images from the dockerhub registry
+    description: "The Password coresponding to the login for pulling images from the dockerhub registry"
+    value: myDockerhubPassword
+  - name: QUAYIO_LOGIN
+    displayName: Login to use for pulling images from the quay.io registry
+    description: "The login to use for pulling images from the quay.io registry"
+    value: myQuayioLogin
+  - name: QUAYIO_PWD
+    displayName: Password to use for pulling images from the quay.io registry
+    description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
+    value: myQuayioPassword

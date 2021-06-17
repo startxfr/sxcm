@@ -29,16 +29,18 @@ function myDemoBegin {
 function myDemoStep {
     echo "-- Demo $demo - step $option"
     case $option in
-        "1") 
-            echo "---- Nothing special to perform for this step"
-            $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
+    "1")
+        echo "---- Nothing special to perform for this step"
+        echo "---- Display main resource deployed in this project"
+        $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
         ;;
-        "2")
-            echo "---- Nothing special to perform for this step"
-            $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
+    "2")
+        echo "---- Nothing special to perform for this step"
+        echo "---- Display main resource deployed in this project"
+        $k8cmdGet pod,route,dc,deployment,bc -n ${namespace}
         ;;
-        *)
-            echo "This step number is not implemented in this demo"
+    *)
+        echo "This step number is not implemented in this demo"
         ;;
     esac
 }
@@ -54,12 +56,23 @@ function myDemoUsage {
     echo "Choose an action between begin, step or end"
 }
 
+# Get information about the demo scenario
+function myDemoInfo {
+    cat <<EOF
+Description : Deployment of the compliance operator and a demo report. This allow 
+              demostrator to show how Openshift 4 infrastructure could report status of
+              compliancy again private or public policies
+Require     : none
+EOF
+}
+
 ####
 
 # main menu for the cluster sub-command
 case $action in
-    begin) myDemoBegin;;
-    step) myDemoStep;;
-    end) myDemoEnd;;
-    *) myDemoUsage ;;
+begin) myDemoBegin ;;
+step) myDemoStep ;;
+end) myDemoEnd ;;
+info) myDemoInfo ;;
+*) myDemoUsage ;;
 esac

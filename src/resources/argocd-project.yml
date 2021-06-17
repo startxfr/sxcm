@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-argocd-template
+  name: sxcm-cluster-argocd-project
   annotations:
     openshift.io/display-name: STARTX ArgoCD (gitops)
     description: Deploy ArgoCD gitops environment to sxcm definitions
@@ -11,8 +11,8 @@ metadata:
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "20"
   labels:
-    template: sxcm-cluster-argocd-template
-    app.kubernetes.io/name: "sxcm-cluster-argocd-template"
+    template: sxcm-cluster-argocd-project
+    app.kubernetes.io/name: "sxcm-cluster-argocd-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your ArgoCD gitops project is now configured
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : red-hat-argocd.v3.3.2-20200903
 labels:
-  template: sxcm-cluster-argocd-template
+  template: sxcm-cluster-argocd-project
   app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: Project
@@ -110,25 +110,25 @@ objects:
       limits:
         - type: "Pod"
           min:
-            cpu: 20m
-            memory: 32Mi
+            cpu: "20m"
+            memory: "32Mi"
           max:
-            cpu: "6000m"
-            ephemeral-storage: 1Gi
+            cpu: 6
+            ephemeral-storage: "1Gi"
             memory: "5Gi"
         - type: "Container"
           defaultRequest:
-            cpu: 100m
-            memory: 128Mi
+            cpu: "100m"
+            memory: "128Mi"
           default:
-            cpu: 200m
-            memory: 256Mi
+            cpu: "200m"
+            memory: "256Mi"
           min:
-            cpu: 20m
-            memory: 32Mi
+            cpu: "20m"
+            memory: "32Mi"
           max:
-            cpu: "6000m"
-            ephemeral-storage: 1Gi
+            cpu: 6
+            ephemeral-storage: "1Gi"
             memory: "5Gi"
   - kind: RoleBinding
     apiVersion: rbac.authorization.k8s.io/v1
@@ -267,4 +267,19 @@ parameters:
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
-
+  - name: DOCKERHUB_LOGIN
+    displayName: Login to use for pulling images from the dockerhub registry
+    description: "The login to use for pulling images from the dockerhub registry"
+    value: myDockerhubLogin
+  - name: DOCKERHUB_PWD
+    displayName: Password to use for pulling images from the dockerhub registry
+    description: "The Password coresponding to the login for pulling images from the dockerhub registry"
+    value: myDockerhubPassword
+  - name: QUAYIO_LOGIN
+    displayName: Login to use for pulling images from the quay.io registry
+    description: "The login to use for pulling images from the quay.io registry"
+    value: myQuayioLogin
+  - name: QUAYIO_PWD
+    displayName: Password to use for pulling images from the quay.io registry
+    description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
+    value: myQuayioPassword

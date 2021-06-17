@@ -158,6 +158,11 @@ Available actions are : list, create, info, update, delete, profiles, current, s
   - profiles                                         List available cluster profiles
   - current [CLUSTERNAME]                            Change the current cluster
   - switch [CLUSTERNAME]                             Alias of the current action
+  - setup aws [ACCESSID [ACCESSKEY [DCNAME]]]        Setup an AWS account under the .aws directory
+  - setup docker [USERNAME [PASSWORD]]               Setup an dockerhub account under the sxcm personnal configuration file
+  - setup quay [USERNAME [PASSWORD]]                 Setup an quay.io account under the sxcm personnal configuration file
+  - setup rhn [USERNAME [PASSWORD [EMAIL [PULLSECRET]]]]  Setup an Redhat account under the sxcm personnal configuration file
+  - setup git [REPO [BRANCH [USER [PASSWORD]]]]      Setup an git repository to record cluster gitops state
 
 ## Cluster commands actions (local) :
   - create CLUSTERNAME [PROFILE]                     Add a new cluster configuration to the cluster stack
@@ -201,6 +206,11 @@ Available actions are : list, create, info, update, delete, profiles, current, s
   sxcm create mycluster <profile>                  # Create an new Openshift cluster based on profile (default is default profile)
   sxcm import mycluster <myclusterbranch>          # Import the cluster named mycluster using the myclusterbranch gitops repository branch
   sxcm switch mycluster                            # Change the current cluster to my-example
+  sxcm setup git                                   # Interactive setup of the git cluster repository
+  sxcm setup docker                                # Interactive setup of the dockerhub repository access
+  sxcm setup quay                                  # Interactive setup of the quay.io repository access
+  sxcm setup rhn                                   # Interactive setup of the rhn account
+  sxcm setup aws                                   # Interactive setup of the aws account
   sxcm edit                                        # Edit the Openshift cluster configuration (default is current cluster)
   sxcm info                                        # Display info about the my-example cluster (default is current cluster)
   sxcm history mycluster 10                        # Display the last 10 actions performed to the mycluster cluster
