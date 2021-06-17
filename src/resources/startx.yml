@@ -133,13 +133,13 @@ objects:
             value: "startx"
           - name: dockercfg.enabled
             value: "true"
-          - name: dockercfg.list.0.user
+          - name: dockercfg.list[0].user
             value: "${DOCKERHUB_LOGIN}"
-          - name: dockercfg.list.0.pwd
+          - name: dockercfg.list[0].pwd
             value: "${DOCKERHUB_PWD}"
-          - name: dockercfg.list.1.user
+          - name: dockercfg.list[1].user
             value: "${QUAYIO_LOGIN}"
-          - name: dockercfg.list.1.pwd
+          - name: dockercfg.list[1].pwd
             value: "${QUAYIO_PWD}"
     syncPolicy:
       automated:

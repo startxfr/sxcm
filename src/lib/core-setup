@@ -49,7 +49,7 @@ function doSetupDockerhub {
     fi
     if [[ "$dhnun" != ""  &&  "$dhnpw" != "" ]]; then
         echo -e "Generating dockerhub token from username \e[1m$dhnun\e[0m with password \e[1mxxxxxx\e[0m"
-        local return=$("curl -s --user '$dhnun:$dhnpw' "https://auth.docker.io/token?service=registry.docker.io&scope=repository:ratelimitpreview/test:pull" | jq -r .token")
+        local return=$(curl -s --user $dhnun:${dhnpw} "https://auth.docker.io/token?service=registry.docker.io&scope=repository:ratelimitpreview/test:pull" | jq -r .token)
         if [[ "$return" != ""  &&  "$return" != "null" ]]; then
             appendConf SXCM_DOCKER_LOGIN $dhnun
             appendConf SXCM_DOCKER_PWD $return
@@ -57,6 +57,7 @@ function doSetupDockerhub {
             appendClusterConf SXCM_DOCKER_PWD $return
         else
             echo -e " \e[1mCould not connect\e[0m Dockerhub credentials using username \e[1m$dhnun\e[0m "
+            exit 1
         fi
     elif [[ "$dhnun" != "" ]]; then
         echo -e " \e[1mCould not change\e[0m Dockerhub credentials because \e[1mpassword is missing\e[0m "
@@ -85,12 +86,12 @@ function doSetupQuayio {
     fi
     if [[ "$dhnun" != ""  &&  "$dhnpw" != "" ]]; then
         echo -e "Generating quay.io token from username \e[1m$dhnun\e[0m with password \e[1mxxxxxx\e[0m"
-        local return=$("curl -s --user '$dhnun:$dhnpw' "https://auth.quay.io/token?service=registry.quay.io&scope=repository:ratelimitpreview/test:pull" | jq -r .token")
-        if [[ "$return" != ""  &&  "$return" != "null" ]]; then
+        podman login quay.io --username $dhnun --password $dhnpw &>/dev/null
+        if [[ "$?" == 0 ]]; then
             appendConf SXCM_QUAYIO_LOGIN $dhnun
-            appendConf SXCM_QUAYIO_PWD $return
+            appendConf SXCM_QUAYIO_PWD $dhnpw
             appendClusterConf SXCM_QUAYIO_LOGIN $dhnun
-            appendClusterConf SXCM_QUAYIO_PWD $return
+            appendClusterConf SXCM_QUAYIO_PWD $dhnpw
         else
             echo -e " \e[1mCould not connect\e[0m Quay.io credentials using username \e[1m$dhnun\e[0m "
         fi
