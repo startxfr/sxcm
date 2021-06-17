@@ -116,7 +116,7 @@ _sxcm_all() {
         "${COMP_WORDS[1]}" == "import" ]] && [[ "${COMP_CWORD}" == "2" ]]; then
         available2=""
     elif [[ "${COMP_WORDS[1]}" == "setup" ]] && [[ "${COMP_CWORD}" == "2" ]]; then
-        available2="aws rhn git all login"
+        available2="aws rhn git dockerhub quayio all login "
     elif [[ "${COMP_WORDS[1]}" == "init" || "${COMP_WORDS[1]}" == "create" ]]; then
         if [[ "${COMP_CWORD}" == "2" ]]; then
             available2="mycluster"
