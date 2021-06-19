@@ -68,6 +68,8 @@ objects:
             value: "${ENV}"
           - name: context.version
             value: "${VERSION}"
+          - name: enabled
+            value: "true"
     syncPolicy:
       automated:
         prune: true
