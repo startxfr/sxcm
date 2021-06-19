@@ -133,14 +133,18 @@ objects:
             value: "startx"
           - name: dockercfg.enabled
             value: "true"
-          - name: dockercfg.list[0].user
-            value: "${DOCKERHUB_LOGIN}"
-          - name: dockercfg.list[0].pwd
-            value: "${DOCKERHUB_PWD}"
-          - name: dockercfg.list[1].user
+          - name: dockercfg.list[0].username
             value: "${QUAYIO_LOGIN}"
-          - name: dockercfg.list[1].pwd
+          - name: dockercfg.list[0].password
             value: "${QUAYIO_PWD}"
+          - name: dockercfg.list[0].email
+            value: "dev@startx.fr"
+          - name: dockercfg.list[1].username
+            value: "${DOCKERHUB_LOGIN}"
+          - name: dockercfg.list[1].password
+            value: "${DOCKERHUB_PWD}"
+          - name: dockercfg.list[1].email
+            value: "dev@startx.fr"
     syncPolicy:
       automated:
         prune: false
@@ -191,8 +195,6 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: enabled
-            value: "true"
-          - name: imagestreams.enabled
             value: "true"
     syncPolicy:
       automated:

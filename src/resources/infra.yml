@@ -81,6 +81,8 @@ objects:
             value: "true"
           - name: imageprunner.schedule
             value: "30 * * * *"
+          - name: registryroute.enabled
+            value: "true"
           - name: projecttemplate.enabled
             value: "true" 
           - name: redhat.operators
@@ -145,13 +147,13 @@ objects:
           - name: context.app
             value: "startx-infra"
           - name: redhat.operators
-            value: "true" 
+            value: "false" 
           - name: operatorElastic.enabled
             value: "true" 
     syncPolicy:
-      automated:
-        prune: false
-        selfHeal: false
+      automated: {}
+        # prune: false
+        # selfHeal: false
       syncOptions:
         - CreateNamespace=false
         - Validate=true
@@ -215,9 +217,9 @@ objects:
           - name: operatorGlobal.enabled
             value: "true"
     syncPolicy:
-      automated:
-        prune: false
-        selfHeal: false
+      automated: {}
+        # prune: false
+        # selfHeal: false
       syncOptions:
         - CreateNamespace=false
         - Validate=true

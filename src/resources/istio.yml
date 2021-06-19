@@ -155,9 +155,9 @@ objects:
           - name: istio.enabled
             value: "false"
     syncPolicy:
-      automated:
-        prune: false
-        selfHeal: false
+      automated: {}
+        # prune: false
+        # selfHeal: false
       syncOptions:
         - CreateNamespace=false
         - Validate=true

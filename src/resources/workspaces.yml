@@ -191,9 +191,9 @@ objects:
           - name: project.project.name
             value: "${NS}"
     syncPolicy:
-      automated:
-        prune: true
-        selfHeal: false
+      automated: {}
+        # prune: false
+        # selfHeal: false
       syncOptions:
         - CreateNamespace=false
         - Validate=true

@@ -22,13 +22,15 @@ function testProjectExist {
     fi
 }
 
-
 testProjectExist $PROJECT
+echo -e "$ACTION of project $PROJECT"
 if [[ $ACTION == "uninstall" ]]
 then
-    oc policy remove-role-to-group view system:serviceaccount -n $PROJECT
+    oc policy remove-role-to-group view system:serviceaccounts -n $PROJECT
     oc policy remove-role-to-group system:image-puller system:serviceaccounts -n $PROJECT
 else
-    oc policy add-role-to-group view system:serviceaccount -n $PROJECT
+    oc policy add-role-to-group view system:serviceaccounts -n $PROJECT
     oc policy add-role-to-group system:image-puller system:serviceaccounts -n $PROJECT
+    oc policy add-role-to-group view system:authenticated -n $PROJECT
+    oc policy add-role-to-group system:image-puller system:authenticated -n $PROJECT
 fi
