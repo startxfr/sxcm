@@ -82,7 +82,7 @@ objects:
           - name: nexus.enabled
             value: "false"
     syncPolicy:
-      automated: {}
+      # automated: 
       #   prune: false
       #   selfHeal: false
       syncOptions:

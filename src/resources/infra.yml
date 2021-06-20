@@ -151,9 +151,9 @@ objects:
           - name: operatorElastic.enabled
             value: "true" 
     syncPolicy:
-      automated: {}
-        # prune: false
-        # selfHeal: false
+      # automated: 
+      #   prune: false
+      #   selfHeal: false
       syncOptions:
         - CreateNamespace=false
         - Validate=true
@@ -217,9 +217,9 @@ objects:
           - name: operatorGlobal.enabled
             value: "true"
     syncPolicy:
-      automated: {}
-        # prune: false
-        # selfHeal: false
+      # automated: 
+      #   prune: false
+      #   selfHeal: false
       syncOptions:
         - CreateNamespace=false
         - Validate=true

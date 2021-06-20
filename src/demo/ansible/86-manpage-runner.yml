@@ -57,7 +57,7 @@ objects:
       targetRevision: devel
       helm:
         valueFiles:
-          - values-demo-awx-manpage.yaml
+          - values-demo-awx-runner-manpage.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -88,7 +88,7 @@ parameters:
   - name: NS
     displayName: AWX namespace for awx instance
     description: "Name of the awx namespace"
-    value: demo-awx
+    value: demo-awx-runner
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
@@ -125,4 +125,3 @@ parameters:
     description: "operator marketplace namespace to place objects to"
     value: openshift-marketplace
     required: true
-
