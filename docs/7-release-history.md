@@ -10,7 +10,8 @@ The objectif of this release is to get a release for managing OCP 4.7 cluster un
 
 | Release                                                        | Date     | Description                                                                                 |
 | -------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
-| 0.1.6                                                          | planned  | improve code quality and reduct application debt                                            |
+| 0.1.7                                                          | planned  | improve code quality and reduct application debt                                            |
+| [0.1.6](https://github.com/startxfr/sxcm/releases/tag/v0.1.6)  | 21-08-03 | Move to Openshift 4.7.22 install                                                            |
 | [0.1.5](https://github.com/startxfr/sxcm/releases/tag/v0.1.5)  | 21-06-04 | Move to Openshift 4.7.13 install and add demo and history sub-command                       |
 | [0.1.4](https://github.com/startxfr/sxcm/releases/tag/v0.1.4)  | 21-05-16 | Full review of the documentation for a stable structure and exaustive content               |
 | [0.1.3](https://github.com/startxfr/sxcm/releases/tag/v0.1.3)  | 21-05-14 | Stable version of the resource parameters and cluster resource management                   |

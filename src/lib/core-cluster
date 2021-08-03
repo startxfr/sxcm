@@ -1177,7 +1177,6 @@ based on a remote cluster repository
 
 
 # Examples
-```
 # Import the cluster named mycluster using the cluster git repository branch named mycluster (fail if not found)
 sxcm import mycluster
 # Import the cluster named mycluster using the myclusterbranch branch stored into the cluster git repository
