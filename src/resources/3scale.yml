@@ -158,9 +158,9 @@ objects:
           - name: rhn.pwd
             value: "${RHN_PASSWORD}"
     syncPolicy:
-      # automated: 
-      #   prune: false
-      #   selfHeal: false
+      automated: 
+        prune: false
+        selfHeal: false
       syncOptions:
         - CreateNamespace=false
         - Validate=true
