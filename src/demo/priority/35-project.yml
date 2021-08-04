@@ -110,7 +110,7 @@ objects:
     source:
       path: charts/project/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: master
+      targetRevision: stable
       helm:
         valueFiles:
           - values-demo-priority.yaml

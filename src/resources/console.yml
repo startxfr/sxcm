@@ -52,7 +52,7 @@ objects:
     source:
       path: charts/cluster-console/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: master
+      targetRevision: stable
       helm:
         valueFiles:
           - values-${TUNNING_PROFILE}.yaml

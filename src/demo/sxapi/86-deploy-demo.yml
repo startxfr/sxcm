@@ -57,7 +57,7 @@ objects:
     source:
       path: charts/sxapi/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: master
+      targetRevision: stable
       helm:
         valueFiles:
           - values-demo-sxapi-deploy.yaml

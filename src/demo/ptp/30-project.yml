@@ -116,7 +116,7 @@ objects:
     source:
       path: charts/cluster-ptp/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: master
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx.yaml
@@ -176,7 +176,7 @@ objects:
     source:
       path: charts/cluster-ptp/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: master
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx.yaml
@@ -242,7 +242,7 @@ objects:
     source:
       path: charts/cluster-ptp/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: master
+      targetRevision: stable
       helm:
         valueFiles:
           - values-demo.yaml

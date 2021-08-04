@@ -53,7 +53,7 @@ objects:
       source:
         path: charts/cluster-couchbase/
         repoURL: 'https://github.com/startxfr/helm-repository.git'
-        targetRevision: master
+        targetRevision: stable
         helm:
           valueFiles:
             - values-demo.yaml
@@ -118,7 +118,7 @@ objects:
       source:
         path: charts/example-html/
         repoURL: 'https://github.com/startxfr/helm-repository.git'
-        targetRevision: master
+        targetRevision: stable
         helm:
           valueFiles:
             - values-demo-couchbase-manpage.yaml
