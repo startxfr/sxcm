@@ -155,7 +155,7 @@ objects:
           - name: istio.enabled
             value: "false"
     syncPolicy:
-      automated:
+      automated: 
         prune: false
         selfHeal: true
       syncOptions:

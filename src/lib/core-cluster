@@ -363,9 +363,8 @@ function doClusterConfigurationCreate {
     fi
     if [[ -r $SXCM_PROFILES_PATH/install-config-$profile.yml ]]; then
         git clone $SXCM_GIT_REPO $clusterConfDir
-        echo -e "  \e[32mcreated\e[0m cluster directory \e[1m$clusterConfDir\e[0m from \e[1m$gitBranch\e[0m branch in \e[1m$SXCM_GIT_REPO\e[0m repository"
+        echo -e "  \e[32mcreated\e[0m cluster directory \e[1m$clusterConfDir\e[0m from \e[1m$SXCM_GIT_BRANCH_MAIN\e[0m branch in \e[1m$SXCM_GIT_REPO\e[0m repository"
         cd $clusterConfDir &> /dev/null
-        echo -e "  \e[33mupdated\e[0m git repository configuration in \e[1m$clusterConfDir\e[0m"
         git checkout $SXCM_GIT_BRANCH_MAIN &> /dev/null
         git checkout $cn &> /dev/null
         if [[ "$?" != "0" ]]; then
@@ -399,10 +398,13 @@ function doClusterConfigurationCreate {
         local SSH_PUBLICKEY=$(cat $clusterConfDir/id_rsa.pub)
         sed -i "s|__ocpSshPublickey__|${SSH_PUBLICKEY}|g" $clusterConfDir/install-config.yaml
         cp $clusterConfDir/install-config.yaml $clusterConfDir/install-config.yaml.back &> /dev/null
+        git add . &> /dev/null
+        git commit -m "[$cn] Record cluster install-config file for cluster $cn" &> /dev/null
         openshift-install create install-config &> /dev/null
         git add . &> /dev/null
         git commit -m "[$cn] Record cluster config file for cluster $cn" &> /dev/null
         openshift-install create manifests &> /dev/null
+        cp $clusterConfDir/install-config.yaml.back $clusterConfDir/install-config.yaml &> /dev/null
         git add . &> /dev/null
         git commit -m "[$cn] Record the cluster manifest for cluster $cn" &> /dev/null
         # openshift-install create ignition-configs &> /dev/null
@@ -1175,7 +1177,6 @@ based on a remote cluster repository
 
 
 # Examples
-```
 # Import the cluster named mycluster using the cluster git repository branch named mycluster (fail if not found)
 sxcm import mycluster
 # Import the cluster named mycluster using the myclusterbranch branch stored into the cluster git repository

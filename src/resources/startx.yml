@@ -133,14 +133,24 @@ objects:
             value: "startx"
           - name: dockercfg.enabled
             value: "true"
-          - name: dockercfg.list.0.user
-            value: "${DOCKERHUB_LOGIN}"
-          - name: dockercfg.list.0.pwd
-            value: "${DOCKERHUB_PWD}"
-          - name: dockercfg.list.1.user
+          - name: dockercfg.list[0].username
             value: "${QUAYIO_LOGIN}"
-          - name: dockercfg.list.1.pwd
+          - name: dockercfg.list[0].password
             value: "${QUAYIO_PWD}"
+          - name: dockercfg.list[0].email
+            value: "dev@startx.fr"
+          - name: dockercfg.list[1].username
+            value: "${DOCKERHUB_LOGIN}"
+          - name: dockercfg.list[1].password
+            value: "${DOCKERHUB_PWD}"
+          - name: dockercfg.list[1].email
+            value: "dev@startx.fr"
+          - name: dockercfg.list[2].username
+            value: "${RHN_USER}"
+          - name: dockercfg.list[2].password
+            value: "${RHN_PASSWORD}"
+          - name: dockercfg.list[2].email
+            value: "clarue@startx.fr"
     syncPolicy:
       automated:
         prune: false
@@ -192,8 +202,6 @@ objects:
             value: "${VERSION}"
           - name: enabled
             value: "true"
-          - name: imagestreams.enabled
-            value: "true"
     syncPolicy:
       automated:
         prune: false
@@ -235,6 +243,12 @@ parameters:
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
+  - name: RHN_USER
+    displayName: RHN container access user
+    description: Redhat Network access user to the RH container catalog
+  - name: RHN_PASSWORD
+    displayName: RHN container access password
+    description: Redhat Network access password to the Rh container catalog
   - name: DOCKERHUB_LOGIN
     displayName: Login to use for pulling images from the dockerhub registry
     description: "The login to use for pulling images from the dockerhub registry"
@@ -250,4 +264,3 @@ parameters:
   - name: QUAYIO_PWD
     displayName: Password to use for pulling images from the quay.io registry
     description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
-    value: myQuayioPassword

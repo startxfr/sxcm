@@ -60,7 +60,7 @@ objects:
       targetRevision: devel
       helm:
         valueFiles:
-          - values-demo-sxapi-knative.yaml
+          - values-demo-sxapi-knative.yaml 
         parameters:
           - name: context.scope
             value: "${SCOPE}"

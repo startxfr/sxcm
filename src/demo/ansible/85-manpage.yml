@@ -125,12 +125,4 @@ parameters:
     description: "operator marketplace namespace to place objects to"
     value: openshift-marketplace
     required: true
-  - name: RHN_USER
-    displayName: RHN container access user
-    description: Redhat Network access user to the RH container catalog
-    required: true
-  - name: RHN_PASSWORD
-    displayName: RHN container access password
-    description: Redhat Network access password to the Rh container catalog
-    required: true
 

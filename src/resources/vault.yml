@@ -84,63 +84,63 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 30s
-# - kind: Application
-#   apiVersion: argoproj.io/v1alpha1
-#   metadata:
-#     name: startx-cluster-vault-instance
-#     namespace: "${ARGOCD_NS}"
-#     labels:  
-#       <<: *basic_labels
-#       app.kubernetes.io/name: "argoapp-cluster-vault-instance-application"
-#     annotations: 
-#       <<: *basic_annotations
-#       # argocd.argoproj.io/manifest-generate-paths: .
-#     finalizers:
-#       - resources-finalizer.argocd.argoproj.io
-#   spec:
-#     destination:
-#       namespace: "${NS}"
-#       server: 'https://kubernetes.default.svc'
-#     info:
-#       - name: teammail
-#         value: dev@startx.fr
-#     project: cluster-admin
-#     source:
-#       path: charts/cluster-vault/
-#       repoURL: 'https://github.com/startxfr/helm-repository.git'
-#       targetRevision: devel
-#       helm:
-#         valueFiles:
-#           - values-startx.yaml
-#         parameters:
-#           - name: context.scope
-#             value: "${SCOPE}"
-#           - name: context.cluster
-#             value: "${CLUSTER}"
-#           - name: project.enabled
-#             value: "false"
-#           - name: route.enabled
-#             value: "true"
-#           - name: vault.global.enabled
-#             value: "true"
-#     syncPolicy:
-#       automated:
-#         prune: false
-#         selfHeal: true
-#       syncOptions:
-#         - CreateNamespace=false
-#         - Validate=true
-#       retry:
-#         limit: 3
-#         backoff:
-#           duration: 60s
-#           factor: 2
-#           maxDuration: 300s
-#     ignoreDifferences:
-#       - group: admissionregistration.k8s.io
-#         kind: MutatingWebhookConfiguration
-#         jsonPointers:
-#           - /webhooks/0/clientConfig/caBundle
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: startx-cluster-vault-instance
+    namespace: "${ARGOCD_NS}"
+    labels:  
+      <<: *basic_labels
+      app.kubernetes.io/name: "argoapp-cluster-vault-instance-application"
+    annotations: 
+      <<: *basic_annotations
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-vault/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-startx.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: project.enabled
+            value: "false"
+          - name: route.enabled
+            value: "true"
+          - name: vault.global.enabled
+            value: "true"
+    syncPolicy:
+      automated:
+        prune: false
+        selfHeal: false
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 3
+        backoff:
+          duration: 60s
+          factor: 2
+          maxDuration: 300s
+    ignoreDifferences:
+      - group: admissionregistration.k8s.io
+        kind: MutatingWebhookConfiguration
+        jsonPointers:
+          - /webhooks/0/clientConfig/caBundle
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
