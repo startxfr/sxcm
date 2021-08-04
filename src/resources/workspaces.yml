@@ -115,7 +115,7 @@ objects:
     source:
       path: charts/project/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         releaseName: startx-workspace-project
         valueFiles:
@@ -172,7 +172,7 @@ objects:
     source:
       path: charts/operator/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         releaseName: startx-workspace-operator
         valueFiles:

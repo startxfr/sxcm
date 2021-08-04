@@ -111,7 +111,7 @@ objects:
     source:
       path: charts/cluster-nexus/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         valueFiles:
           - values-demo.yaml

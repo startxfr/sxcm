@@ -55,7 +55,7 @@ objects:
     source:
       path: charts/example-php/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         valueFiles:
           - values-demo-hpa.yaml

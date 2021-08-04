@@ -111,7 +111,7 @@ objects:
     source:
       path: charts/project/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         valueFiles:
           - values-demo-storage.yaml
@@ -156,7 +156,7 @@ objects:
     source:
       path: charts/example-catalog/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         valueFiles:
           - values-storage_context.yaml

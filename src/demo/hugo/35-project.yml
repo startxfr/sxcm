@@ -112,7 +112,7 @@ objects:
     source:
       path: charts/project/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         valueFiles:
           - values-demo-hugo.yaml

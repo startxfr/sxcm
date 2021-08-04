@@ -52,7 +52,7 @@ objects:
     source:
       path: charts/cluster-auth/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         valueFiles:
           - values-${TUNNING_PROFILE}.yaml

@@ -53,7 +53,7 @@ objects:
     source:
       path: charts/cluster-machine/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         valueFiles:
           - values-startx-${CLUSTER_PROFILE}.yaml
@@ -122,7 +122,7 @@ objects:
     source:
       path: charts/cluster-machine/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         valueFiles:
           - values-startx-${CLUSTER_PROFILE}.yaml

@@ -52,7 +52,7 @@ objects:
     source:
       path: charts/cluster-config/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         valueFiles:
           - values-startx.yaml
@@ -131,7 +131,7 @@ objects:
     source:
       path: charts/cluster-config/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         valueFiles:
           - values-startx-elastic.yaml
@@ -199,7 +199,7 @@ objects:
     source:
       path: charts/cluster-config/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         valueFiles:
           - values-startx-operator.yaml

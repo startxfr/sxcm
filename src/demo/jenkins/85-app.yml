@@ -56,7 +56,7 @@ objects:
     source:
       path: charts/cluster-jenkins/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: master
       helm:
         valueFiles:
           - values-demo.yaml
@@ -124,7 +124,7 @@ objects:
 #     source:
 #       path: charts/cluster-jenkins/
 #       repoURL: 'https://github.com/startxfr/helm-repository.git'
-#       targetRevision: devel
+#       targetRevision: master
 #       helm:
 #         valueFiles:
 #           - values-startx.yaml
