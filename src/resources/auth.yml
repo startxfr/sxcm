@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-auth-template
+  name: sxcm-cluster-auth-project
   annotations:
     openshift.io/display-name: STARTX cluster Auth (admin)
     description: Deploy cluster-wide resources to configure authentification backend according to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,auth
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "5"
+    sxcm_console_timeout: "5"
   labels:
-    template: sxv4-cluster-auth-template
-    app.kubernetes.io/name: "sxv4-cluster-auth-template"
+    template: sxcm-cluster-auth-project
+    app.kubernetes.io/name: "sxcm-cluster-auth-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster authentification backend configuration is done
@@ -20,7 +20,7 @@ message: |-
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
 labels:
-  template: sxv4-cluster-auth-template
+  template: sxcm-cluster-auth-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -55,10 +55,7 @@ objects:
       targetRevision: devel
       helm:
         valueFiles:
-          - values-startx.yaml
-          # - values-manutan.yaml
-          # - values-cisval.yaml
-          # - values-lumiplan.yaml
+          - values-${TUNNING_PROFILE}.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -82,8 +79,7 @@ objects:
           factor: 2
           maxDuration: 20s
     ignoreDifferences:
-      - group: "apps"
-        kind: Secret
+      - kind: Secret
         namespace: "openshift-authentication"
         jsonPointers:
           - /
@@ -95,7 +91,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"
@@ -112,4 +108,23 @@ parameters:
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
-
+  - name: TUNNING_PROFILE
+    displayName: Name of the personnalisation to perform
+    description: "The name of the personnalisation to execute (could be manutan, cisval, lumiplan, monaco)"
+    value: startx
+  - name: DOCKERHUB_LOGIN
+    displayName: Login to use for pulling images from the dockerhub registry
+    description: "The login to use for pulling images from the dockerhub registry"
+    value: myDockerhubLogin
+  - name: DOCKERHUB_PWD
+    displayName: Password to use for pulling images from the dockerhub registry
+    description: "The Password coresponding to the login for pulling images from the dockerhub registry"
+    value: myDockerhubPassword
+  - name: QUAYIO_LOGIN
+    displayName: Login to use for pulling images from the quay.io registry
+    description: "The login to use for pulling images from the quay.io registry"
+    value: myQuayioLogin
+  - name: QUAYIO_PWD
+    displayName: Password to use for pulling images from the quay.io registry
+    description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
+    value: myQuayioPassword

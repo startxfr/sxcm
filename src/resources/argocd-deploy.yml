@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-argocd-deploy-template
+  name: sxcm-cluster-argocd-deploy-project
   annotations:
     openshift.io/display-name: STARTX ArgoCD Deployment (gitops)
     description: Deploy ArgoCD gitops tools according to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,argocd,gitops
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "60"
+    sxcm_console_timeout: "60"
   labels:
-    template: sxv4-cluster-argocd-deploy-template
-    app.kubernetes.io/name: "sxv4-cluster-argocd-deploy-template"
+    template: sxcm-cluster-argocd-deploy-project
+    app.kubernetes.io/name: "sxcm-cluster-argocd-deploy-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your ArgoCD gitops engine is now enabled
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : container-security-operator.v1.0.5,red-hat-argocd.v3.3.0
 labels:
-  template: sxv4-cluster-argocd-deploy-template
+  template: sxcm-cluster-argocd-deploy-project
   app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: ArgoCD
@@ -70,6 +70,11 @@ objects:
           clusters:
           - "*"
       server:
+        config:
+          repositories: |
+            - type: helm
+              name: stable
+              url: https://startxfr.github.io/helm-repository/packages/
         autoscale:
           enabled: true
           hpa:
@@ -99,6 +104,13 @@ objects:
       helpChatURL: 'https://startx-france.slack.com/chatops'
       usersAnonymousEnabled: false
       controller:
+        extraArgs:
+        - --repo-server-timeout-seconds
+        - "500"
+        - --status-processors
+        - "25"
+        - --operation-processors
+        - "10"
         appSync: 120s
         processors:
           operation: 10
@@ -106,12 +118,12 @@ objects:
         resources:
           limits:
             cpu: 3500m
-            ephemeral-storage: 256Mi
-            memory: 4Gi
+            ephemeral-storage: 512Mi
+            memory: 5Gi
           requests:
             cpu: 1200m
-            ephemeral-storage: 64Mi
-            memory: 2Gi
+            ephemeral-storage: 128Mi
+            memory: 2.5Gi
       ha:
         enabled: false
       redis:
@@ -161,15 +173,18 @@ objects:
           enabled: true
       repo:
         mountsatoken: true
+        env:
+          - name: "ARGOCD_EXEC_TIMEOUT"
+            value: "5m"
         resources:
           limits:
-            cpu: 600m
+            cpu: 1000m
             ephemeral-storage: 800Mi
-            memory: 1024Mi
+            memory: 2500Mi
           requests:
-            cpu: 300m
+            cpu: 500m
             ephemeral-storage: 400Mi
-            memory: 512Mi
+            memory: 1500Mi
   # !!!!! warning sur les droits confies a argocd (creation de resources cluster)
   - kind: ClusterRoleBinding
     apiVersion: rbac.authorization.k8s.io/v1
@@ -211,6 +226,8 @@ objects:
         app.kubernetes.io/name: "default-appproject"
       annotations: 
         openshift.io/generated-by: sxcm
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
     spec:
       sourceRepos:
         - '*'
@@ -276,6 +293,8 @@ objects:
         app.kubernetes.io/name: "cluster-admin-appproject"
       annotations: 
         openshift.io/generated-by: sxcm
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
     spec:
       sourceRepos:
         - '*'
@@ -334,7 +353,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"
@@ -379,4 +398,19 @@ parameters:
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
-
+  - name: DOCKERHUB_LOGIN
+    displayName: Login to use for pulling images from the dockerhub registry
+    description: "The login to use for pulling images from the dockerhub registry"
+    value: myDockerhubLogin
+  - name: DOCKERHUB_PWD
+    displayName: Password to use for pulling images from the dockerhub registry
+    description: "The Password coresponding to the login for pulling images from the dockerhub registry"
+    value: myDockerhubPassword
+  - name: QUAYIO_LOGIN
+    displayName: Login to use for pulling images from the quay.io registry
+    description: "The login to use for pulling images from the quay.io registry"
+    value: myQuayioLogin
+  - name: QUAYIO_PWD
+    displayName: Password to use for pulling images from the quay.io registry
+    description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
+    value: myQuayioPassword

@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-3scale-template
+  name: sxcm-cluster-3scale-project
   annotations:
     openshift.io/display-name: STARTX cluster 3Scale (admin)
     description: Deploy cluster-wide resources to enable 3Scale registry support according to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,3scale
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "30"
+    sxcm_console_timeout: "30"
   labels:
-    template: sxv4-cluster-3scale-template
-    app.kubernetes.io/name: "sxv4-cluster-3scale-template"
+    template: sxcm-cluster-3scale-project
+    app.kubernetes.io/name: "sxcm-cluster-3scale-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster enterprise api-management support is now enabled
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : red-hat-3scale.v0.6.1
 labels:
-  template: sxv4-cluster-3scale-template
+  template: sxcm-cluster-3scale-project
   app.kubernetes.io/managed-by: sxcm
 objects: 
 - kind: Application
@@ -257,7 +257,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"
@@ -280,4 +280,19 @@ parameters:
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
-
+  - name: DOCKERHUB_LOGIN
+    displayName: Login to use for pulling images from the dockerhub registry
+    description: "The login to use for pulling images from the dockerhub registry"
+    value: myDockerhubLogin
+  - name: DOCKERHUB_PWD
+    displayName: Password to use for pulling images from the dockerhub registry
+    description: "The Password coresponding to the login for pulling images from the dockerhub registry"
+    value: myDockerhubPassword
+  - name: QUAYIO_LOGIN
+    displayName: Login to use for pulling images from the quay.io registry
+    description: "The login to use for pulling images from the quay.io registry"
+    value: myQuayioLogin
+  - name: QUAYIO_PWD
+    displayName: Password to use for pulling images from the quay.io registry
+    description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
+    value: myQuayioPassword

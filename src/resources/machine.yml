@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-machine-template
+  name: sxcm-cluster-machine-project
   annotations:
     openshift.io/display-name: STARTX Cluster Machine config (admin)
     description: Configure machine ressource to sxcm cluster configuration
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,machine,machineset,iac,cluster
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "10"
+    sxcm_console_timeout: "10"
   labels:
-    template: sxv4-cluster-machine-template
-    app.kubernetes.io/name: "sxv4-cluster-machine-template"
+    template: sxcm-cluster-machine-project
+    app.kubernetes.io/name: "sxcm-cluster-machine-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide machine support is now configured.
@@ -21,7 +21,7 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : machine-operator.4.4.0
 labels:
-  template: sxv4-cluster-machine-template
+  template: sxcm-cluster-machine-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -172,7 +172,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"
@@ -203,3 +203,19 @@ parameters:
   - name: RHN_PASSWORD
     displayName: RHN container access password
     description: Redhat Network access password to the Rh container catalog
+  - name: DOCKERHUB_LOGIN
+    displayName: Login to use for pulling images from the dockerhub registry
+    description: "The login to use for pulling images from the dockerhub registry"
+    value: myDockerhubLogin
+  - name: DOCKERHUB_PWD
+    displayName: Password to use for pulling images from the dockerhub registry
+    description: "The Password coresponding to the login for pulling images from the dockerhub registry"
+    value: myDockerhubPassword
+  - name: QUAYIO_LOGIN
+    displayName: Login to use for pulling images from the quay.io registry
+    description: "The login to use for pulling images from the quay.io registry"
+    value: myQuayioLogin
+  - name: QUAYIO_PWD
+    displayName: Password to use for pulling images from the quay.io registry
+    description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
+    value: myQuayioPassword

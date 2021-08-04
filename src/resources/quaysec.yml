@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxv4-cluster-quaysec-template
+  name: sxcm-cluster-quaysec-project
   annotations:
     openshift.io/display-name: STARTX cluster Quay (admin)
     description: Deploy cluster-wide resources to enable Quay registry support according to sxcm definitions
@@ -9,10 +9,10 @@ metadata:
     tags: startx,cluster,config,admin,quay,security,scan
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxv4_console_timeout: "10"
+    sxcm_console_timeout: "10"
   labels:
-    template: sxv4-cluster-quaysec-template
-    app.kubernetes.io/name: "sxv4-cluster-quaysec-template"
+    template: sxcm-cluster-quaysec-project
+    app.kubernetes.io/name: "sxcm-cluster-quaysec-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster enterprise registry support is now enabled
@@ -21,80 +21,9 @@ message: |-
   Cluster           : ${CLUSTER}
   Operator          : container-security-operator.v1.0.5
 labels:
-  template: sxv4-cluster-quaysec-template
+  template: sxcm-cluster-quaysec-project
   app.kubernetes.io/managed-by: sxcm
 objects:
-- kind: Application
-  apiVersion: argoproj.io/v1alpha1
-  metadata:
-    name: startx-cluster-quaysec-project
-    namespace: "${ARGOCD_NS}"
-    labels:  &basic_labels
-      app.startx.fr/scope: "${SCOPE}"
-      app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-quaysec"
-      app.kubernetes.io/name: "argoapp-cluster-quaysec-project-application"
-      app.kubernetes.io/part-of: ${CLUSTER}
-      app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-quaysec"
-    annotations: &basic_annotations
-      openshift.io/generated-by: sxcm
-      # argocd.argoproj.io/manifest-generate-paths: .
-    finalizers:
-      - resources-finalizer.argocd.argoproj.io
-  spec:
-    destination:
-      namespace: "${NS}"
-      server: 'https://kubernetes.default.svc'
-    info:
-      - name: teammail
-        value: dev@startx.fr
-    project: cluster-admin
-    source:
-      path: charts/cluster-quay/
-      repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
-      helm:
-        valueFiles:
-          - values-startx-secvuln.yaml
-        parameters:
-          - name: context.scope
-            value: "${SCOPE}"
-          - name: context.cluster
-            value: "${CLUSTER}"
-          - name: context.environment
-            value: "${ENV}"
-          - name: context.version
-            value: "${VERSION}"
-          - name: context.app
-            value: "startx-quaysecvuln"
-          - name: rhn.enabled
-            value: "false"
-          - name: route.enabled
-            value: "false"
-          - name: quay.enabled
-            value: "false"
-          - name: project.enabled
-            value: "true"
-          - name: project.project.requester
-            value: "sxcm"
-          - name: operator.enabled
-            value: "false"
-          - name: operatorsec.enabled
-            value: "false"
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: true
-      syncOptions:
-        - CreateNamespace=false
-        - Validate=true
-      retry:
-        limit: 5
-        backoff:
-          duration: 5s
-          factor: 2
-          maxDuration: 20s
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -187,7 +116,7 @@ parameters:
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
-    value: sxv4
+    value: startx
   - name: CLUSTER
     displayName: Cluster name
     description: "Name of the current cluster  (ex: sxsf)"
@@ -204,3 +133,19 @@ parameters:
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
     value: default
+  - name: DOCKERHUB_LOGIN
+    displayName: Login to use for pulling images from the dockerhub registry
+    description: "The login to use for pulling images from the dockerhub registry"
+    value: myDockerhubLogin
+  - name: DOCKERHUB_PWD
+    displayName: Password to use for pulling images from the dockerhub registry
+    description: "The Password coresponding to the login for pulling images from the dockerhub registry"
+    value: myDockerhubPassword
+  - name: QUAYIO_LOGIN
+    displayName: Login to use for pulling images from the quay.io registry
+    description: "The login to use for pulling images from the quay.io registry"
+    value: myQuayioLogin
+  - name: QUAYIO_PWD
+    displayName: Password to use for pulling images from the quay.io registry
+    description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
+    value: myQuayioPassword

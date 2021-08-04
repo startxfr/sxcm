@@ -135,214 +135,6 @@ function createClusterDemos {
     doUpsertClusterDemos create $cn
 }
 
-# create cluster resources
-function applyClusterResource {
-    local UPSERT=$1
-    local cn=$2
-    local rn=$3
-    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
-    local localEnv=${SXCM_ENV:-dev}
-    local localVersion=${SXCM_VERSION:-beta}
-    local localScope=${SXCM_CLUSTER_SCOPE:-scope}
-    local localToken=${SXCM_CLUSTER_ADMIN_TOKEN:-mytoken} 
-    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
-    local clusterConfDirResource=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
-    local clusterRegion=$(extractOCPInstallAWSRegion $clusterConfOCPInstallFile)
-    local clusterProfile=$(extractOCPInstallProfile $clusterConfOCPInstallFile)
-    local clusterID=$(oc get machineset -n openshift-machine-api -o jsonpath="{.items[0].metadata.labels}" | cut -d \" -f 4)
-    local clusterName=$(echo $SXCM_CLUSTER_URL | sed -e 's|https://||g')
-    clusterName=$(echo $clusterName | sed -e 's|\.|-|g')
-    local CLUSTERTIMEOUT=5
-    local CMD="oc apply $SXCM_OCAPPLY_OPTS --token=$localToken --cluster=$clusterName -f -"
-    if [[ $UPSERT == "delete" ]]
-    then
-        CMD="oc delete -f -"
-    fi
-    if [[ -r $clusterConfDirResource/$rn.yml ]]
-    then
-        CLUSTERTIMEOUT=$(extractResourceTimeout $clusterConfDirResource/$rn.yml)
-        echo -e "${UPSERT} \e[1m$rn\e[0m cluster resource in cluster \e[1m$cn\e[0m \e[93m(admin)\e[0m"
-        if [[ 
-              "$rn" == "quay" || 
-              "$rn" == "3scale" || 
-              "$rn" == "argocd-apps" 
-            ]]
-        then
-            oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
-            -p SCOPE=$localScope \
-            -p CLUSTER=$cn \
-            -p ENV=$localEnv \
-            -p VERSION=$localVersion \
-            -p CLUSTER_PROFILE=$clusterProfile \
-            -p RHN_USER=$SXCM_RHN_USER \
-            -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
-            | $CMD
-        elif [[ 
-              "$rn" == "argocd-deploy" || 
-              "$rn" == "argocd-deploy-small" 
-            ]]
-        then
-            oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
-            -p SCOPE=$localScope \
-            -p CLUSTER=$cn \
-            -p ENV=$SXCM_ENV \
-            -p VERSION=$localVersion \
-            -p AWS_ZONE=$SXCM_AWS_ZONE \
-            -p AWS_ACCESS_ID=$SXCM_AWS_ID \
-            -p AWS_ACCESS_KEY=$SXCM_AWS_KEY \
-            -p AWS_SMTP_USER=$SXCM_AWS_SMTP_USER \
-            -p AWS_SMTP_PASSWORD=$SXCM_AWS_SMTP_PASSWORD \
-            -p AWS_SMTP_ZONE=$SXCM_AWS_SMTPZONE \
-            -p AWS_SMTP_FROM=$SXCM_AWS_SMTPFROM \
-            -p CLUSTER_PROFILE=$clusterProfile \
-            | $CMD
-        elif [[ "$rn" == "machine" ]]
-        then
-            oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
-            -p SCOPE=$localScope \
-            -p CLUSTER=$cn \
-            -p ENV=$localEnv \
-            -p VERSION=$localVersion \
-            -p CLUSTERID=$clusterID \
-            -p CLUSTER_REGION=$clusterRegion \
-            -p CLUSTER_PROFILE=$clusterProfile \
-            -p RHN_USER=$SXCM_RHN_USER \
-            -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
-            | $CMD
-        else
-            oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
-            -p SCOPE=$localScope \
-            -p CLUSTER=$cn \
-            -p ENV=$localEnv \
-            -p VERSION=$localVersion \
-            -p CLUSTER_PROFILE=$clusterProfile \
-            | $CMD
-        fi
-        if [[ "${UPSERT}" == "create" ]]; then
-            echo -e "wait ${CLUSTERTIMEOUT}sec for operator dependencies start"
-            temporize $CLUSTERTIMEOUT 5
-        else
-            echo -e "wait 5sec for operator dependencies update"
-            temporize 2 1
-        fi
-    fi
-    if [[ -d $clusterConfDirResource/$rn ]]
-    then
-        local ressscript="upsert.sh"
-        if [[ -x $clusterConfDirResource/$rn/$ressscript ]]
-        then
-            echo -e "${UPSERT} \e[1m$rn\e[0m cluster resource in cluster \e[1m$cn\e[0m \e[93m(admin)\e[0m"
-            . $clusterConfDirResource/$rn/$ressscript "$cn" "$localScope" "$localEnv" "$localVersion" "$localToken" "$cn" "$clusterName"
-            if [[ "${UPSERT}" == "create" ]]; then
-                echo -e "wait ${CLUSTERTIMEOUT}sec for deployment dependencies start"
-                temporize 10 2
-            fi
-        else 
-            echo -e "No \e[1m$rn\e[0m cluster resource found at \e[1m$clusterConfDirResource/$rn/$ressscript\e[0 or is executable"
-        fi
-    fi
-}
-
-# create demos
-function applyClusterDemo {
-    local UPSERT=$1
-    local cn=$2
-    local rn=$3
-    local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
-    local localEnv=${SXCM_ENV:-dev}
-    local localVersion=${SXCM_VERSION:-beta}
-    local localScope=${SXCM_CLUSTER_SCOPE:-scope}
-    local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
-    local clusterConfDirDemo=$clusterConfDir/$SXCM_USER_CONF_DIR_DEMOS
-    local clusterRegion=$(extractOCPInstallAWSRegion $clusterConfOCPInstallFile)
-    local clusterProfile=$(extractOCPInstallProfile $clusterConfOCPInstallFile)
-    local clusterID=$(oc get machineset -n openshift-machine-api -o jsonpath="{.items[0].metadata.labels}" | cut -d \" -f 4)
-    local clusterName=$(echo $SXCM_CLUSTER_URL | sed -e 's|https://||g')
-    clusterName=$(echo $clusterName | sed -e 's|\.|-|g')
-    local CLUSTERTIMEOUT=5
-    local CMD="oc apply $SXCM_OCAPPLY_OPTS --cluster=$clusterName -f -"
-    if [[ $UPSERT == "delete" ]]
-    then
-        CMD="oc delete -f -"
-    fi
-    local LIST=$(ls $clusterConfDirDemo/$rn 2>/dev/null)
-    local COUNT=$(echo $LIST | wc -w)
-    if [[ $COUNT -gt 0 ]]; then
-        for demo in $LIST; do
-            local file="$clusterConfDirDemo/$rn/${demo}"
-            local CLUSTERTIMEOUT=4
-            local foo=${demo#"$clusterConfDirDemo/$rn/"}; foo=${foo%"/"}
-            local oldifs="$IFS"; IFS="-"; tab=($foo); IFS="$oldifs"
-            local FAMILLY="${tab[0]}"
-            # 1x. Admin template without params
-            # 2x. Admin template with default, rhn and aws params
-            # 3x. Admin template with default params and script enabled
-            # 4x. Admin template (reserved)
-            # 5x. Admin template (reserved)
-            # 6x. Developer template without params
-            # 7x. Developer template with default, rhn and aws params
-            # 8x. Developer template with default params and script enabled
-            # 9x. Developer template (reserved)
-            if [[ -x $file ]]
-            then
-                echo -e "${UPSERT} \e[1m$rn\e[0m demo in cluster \e[1m$cn\e[0m with resource \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
-                . $file $UPSERT "$cn" "$localScope" "$localEnv" "$localVersion" "$cn" "$clusterName"
-            else
-                echo -e "${UPSERT} \e[1m$rn\e[0m demo in cluster \e[1m$cn\e[0m with resource \e[1m${demo}\e[0m \e[93m(admin)\e[0m"
-                if [[ "${FAMILLY:0:1}" == "2" ]]
-                then
-                    oc process -f $file --local -o yaml \
-                    -p SCOPE=$localScope \
-                    -p CLUSTER=$cn \
-                    -p ENV=$localEnv \
-                    -p VERSION=$localVersion \
-                    -p RHN_USER=$SXCM_RHN_USER \
-                    -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
-                    | $CMD
-                elif [[ "${FAMILLY:0:1}" == "4" ]]
-                then
-                    oc process -f $file --local -o yaml \
-                    -p SCOPE=$localScope \
-                    -p CLUSTER=$cn \
-                    -p ENV=$SXCM_ENV \
-                    -p VERSION=$localVersion \
-                    -p AWS_ZONE=$SXCM_AWS_ZONE \
-                    -p AWS_ACCESS_ID=$SXCM_AWS_ID \
-                    -p AWS_ACCESS_KEY=$SXCM_AWS_KEY \
-                    -p AWS_SMTP_USER=$SXCM_AWS_SMTP_USER \
-                    -p AWS_SMTP_PASSWORD=$SXCM_AWS_SMTP_PASSWORD \
-                    -p AWS_SMTP_ZONE=$SXCM_AWS_SMTPZONE \
-                    -p AWS_SMTP_FROM=$SXCM_AWS_SMTPFROM \
-                    | $CMD
-                elif [[ "${FAMILLY:0:1}" == "5" ]]
-                then
-                    oc process -f $file --local -o yaml \
-                    -p SCOPE=$localScope \
-                    -p CLUSTER=$cn \
-                    -p ENV=$localEnv \
-                    -p VERSION=$localVersion \
-                    -p CLUSTERID=$clusterID \
-                    -p CLUSTER_REGION=$clusterRegion \
-                    -p RHN_USER=$SXCM_RHN_USER \
-                    -p RHN_PASSWORD=$SXCM_RHN_PASSWORD \
-                    | $CMD
-                else
-                    oc process -f $file --local -o yaml \
-                    -p SCOPE=$localScope \
-                    -p CLUSTER=$cn \
-                    -p ENV=$localEnv \
-                    -p VERSION=$localVersion \
-                    | $CMD
-                fi
-            fi
-            if [[ "${UPSERT}" == "create" ]]; then
-                echo -e "wait ${CLUSTERTIMEOUT}sec for deployment dependencies start"
-                temporize $CLUSTERTIMEOUT 2
-            fi
-        done
-    fi
-}
-
 # create/update cluster resources
 function doUpsertClusterResources {
     local UPSERT=$1
@@ -414,7 +206,7 @@ function getCredentialsFromCreatedCluster {
     cd - &> /dev/null
 }
 
-# Record SXCM_CLUSTER_ADMIN_TOKEN for created cluster in sxv4 configuration
+# Record SXCM_CLUSTER_ADMIN_TOKEN for created cluster in sxcm configuration
 function recordAdminTokenFromCreatedCluster {
     local cn=$1
     getCredentialsFromCreatedCluster $cn
@@ -571,9 +363,8 @@ function doClusterConfigurationCreate {
     fi
     if [[ -r $SXCM_PROFILES_PATH/install-config-$profile.yml ]]; then
         git clone $SXCM_GIT_REPO $clusterConfDir
-        echo -e "  \e[32mcreated\e[0m cluster directory \e[1m$clusterConfDir\e[0m from \e[1m$gitBranch\e[0m branch in \e[1m$SXCM_GIT_REPO\e[0m repository"
+        echo -e "  \e[32mcreated\e[0m cluster directory \e[1m$clusterConfDir\e[0m from \e[1m$SXCM_GIT_BRANCH_MAIN\e[0m branch in \e[1m$SXCM_GIT_REPO\e[0m repository"
         cd $clusterConfDir &> /dev/null
-        echo -e "  \e[33mupdated\e[0m git repository configuration in \e[1m$clusterConfDir\e[0m"
         git checkout $SXCM_GIT_BRANCH_MAIN &> /dev/null
         git checkout $cn &> /dev/null
         if [[ "$?" != "0" ]]; then
@@ -607,9 +398,21 @@ function doClusterConfigurationCreate {
         local SSH_PUBLICKEY=$(cat $clusterConfDir/id_rsa.pub)
         sed -i "s|__ocpSshPublickey__|${SSH_PUBLICKEY}|g" $clusterConfDir/install-config.yaml
         cp $clusterConfDir/install-config.yaml $clusterConfDir/install-config.yaml.back &> /dev/null
+        git add . &> /dev/null
+        git commit -m "[$cn] Record cluster install-config file for cluster $cn" &> /dev/null
+        openshift-install create install-config &> /dev/null
+        git add . &> /dev/null
+        git commit -m "[$cn] Record cluster config file for cluster $cn" &> /dev/null
+        openshift-install create manifests &> /dev/null
+        cp $clusterConfDir/install-config.yaml.back $clusterConfDir/install-config.yaml &> /dev/null
+        git add . &> /dev/null
+        git commit -m "[$cn] Record the cluster manifest for cluster $cn" &> /dev/null
+        # openshift-install create ignition-configs &> /dev/null
+        # git add . &> /dev/null
+        # git commit -m "[$cn] Record the cluster ignition files for cluster $cn" &> /dev/null
         doClusterConfigurationCreateUpdateResources $cn 
         git add . &> /dev/null
-        git commit -am "[$cn] Create the $cn cluster" &> /dev/null
+        git commit -am "[$cn] Record resources files for cluster $cn" &> /dev/null
         git push origin $cn &> /dev/null
         cd - &> /dev/null
         echo -e "  \e[32mrecorded\e[0m cluster configuration based on \e[1m$PROFILE\e[0m profile"
@@ -676,9 +479,17 @@ function doClusterConfigurationCreate {
             cd $clusterConfDir &> /dev/null
             git checkout $cn &> /dev/null
             openshift-install create install-config &> /dev/null
+            git add . &> /dev/null
+            git commit -m "[$cn] Record cluster config file for cluster $cn" &> /dev/null
+            openshift-install create manifests &> /dev/null
+            git add . &> /dev/null
+            git commit -m "[$cn] Record the cluster manifest for cluster $cn" &> /dev/null
+            # openshift-install create ignition-configs &> /dev/null
+            # git add . &> /dev/null
+            # git commit -m "[$cn] Record the cluster ignition files for cluster $cn" &> /dev/null
             doClusterConfigurationCreateUpdateResources $cn 
             git add . &> /dev/null
-            git commit -m "[$cn] Record the $cn cluster config" &> /dev/null
+            git commit -am "[$cn] Record resources files for cluster $cn" &> /dev/null
             git push origin $cn &> /dev/null
             cd - &> /dev/null
         fi
@@ -701,6 +512,7 @@ function doClusterConfigurationImport {
     if [[ $branch == '' ]]; then
         branch="$cn"
     fi
+    reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local gitBranch=$branch
     if [[ -d $clusterConfDir ]]; then
@@ -789,6 +601,7 @@ function doClusterConfigurationInfo {
         echo -e "or get a list of available cluster configuration with \e[90;4msxcm list\e[0m" ;
         exit 1;
     fi
+    reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ -r $clusterConfDir/$SXCM_USER_CONF_FILE ]]; then
         . $clusterConfDir/$SXCM_USER_CONF_FILE;
@@ -862,6 +675,7 @@ function doClusterConfigurationHistory {
         echo -e "or get a list of available cluster configuration with \e[90;4msxcm list\e[0m" ;
         exit 1;
     fi
+    reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ -r $clusterConfDir/$SXCM_USER_CONF_FILE ]]; then
         . $clusterConfDir/$SXCM_USER_CONF_FILE;
@@ -893,6 +707,7 @@ function doClusterConfigurationEdit {
     else 
         cn=`getActiveCluster`
     fi
+    reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ $cn == '' ]]; then
         echo -e "You must give a \e[1mcluster configuration name\e[0m"
@@ -946,6 +761,7 @@ function doClusterConfigurationUpdate {
     else 
         cn=`getActiveCluster`
     fi
+    reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ $cn == '' ]]; then
         echo -e "You must give a \e[1mcluster configuration name\e[0m"
@@ -986,6 +802,7 @@ function doClusterConfigurationDelete {
     else 
         cn=`getActiveCluster`
     fi
+    reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     echo $clusterConfDir
     if [[ $cn == '' ]]; then
@@ -1085,6 +902,7 @@ function doClusterConfigurationClone {
     if [[ $source == '' ]]; then
         source=$(getActiveCluster)
     fi
+    reloadIndividualClusterConf $source
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ -d $clusterConfDir ]]; then
         echo -e "  Cluster \e[1m$cn\e[0m is \e[31m already managed\e[0m. Could not clone \e[1m$cn\e[0m"
@@ -1093,6 +911,7 @@ function doClusterConfigurationClone {
         if [[ -d $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$source ]]; then
             cp -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$source $clusterConfDir
             cd $clusterConfDir  &> /dev/null
+            reloadIndividualClusterConf $cn
             git branch $cn &> /dev/null
             git checkout $cn &> /dev/null
             if [[ ! -r install-config.yaml && -r install-config.yaml.back ]]
@@ -1358,7 +1177,6 @@ based on a remote cluster repository
 
 
 # Examples
-```
 # Import the cluster named mycluster using the cluster git repository branch named mycluster (fail if not found)
 sxcm import mycluster
 # Import the cluster named mycluster using the myclusterbranch branch stored into the cluster git repository

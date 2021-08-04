@@ -1,6 +1,6 @@
 # startx cluster manager (sxcm)
 
-![sxcm](https://img.shields.io/badge/latest-v0.1.5-blue.svg) [![last commit](https://img.shields.io/github/last-commit/startxfr/sxcm.svg)](https://github.com/startxfr/sxcm) [![Doc](https://readthedocs.org/projects/sxcm/badge)](https://sxcm.readthedocs.io)
+![sxcm](https://img.shields.io/badge/latest-v0.7.22-blue.svg) [![last commit](https://img.shields.io/github/last-commit/startxfr/sxcm.svg)](https://github.com/startxfr/sxcm) [![Doc](https://readthedocs.org/projects/sxcm/badge)](https://sxcm.readthedocs.io)
 
 STARTX Openshift installer for various infrastructure configuration deployed under an AWS account.
 
@@ -105,4 +105,4 @@ The active cluster state is used every time a cluster name is required but not p
 - You must follow the [system requirements and client install documentation](1-installation.md) to get and install the sxcm cli.
 - After this basic installation, you can [follow the configuration guide](2-configure.md).
 - If you want to have move information about the sxcm relese lifecycle, you can read the [release lifecycle](6-developpement.md#release-lifecycle).
-- If you want to have move information about the various sxcm release and their content, you can read the [release history](5-release-history.md).
+- If you want to have move information about the various sxcm release and their content, you can read the [release history](7-release-history.md).
