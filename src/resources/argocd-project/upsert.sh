@@ -41,4 +41,16 @@ else
     fi
     echo -e "Add anyuid SCC to argocd-redis-ha service account in $PROJECT namespace"
     oc adm policy add-scc-to-user anyuid -z argocd-redis-ha -n $PROJECT --token=$OCTOKEN --cluster=$OCCLUSTERNAME &>/dev/null
+    echo -e "Link serviceAccounts with registrycreds secrets in $PROJECT"
+    oc secrets link argocd-application-controller startx-registrycreds-docker --for=pull -n $PROJECT
+    oc secrets link argocd-dex-server startx-registrycreds-docker --for=pull -n $PROJECT
+    oc secrets link argocd-operator startx-registrycreds-docker --for=pull -n $PROJECT
+    oc secrets link argocd-redis-ha startx-registrycreds-docker --for=pull -n $PROJECT
+    oc secrets link argocd-server startx-registrycreds-docker --for=pull -n $PROJECT
+    oc secrets link default startx-registrycreds-docker --for=pull -n $PROJECT
+    oc secrets link deployer startx-registrycreds-docker --for=pull -n $PROJECT
+    oc secrets link $PROJECT-application-controller startx-registrycreds-docker --for=pull -n $PROJECT
+    oc secrets link $PROJECT-dex-server startx-registrycreds-docker --for=pull -n $PROJECT
+    oc secrets link $PROJECT-redis-ha startx-registrycreds-docker --for=pull -n $PROJECT
+    oc secrets link $PROJECT-server startx-registrycreds-docker --for=pull -n $PROJECT
 fi
