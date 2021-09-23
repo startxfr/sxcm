@@ -77,6 +77,8 @@ objects:
             value: "_pager_dutty_startx_key_"
           - name: alertmanager.api.endpoint
             value: "_startx_api_endpoint_"
+          - name: monitoring.enabled
+            value: "true"
           - name: imageprunner.enabled
             value: "true"
           - name: imageprunner.schedule
