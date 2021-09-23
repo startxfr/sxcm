@@ -131,7 +131,7 @@ objects:
             value: "${VERSION}"
           - name: context.app
             value: "startx"
-          - name: dockercfg.enabled
+          - name: dockercfg.enabled 
             value: "true"
           - name: dockercfg.list[0].username
             value: "${QUAYIO_LOGIN}"

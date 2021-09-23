@@ -71,7 +71,7 @@ objects:
             value: "false"
           - name: clusterversion.enabled 
             value: "false"
-          - name: alertmanager.enabled
+          - name: alertmanager.enabled 
             value: "false"
           - name: alertmanager.pagerDutty.key
             value: "_pager_dutty_startx_key_"
@@ -91,6 +91,9 @@ objects:
             value: "true" 
           - name: helm_reposistory.enabled
             value: "true" 
+          - name: project.enabled
+            value: "true" 
+
     syncPolicy:
       automated:
         prune: true

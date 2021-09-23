@@ -233,7 +233,7 @@ function applyClusterResource {
     then
         local ressscript="upsert.sh"
         if [[ -x $clusterConfDirResource/$rn/$ressscript ]]
-        then
+        then 
             echo -e "${UPSERT} \e[1m$rn\e[0m cluster \e[1mresource\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${ressscript}\e[0m \e[93m(admin)\e[0m"
             . $clusterConfDirResource/$rn/$ressscript "$cn" "$localScope" "$localEnv" "$localVersion" "$localToken" "$cn" "$clusterName"  "$SXCM_DOCKER_LOGIN:$SXCM_DOCKER_PWD" "$SXCM_QUAYIO_LOGIN:$SXCM_QUAYIO_PWD"
             if [[ "${UPSERT}" == "create" ]]; then
