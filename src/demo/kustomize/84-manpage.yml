@@ -59,7 +59,7 @@ objects:
       source:
         path: charts/example-html/
         repoURL: 'https://github.com/startxfr/helm-repository.git'
-        targetRevision: devel
+        targetRevision: stable
         helm:
           valueFiles:
             - values-demo-kustomize-manpage.yaml

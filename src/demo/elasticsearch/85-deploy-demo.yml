@@ -1,41 +1,42 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-awx-manpage
+  name: sxcm-demo-elasticsearch-app-project
   annotations:
-    openshift.io/display-name: Demo STARTX - AWX
-    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/ansible
+    openshift.io/display-name: Demo STARTX - 3Scale App
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/elasticsearch
     openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of AWX demo
-    iconClass: icon-sso
-    tags: startx,sso,demo,dev
+      Deployment of a elasticsearch infra and a sample application using this infrastructure to 
+      demonstrate the API management capacities of 3Scale solution running under an 
+      openshift 4 environment
+    iconClass: icon-elasticsearch
+    tags: startx,elasticsearch,demo,dev
   labels:
-    template: sxcm-demo-awx-manpage
+    template: sxcm-demo-elasticsearch-app-project
 message: |-
-  Your demo manpage in ${NS} is deployed.
+  Your demo application ${NS} for elasticsearch technology is now created.
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
-  Service        : awx
   Project        : ${NS}
 
 labels:
-  template: sxcm-demo-awx-manpage
+  template: sxcm-demo-elasticsearch-app-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${NS}-manpage
+    name: ${NS}-app
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "${NS}"
-      app.kubernetes.io/name: "${NS}-manpage-application"
+      app.kubernetes.io/name: "${NS}-application"
       app.kubernetes.io/part-of: ${NS}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "${NS}-project"
@@ -52,12 +53,12 @@ objects:
         value: dev@startx.fr
     project: ${NS}
     source:
-      path: charts/example-html/
+      path: charts/example-catalog/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: stable
+      targetRevision: devel
       helm:
         valueFiles:
-          - values-demo-awx-runner-manpage.yaml
+          - values-elasticsearch.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -68,8 +69,8 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "manpage"
-          - name: html.namespace
+            value: "priority"
+          - name: demo.elasticsearch.namespace
             value: "${NS}"
     syncPolicy:
       automated:
@@ -86,9 +87,14 @@ objects:
           maxDuration: 20s
 parameters:
   - name: NS
-    displayName: AWX namespace for awx instance
-    description: "Name of the awx namespace"
-    value: demo-awx-runner
+    displayName: demo namespace for elasticsearch instance
+    description: "Name of the elasticsearch namespace"
+    value: demo-elasticsearch
+    required: true
+  - name: OPERATOR_NS
+    displayName: The namespace where operator goes to
+    description: "Namespace to place objects to"
+    value: startx-elasticsearch
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
@@ -97,7 +103,7 @@ parameters:
     required: true
   - name: SCOPE
     displayName: Project scope
-    description: "Project scope (ex: demo)"
+    description: "Project scope (ex: sxv4)"
     value: demo
     required: true
   - name: CLUSTER
@@ -120,8 +126,9 @@ parameters:
     description: "Project service"
     value: demo
     required: true
-  - name: MARKETPLACE_NS
-    displayName: The operator marketplace namespace where objects goes to
-    description: "operator marketplace namespace to place objects to"
-    value: openshift-marketplace
+  - name: RANDRUN
+    displayName: Random string for job execution
+    description: Random string suffix to use for job uniqueness
+    from: "[a-z0-9]{10}"
+    generate: expression
     required: true

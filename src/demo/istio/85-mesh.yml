@@ -58,7 +58,7 @@ objects:
     source:
       path: charts/example-catalog/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-istio.yaml
@@ -113,7 +113,7 @@ objects:
     source:
       path: charts/cluster-istio/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-members-demo-istio.yaml

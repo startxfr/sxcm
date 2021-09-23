@@ -55,7 +55,7 @@ objects:
     source:
       path: charts/cluster-sso/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx.yaml
@@ -120,7 +120,7 @@ objects:
     source:
       path: charts/cluster-sso/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx.yaml
@@ -189,7 +189,7 @@ objects:
 #     source:
 #       path: charts/cluster-sso/
 #       repoURL: 'https://github.com/startxfr/helm-repository.git'
-#       targetRevision: devel
+#       targetRevision: stable
 #       helm:
 #         valueFiles:
 #           - values-startx.yaml

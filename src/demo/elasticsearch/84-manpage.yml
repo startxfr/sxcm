@@ -1,29 +1,29 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-awx-manpage
+  name: sxcm-demo-elasticsearch-manpage
   annotations:
-    openshift.io/display-name: Demo STARTX - AWX
-    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/ansible
+    openshift.io/display-name: Demo STARTX - ElasticSearch
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/elasticsearch
     openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of AWX demo
-    iconClass: icon-sso
-    tags: startx,sso,demo,dev
+      Deployment of ElasticSearch demo
+    iconClass: icon-load-balancer
+    tags: startx,elasticsearch,demo,dev
   labels:
-    template: sxcm-demo-awx-manpage
+    template: sxcm-demo-elasticsearch-manpage
 message: |-
   Your demo manpage in ${NS} is deployed.
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
-  Service        : awx
+  Service        : elasticsearch
   Project        : ${NS}
 
 labels:
-  template: sxcm-demo-awx-manpage
+  template: sxcm-demo-elasticsearch-manpage
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -54,10 +54,10 @@ objects:
     source:
       path: charts/example-html/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: stable
+      targetRevision: devel
       helm:
         valueFiles:
-          - values-demo-awx-runner-manpage.yaml
+          - values-demo-elasticsearch-manpage.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -85,10 +85,15 @@ objects:
           factor: 2
           maxDuration: 20s
 parameters:
+  - name: OPERATOR_NS
+    displayName: The namespace where operator goes to
+    description: "Namespace to place objects to"
+    value: startx-elasticsearch
+    required: true
   - name: NS
-    displayName: AWX namespace for awx instance
-    description: "Name of the awx namespace"
-    value: demo-awx-runner
+    displayName: The namespace where objects goes to
+    description: "Namespace to place objects to"
+    value: demo-elasticsearch
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
@@ -97,7 +102,7 @@ parameters:
     required: true
   - name: SCOPE
     displayName: Project scope
-    description: "Project scope (ex: demo)"
+    description: "Project scope (ex: sxv4)"
     value: demo
     required: true
   - name: CLUSTER
@@ -119,9 +124,4 @@ parameters:
     displayName: Project service
     description: "Project service"
     value: demo
-    required: true
-  - name: MARKETPLACE_NS
-    displayName: The operator marketplace namespace where objects goes to
-    description: "operator marketplace namespace to place objects to"
-    value: openshift-marketplace
     required: true

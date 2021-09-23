@@ -52,7 +52,7 @@ objects:
     source:
       path: charts/project/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx.yaml
@@ -95,11 +95,11 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-dockercfg
+    name: startx-cluster-default-dockercfg
     namespace: "${ARGOCD_NS}"
     labels:
       <<: *basic_labels
-      app.kubernetes.io/name: "argoapp-cluster-dockercfg-application"
+      app.kubernetes.io/name: "argoapp-cluster-default-dockercfg-application"
     annotations:
       <<: *basic_annotations
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -116,7 +116,7 @@ objects:
     source:
       path: charts/cluster-config/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx.yaml
@@ -131,7 +131,7 @@ objects:
             value: "${VERSION}"
           - name: context.app
             value: "startx"
-          - name: dockercfg.enabled
+          - name: dockercfg.enabled 
             value: "true"
           - name: dockercfg.list[0].username
             value: "${QUAYIO_LOGIN}"
@@ -151,6 +151,73 @@ objects:
             value: "${RHN_PASSWORD}"
           - name: dockercfg.list[2].email
             value: "clarue@startx.fr"
+    syncPolicy:
+      automated:
+        prune: false
+        selfHeal: false
+      syncOptions:
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: startx-cluster-argocd-dockercfg
+    namespace: "${ARGOCD_NS}"
+    labels:
+      <<: *basic_labels
+      app.kubernetes.io/name: "argoapp-cluster-argocd-dockercfg-application"
+    annotations:
+      <<: *basic_annotations
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${ARGOCD_NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-config/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-dockercfg.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          # give the destination namespace
+          - name: context.app
+            value: "${ARGOCD_NS}"
+          - name: dockercfg.enabled
+            value: "true"
+          - name: dockercfg.list[0].username
+            value: "${QUAYIO_LOGIN}"
+          - name: dockercfg.list[0].password
+            value: "${QUAYIO_PWD}"
+          - name: dockercfg.list[0].email
+            value: "dev@startx.fr"
+          - name: dockercfg.list[1].username
+            value: "${DOCKERHUB_LOGIN}"
+          - name: dockercfg.list[1].password
+            value: "${DOCKERHUB_PWD}"
+          - name: dockercfg.list[1].email
+            value: "dev@startx.fr"
     syncPolicy:
       automated:
         prune: false
@@ -187,7 +254,7 @@ objects:
     source:
       path: charts/example-imagestreams/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx.yaml

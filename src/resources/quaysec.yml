@@ -53,7 +53,7 @@ objects:
     source:
       path: charts/cluster-quay/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx-secvuln.yaml

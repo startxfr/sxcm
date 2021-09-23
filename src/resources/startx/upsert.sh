@@ -53,7 +53,7 @@ then
         oc get secret/pull-secret -n openshift-config --template='{{index .data ".dockerconfigjson" | base64decode}}' > /tmp/secrettmp
         echo -e "Add quay and dockerhub to cluster pull-secret credentials"
         oc registry login --registry="docker.io" --auth-basic="$8" --skip-check --to=/tmp/secrettmp 
-        oc registry login --registry="quay.io" --auth-basic="$9" --to=/tmp/secrettmp
+        # oc registry login --registry="quay.io" --auth-basic="$9" --to=/tmp/secrettmp
         echo -e "Apply this change to the new cluster (first time could be long, require a drain on all nodes)"
         oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=/tmp/secrettmp
         rm -f /tmp/secrettmp

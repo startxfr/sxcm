@@ -12,6 +12,7 @@ A demo is a group of **argocd application** deploying a group of resources into 
 | **[ansible](../demo/ansible)**               | **Automation**  | Demo on how to use Ansible AWX infrastructure                              |
 | **[argocd](../demo/argocd)**                 | **Automation**  | Demo on how to use ArgoCD Gitops platform for application lifecycle        |
 | **[compliance](../demo/compliance)**         | **Security**    | Demo on how to use the compliance operator                                 |
+| **[elasticsearch](../demo/elasticsearch)**   | **Infra**       | Demo on how to use the elasticsearch operator                              |
 | **[helm](../demo/helm)**                     | **Application** | Demo on how to use Helm to deploy application                              |
 | **[hpa](../demo/hpa)**                       | **Infra**       | Demo on how to use the Horizontal Pod Autoscaler                           |
 | **[hugo](../demo/hugo)**                     | **Application** | Demo on how to use HUGO to build static website container                  |

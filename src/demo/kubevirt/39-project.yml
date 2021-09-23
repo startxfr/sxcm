@@ -111,7 +111,7 @@ objects:
     source:
       path: charts/cluster-kubevirt/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-demo.yaml
