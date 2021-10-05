@@ -80,6 +80,16 @@ objects:
             value: "false"
           - name: loader.enabled
             value: "false"
+          - name: project.serviceAccounts.enabled
+            value: "true"
+          - name: project.dockercfg.enabled
+            value: "true"
+          - name: project.dockercfg.list[0].username
+            value: "${RHN_USER}"
+          - name: project.dockercfg.list[0].password
+            value: "${RHN_PASSWORD}"
+          - name: project.dockercfg.list[0].email
+            value: "clarue@startx.fr"
     syncPolicy:
       automated:
         prune: true
@@ -143,10 +153,6 @@ objects:
             value: "true"
           - name: couchbaseConfig.enabled
             value: "true"
-          - name: couchbaseConfig.imageCredentials.username
-            value: "${RHN_USER}"
-          - name: couchbaseConfig.imageCredentials.password
-            value: "${RHN_PASSWORD}"
           - name: loader.enabled
             value: "false"
           - name: cluster.enabled

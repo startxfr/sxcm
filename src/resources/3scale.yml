@@ -76,12 +76,16 @@ objects:
             value: "false"
           - name: manager.enabled
             value: "false"
-          - name: rhn.enabled
+          - name: project.serviceAccounts.enabled
             value: "true"
-          - name: rhn.user
+          - name: project.dockercfg.enabled
+            value: "true"
+          - name: project.dockercfg.list[0].username
             value: "${RHN_USER}"
-          - name: rhn.pwd
+          - name: project.dockercfg.list[0].password
             value: "${RHN_PASSWORD}"
+          - name: project.dockercfg.list[0].email
+            value: "clarue@startx.fr"
     syncPolicy:
       automated:
         prune: true
