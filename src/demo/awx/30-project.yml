@@ -1,31 +1,31 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-knative-project
+  name: sxcm-demo-awx-project
   annotations:
-    openshift.io/display-name: Demo STARTX - KNative
-    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/knative
+    openshift.io/display-name: Demo STARTX - AWX
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/awx
     openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of a sample application using KNative infrastructure to 
-      demonstrate the Serverless capacities of KNative solution integrated with an 
-      openshift 4 environment
-    iconClass: icon-knative
-    tags: startx,knative,demo,dev
+      Deployment of the awx operator and a demo report. This allow 
+      demostrator to show how Openshift 4 infrastructure could report status of
+      compliancy again private or public policies
+    iconClass: icon-load-balancer
+    tags: startx,awx,demo,dev
   labels:
-    template: sxcm-demo-knative-project
+    template: sxcm-demo-awx-project
 message: |-
-  Your demo project ${NS} for KNative technology is now created.
+  Your demo project ${NS} for AWX technology is now created.
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
-  Service        : knative
+  Service        : awx
   Project        : ${NS}
 
 labels:
-  template: sxcm-demo-knative-project
+  template: sxcm-demo-awx-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: AppProject
@@ -98,6 +98,7 @@ objects:
       app.kubernetes.io/name: "${NS}-project-application"
     annotations:
       <<: *basic_annotations
+      # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
   spec:
@@ -107,14 +108,14 @@ objects:
     info:
       - name: teammail
         value: dev@startx.fr
-    project: ${NS}
+    project: cluster-admin
     source:
       path: charts/project/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: stable
+      targetRevision: devel
       helm:
         valueFiles:
-          - values-demo-knative.yaml
+          - values-demo-awx.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -139,16 +140,16 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 5m
-    ignoreDifferences:
-      - kind: ServiceAccount
-        jsonPointers:
-        - /imagePullSecrets
-        - /secrets
 parameters:
+  - name: OPERATOR_NS
+    displayName: The namespace where operator goes to
+    description: "Namespace to place objects to"
+    value: startx-awx
+    required: true
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
-    value: demo-knative
+    value: demo-awx
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
@@ -157,7 +158,7 @@ parameters:
     required: true
   - name: SCOPE
     displayName: Project scope
-    description: "Project scope (ex: demo)"
+    description: "Project scope (ex: sxv4)"
     value: demo
     required: true
   - name: CLUSTER
