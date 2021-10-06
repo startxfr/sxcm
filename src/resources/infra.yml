@@ -90,10 +90,9 @@ objects:
           - name: redhat.operators
             value: "true" 
           - name: helm_reposistory.enabled
-            value: "true" 
+            value: "true"
           - name: project.enabled
-            value: "true" 
-
+            value: "false" 
     syncPolicy:
       automated:
         prune: true
@@ -107,6 +106,11 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 60s
+    ignoreDifferences:
+      - kind: ServiceAccount
+        jsonPointers:
+        - /imagePullSecrets
+        - /secrets
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:

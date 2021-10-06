@@ -127,7 +127,7 @@ function applyClusterResource {
     local cn=$2
     local rn=$3
     local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
-    local localEnv=${SXCM_ENV:-dev}
+    local localEnv=${SXCM_CLUSTER_ENV:-dev}
     local localVersion=${SXCM_VERSION:-beta}
     local localScope=${SXCM_CLUSTER_SCOPE:-scope}
     local localToken=${SXCM_CLUSTER_ADMIN_TOKEN:-mytoken} 
@@ -176,7 +176,7 @@ function applyClusterResource {
             oc process -f $clusterConfDirResource/$rn.yml --local -o yaml \
             -p SCOPE=$localScope \
             -p CLUSTER=$cn \
-            -p ENV=$SXCM_ENV \
+            -p ENV=$SXCM_CLUSTER_ENV \
             -p VERSION=$localVersion \
             -p DOCKERHUB_LOGIN=$SXCM_DOCKER_LOGIN \
             -p DOCKERHUB_PWD=$SXCM_DOCKER_PWD \

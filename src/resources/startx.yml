@@ -79,59 +79,9 @@ objects:
             value: "true"
           - name: quotas.enabled
             value: "true"
-    syncPolicy:
-      automated:
-        prune: false
-        selfHeal: false
-      syncOptions:
-        - CreateNamespace=false
-        - Validate=true
-      retry:
-        limit: 5
-        backoff:
-          duration: 5s
-          factor: 2
-          maxDuration: 5m
-- kind: Application
-  apiVersion: argoproj.io/v1alpha1
-  metadata:
-    name: startx-cluster-default-dockercfg
-    namespace: "${ARGOCD_NS}"
-    labels:
-      <<: *basic_labels
-      app.kubernetes.io/name: "argoapp-cluster-default-dockercfg-application"
-    annotations:
-      <<: *basic_annotations
-      # argocd.argoproj.io/manifest-generate-paths: .
-    finalizers:
-      - resources-finalizer.argocd.argoproj.io
-  spec:
-    destination:
-      namespace: "${ARGOCD_NS}"
-      server: 'https://kubernetes.default.svc'
-    info:
-      - name: teammail
-        value: dev@startx.fr
-    project: cluster-admin
-    source:
-      path: charts/cluster-config/
-      repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: master
-      helm:
-        valueFiles:
-          - values-startx.yaml
-        parameters:
-          - name: context.scope
-            value: "${SCOPE}"
-          - name: context.cluster
-            value: "${CLUSTER}"
-          - name: context.environment
-            value: "${ENV}"
-          - name: context.version
-            value: "${VERSION}"
-          - name: context.app
-            value: "startx"
-          - name: dockercfg.enabled 
+          - name: serviceAccounts.enabled
+            value: "true"
+          - name: dockercfg.enabled
             value: "true"
           - name: dockercfg.list[0].username
             value: "${QUAYIO_LOGIN}"
@@ -164,6 +114,11 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 5m
+    ignoreDifferences:
+      - kind: ServiceAccount
+        jsonPointers:
+        - /imagePullSecrets
+        - /secrets
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -186,12 +141,12 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-config/
+      path: charts/project/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: devel
       helm:
         valueFiles:
-          - values-dockercfg.yaml
+          - values-startx-argocd.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -201,9 +156,10 @@ objects:
             value: "${ENV}"
           - name: context.version
             value: "${VERSION}"
-          # give the destination namespace
           - name: context.app
             value: "${ARGOCD_NS}"
+          - name: serviceAccounts.enabled
+            value: "true"
           - name: dockercfg.enabled
             value: "true"
           - name: dockercfg.list[0].username

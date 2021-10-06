@@ -80,6 +80,16 @@ objects:
             value: "false"
           - name: loader.enabled
             value: "false"
+          - name: project.serviceAccounts.enabled
+            value: "true"
+          - name: project.dockercfg.enabled
+            value: "true"
+          - name: project.dockercfg.list[0].username
+            value: "${RHN_USER}"
+          - name: project.dockercfg.list[0].password
+            value: "${RHN_PASSWORD}"
+          - name: project.dockercfg.list[0].email
+            value: "clarue@startx.fr"
     syncPolicy:
       automated:
         prune: true
@@ -93,6 +103,11 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 5m
+    ignoreDifferences:
+      - kind: ServiceAccount
+        jsonPointers:
+        - /imagePullSecrets
+        - /secrets
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -143,10 +158,6 @@ objects:
             value: "true"
           - name: couchbaseConfig.enabled
             value: "true"
-          - name: couchbaseConfig.imageCredentials.username
-            value: "${RHN_USER}"
-          - name: couchbaseConfig.imageCredentials.password
-            value: "${RHN_PASSWORD}"
           - name: loader.enabled
             value: "false"
           - name: cluster.enabled
@@ -170,6 +181,10 @@ objects:
         namespace: "${NS}"
         jsonPointers:
           - /metadata/annotations/olm.providedAPIs
+      - kind: ServiceAccount
+        jsonPointers:
+        - /imagePullSecrets
+        - /secrets
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
