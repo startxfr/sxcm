@@ -43,7 +43,7 @@ function doSetupDockerhub {
     fi
     if [[ "$dhnpw" == "" ]]; then
         echo -e "Set your \e[34mdocker.io\e[0m \e[32mpassword\e[0m"
-        echo -en "Dockerhub password [*********] : "
+        echo -en "Dockerhub password [] : "
         read -s dhnpw
         echo
     fi
@@ -80,7 +80,7 @@ function doSetupQuayio {
     fi
     if [[ "$dhnpw" == "" ]]; then
         echo -e "Set your \e[34mquay.io\e[0m \e[32mpassword\e[0m"
-        echo -en "Quay.io password [*********] : "
+        echo -en "Quay.io password [] : "
         read -s dhnpw
         echo
     fi
@@ -119,7 +119,7 @@ function doSetupRedhat {
     fi
     if [[ "$rhnpw" == "" ]]; then
         echo -e "Set your \e[34maccess.redhat.com\e[0m \e[32mpassword\e[0m"
-        echo -en "RHN password [*********] : "
+        echo -en "RHN password [] : "
         read -s rhnpw
         echo
     fi
@@ -130,7 +130,7 @@ function doSetupRedhat {
     fi
     if [[ "$rhnps" == "" ]]; then
         echo -e "Set your \e[34mcloud.redhat.com\e[0m Openshift \e[32mpull secret\e[0m"
-        echo -en "RHN pullSecret [*********] : "
+        echo -en "RHN pullSecret [] : "
         read -s rhnps
         echo
     fi
@@ -164,42 +164,42 @@ function doSetupAWSCredentials {
     echo -e "Recording your \e[34mAWS\e[0m \e[32mAPI\e[0m credentials"
     if [[ "$awsid" == "" ]]; then
         echo -e "Set your \e[34mAWS\e[0m \e[32mAPI ID\e[0m"
-        echo -en "AWS API ID [$AWS_ID] : "
+        echo -en "AWS API ID [$SXCM_AWS_ID] : "
         read awsid
     fi
     if [[ "$awskey" == "" ]]; then
         echo -e "Set your \e[34mAWS\e[0m \e[32mAPI Key\e[0m"
-        echo -en "AWS API Key [*********] : "
+        echo -en "AWS API Key [] : "
         read -s awskey
         echo
     fi
     if [[ "$awszone" == "" ]]; then
         echo -e "Set your \e[34mAWS\e[0m \e[32mDatacenter\e[0m"
-        echo -en "AWS zone [$AWS_ZONE] : "
+        echo -en "AWS zone [$SXCM_AWS_ZONE] : "
         read awszone
     fi
-    if [[ "$awsid" != "$AWS_ID" || "$awskey" != "$AWS_KEY" ]]; then
+    if [[ "$awsid" != "$SXCM_AWS_ID" || "$awskey" != "$SXCM_AWS_KEY" ]]; then
         reconnectaws=true
     fi
     if [[ "$awsid" != "" ]]; then
         echo -e "Switching to AWS ID \e[1m$awsid\e[0m"
-        appendConf AWS_ID $awsid
-        appendClusterConf AWS_ID $awsid
+        appendConf SXCM_AWS_ID $awsid
+        appendClusterConf SXCM_AWS_ID $awsid
     fi
     if [[ "$awskey" != "" ]]; then
         echo -e "Change AWS ID \e[1m$awsid\e[0m key"
-        appendConf AWS_KEY $awskey
-        appendClusterConf AWS_KEY $awskey
+        appendConf SXCM_AWS_KEY $awskey
+        appendClusterConf SXCM_AWS_KEY $awskey
     fi
     if [[ "$awszone" != "" ]]; then
         echo -e "Switching to AWS ZONE \e[1m$awszone\e[0m"
-        appendConf AWS_ZONE $awszone
-        appendClusterConf AWS_ZONE $awszone
+        appendConf SXCM_AWS_ZONE $awszone
+        appendClusterConf SXCM_AWS_ZONE $awszone
     fi
     if [[ $reconnectaws == true ]]; then
-        export AWS_ACCESS_KEY_ID=$AWS_ID
-        export AWS_ACCESS_KEY=$AWS_KEY
-        export AWS_DEFAULT_REGION=$AWS_ZONE
+        export AWS_ACCESS_KEY_ID=$SXCM_AWS_ID
+        export AWS_ACCESS_KEY=$SXCM_AWS_KEY
+        export AWS_DEFAULT_REGION=$SXCM_AWS_ZONE
         AWSDIR=~/.aws
         AWSCONF=$AWSDIR/credentials
         mkdir -p $AWSDIR
@@ -209,7 +209,7 @@ function doSetupAWSCredentials {
         echo "aws_access_key_id = $AWS_ACCESS_KEY_ID" >> $AWSCONF
         echo "aws_secret_access_key = $AWS_ACCESS_KEY" >> $AWSCONF
         aws configure
-        echo -e "Logged to AWS \e[1m$AWS_ZONE\e[0m with access ID \e[1m$AWS_ACCESS_KEY_ID\e[0m"
+        echo -e "Logged to AWS \e[1m$SXCM_AWS_ZONE\e[0m with access ID \e[1m$AWS_ACCESS_KEY_ID\e[0m"
     fi
 }
 
