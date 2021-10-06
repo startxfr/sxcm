@@ -38,8 +38,8 @@ function LoadConfig {
         CheckConfigOrCreate
     fi
     reloadConf
-    if [[ ! -z "${SXCM_ENV}" ]]; then
-        SXCM_ENV="dev"
+    if [[ ! -z "${SXCM_CLUSTER_ENV}" ]]; then
+        SXCM_CLUSTER_ENV="dev"
     fi
 }
 

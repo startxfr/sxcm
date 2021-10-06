@@ -53,7 +53,7 @@ objects:
     source:
       path: charts/cluster-quay/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx-secvuln.yaml
@@ -96,12 +96,6 @@ objects:
     ignoreDifferences:
       - group: operators.coreos.com
         kind: OperatorGroup
-        namespace: "${NS}"
-        jsonPointers:
-          - /metadata/annotations/olm.providedAPIs
-      - group: operators.coreos.com
-        kind: OperatorGroup
-        namespace: "openshift-operators"
         jsonPointers:
           - /metadata/annotations/olm.providedAPIs
 parameters:

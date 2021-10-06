@@ -52,7 +52,7 @@ objects:
     source:
       path: charts/cluster-config/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx.yaml
@@ -71,12 +71,14 @@ objects:
             value: "false"
           - name: clusterversion.enabled 
             value: "false"
-          - name: alertmanager.enabled
+          - name: alertmanager.enabled 
             value: "false"
           - name: alertmanager.pagerDutty.key
             value: "_pager_dutty_startx_key_"
           - name: alertmanager.api.endpoint
             value: "_startx_api_endpoint_"
+          - name: monitoring.enabled
+            value: "true"
           - name: imageprunner.enabled
             value: "true"
           - name: imageprunner.schedule
@@ -88,7 +90,9 @@ objects:
           - name: redhat.operators
             value: "true" 
           - name: helm_reposistory.enabled
-            value: "true" 
+            value: "true"
+          - name: project.enabled
+            value: "false" 
     syncPolicy:
       automated:
         prune: true
@@ -102,6 +106,11 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 60s
+    ignoreDifferences:
+      - kind: ServiceAccount
+        jsonPointers:
+        - /imagePullSecrets
+        - /secrets
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -131,7 +140,7 @@ objects:
     source:
       path: charts/cluster-config/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx-elastic.yaml
@@ -199,7 +208,7 @@ objects:
     source:
       path: charts/cluster-config/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx-operator.yaml

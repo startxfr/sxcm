@@ -113,7 +113,7 @@ objects:
     source:
       path: charts/project/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-demo-istio.yaml
@@ -135,6 +135,17 @@ objects:
       syncOptions:
         - CreateNamespace=false
         - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+    ignoreDifferences:
+      - kind: ServiceAccount
+        jsonPointers:
+        - /imagePullSecrets
+        - /secrets
 parameters:
   - name: NS
     displayName: The namespace where objects goes to

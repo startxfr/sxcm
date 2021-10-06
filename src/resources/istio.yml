@@ -56,7 +56,7 @@ objects:
     source:
       path: charts/cluster-istio/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx.yaml
@@ -98,6 +98,11 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 5m
+    ignoreDifferences:
+      - kind: ServiceAccount
+        jsonPointers:
+        - /imagePullSecrets
+        - /secrets
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -127,7 +132,7 @@ objects:
     source:
       path: charts/cluster-istio/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx.yaml
@@ -207,7 +212,7 @@ objects:
     source:
       path: charts/cluster-istio/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-startx.yaml

@@ -111,7 +111,7 @@ objects:
     source:
       path: charts/cluster-vpa/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-demo.yaml
@@ -173,7 +173,7 @@ objects:
     source:
       path: charts/cluster-vpa/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-demo.yaml
@@ -241,7 +241,7 @@ objects:
 #     source:
 #       path: charts/cluster-vpa/
 #       repoURL: 'https://github.com/startxfr/helm-repository.git'
-#       targetRevision: devel
+#       targetRevision: stable
 #       helm:
 #         valueFiles:
 #           - values-startx.yaml

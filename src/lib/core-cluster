@@ -385,14 +385,14 @@ function doClusterConfigurationCreate {
         appendIndividualClusterConf $cn SXCM_RHN_EMAIL $SXCM_RHN_EMAIL
         # appendIndividualClusterConf $cn SXCM_RHN_PULLSECRET $SXCM_RHN_PULLSECRET
         appendIndividualClusterConf $cn SXCM_CLUSTER_NAME $cn
-        appendIndividualClusterConf $cn PROFILE $profile
+        appendIndividualClusterConf $cn SXCM_CLUSTER_PROFILE $profile
         reloadIndividualClusterConf $cn
         cp $SXCM_USER_SSH_DIR/id_rsa.pub $SXCM_USER_SSH_DIR/id_rsa $clusterConfDir/ &> /dev/null
         chown 400 $clusterConfDir/id_rsa.pub $clusterConfDir/id_rsa &> /dev/null
         eval "$(ssh-agent -s)" &>/dev/null
         `ssh-add $clusterConfDir/id_rsa &> /dev/null` &> /dev/null
         echo -e "  \e[32madded\e[0m ssh key \e[1m$clusterConfDir/id_rsa\e[0m for this cluster"
-        cp $SXCM_PROFILES_PATH/install-config-$PROFILE.yml $clusterConfDir/install-config.yaml &> /dev/null
+        cp $SXCM_PROFILES_PATH/install-config-$SXCM_CLUSTER_PROFILE.yml $clusterConfDir/install-config.yaml &> /dev/null
         sed -i "s|__mycluster__|$cn|g" $clusterConfDir/install-config.yaml &> /dev/null
         sed -i "s|__ocpPullSecret__|$SXCM_RHN_PULLSECRET|g" $clusterConfDir/install-config.yaml &> /dev/null
         local SSH_PUBLICKEY=$(cat $clusterConfDir/id_rsa.pub)
@@ -415,11 +415,11 @@ function doClusterConfigurationCreate {
         git commit -am "[$cn] Record resources files for cluster $cn" &> /dev/null
         git push origin $cn &> /dev/null
         cd - &> /dev/null
-        echo -e "  \e[32mrecorded\e[0m cluster configuration based on \e[1m$PROFILE\e[0m profile"
+        echo -e "  \e[32mrecorded\e[0m cluster configuration based on \e[1m$SXCM_CLUSTER_PROFILE\e[0m profile"
         setActiveCluster $cn
         echo -e "\e[1m\e[34mSet active\e[0m cluster set to \e[1m$cn\e[0m"
     else
-        echo -e "  No profile named \e[1m$PROFILE\e[0m found"
+        echo -e "  No profile named \e[1m$SXCM_CLUSTER_PROFILE\e[0m found"
         echo -e "  you could run \e[90;4msxcm profiles\e[0m to get a list of available profiles"
         echo -en "  Do you want to create a new cluster without profile [Y/n] : "
         read newCluster
@@ -605,7 +605,7 @@ function doClusterConfigurationInfo {
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     if [[ -r $clusterConfDir/$SXCM_USER_CONF_FILE ]]; then
         . $clusterConfDir/$SXCM_USER_CONF_FILE;
-        local sourceConfFile=$SXCM_PROFILES_PATH/install-config-$PROFILE.yml
+        local sourceConfFile=$SXCM_PROFILES_PATH/install-config-$SXCM_CLUSTER_PROFILE.yml
         local desc=$(extractOCPInstallDescription $sourceConfFile desc)
         local service=$(extractOCPInstallDescription $sourceConfFile service)
         local demos=$(listDemosCluster $cn)
@@ -631,7 +631,7 @@ function doClusterConfigurationInfo {
         fi
         echo -e "\e[1m\e[34mInformation\e[0m on cluster \e[1m$cn\e[0m found in $clusterConfDir/$SXCM_USER_CONF_FILE"
         printf "\e[1m%-10s\e[0m %s\n" name $cn
-        printf "\e[1m%-10s\e[0m %s\n" profile $PROFILE
+        printf "\e[1m%-10s\e[0m %s\n" profile $SXCM_CLUSTER_PROFILE
         printf "\e[1m%-10s\e[0m %s$STATE\n" state ""
         printf "\e[1m%-10s\e[0m%s\n" desc "$desc"
         printf "\e[1m%-10s\e[0m%s\n" services "$service"

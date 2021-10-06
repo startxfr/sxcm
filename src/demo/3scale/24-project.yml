@@ -111,7 +111,7 @@ objects:
     source:
       path: charts/project/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: stable
       helm:
         valueFiles:
           - values-demo-3scale.yaml
@@ -133,6 +133,17 @@ objects:
       syncOptions:
         - CreateNamespace=false
         - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+    ignoreDifferences:
+      - kind: ServiceAccount
+        jsonPointers:
+        - /imagePullSecrets
+        - /secrets
 parameters:
   - name: 3SCALE_NS
     displayName: The namespace where 3scale server goes to
