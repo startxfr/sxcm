@@ -103,6 +103,12 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 5m
+    ignoreDifferences:
+      - kind: ServiceAccount
+        name: "default"
+        namespace: startx-3scale
+        jsonPointers:
+          - /imagePullSecrets
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
