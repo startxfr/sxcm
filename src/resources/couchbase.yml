@@ -105,10 +105,9 @@ objects:
           maxDuration: 5m
     ignoreDifferences:
       - kind: ServiceAccount
-        name: "default"
-        namespace: startx-3scale
         jsonPointers:
-          - /imagePullSecrets
+        - /imagePullSecrets
+        - /secrets
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -182,6 +181,10 @@ objects:
         namespace: "${NS}"
         jsonPointers:
           - /metadata/annotations/olm.providedAPIs
+      - kind: ServiceAccount
+        jsonPointers:
+        - /imagePullSecrets
+        - /secrets
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to

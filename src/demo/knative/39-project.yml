@@ -133,6 +133,17 @@ objects:
       syncOptions:
         - CreateNamespace=false
         - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+    ignoreDifferences:
+      - kind: ServiceAccount
+        jsonPointers:
+        - /imagePullSecrets
+        - /secrets
 parameters:
   - name: NS
     displayName: The namespace where objects goes to
