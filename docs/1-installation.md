@@ -48,9 +48,32 @@ credentials and backend (redhat) used for cluster management.
 
 ```bash
 # setup the sxcm redhat environment (interactive)
-sxcm setup redhat
+sxcm setup rhn
 # setup the sxcm redhat environment (static)
-sxcm setup redhat username password email pullSecret
+sxcm setup rhn username password email pullSecret
+```
+
+### Docker.io credentials
+
+Dockerhub setup is an optionnal step when configuring sxcm enviroment. It allow you to use personnalized credentials to access dockerhub registry (restricted anonymous access is a pain ;()).
+
+```bash
+# setup the sxcm dockerhub environment (interactive)
+sxcm setup docker
+# setup the sxcm dockerhub environment (static)
+sxcm setup docker username password
+```
+
+### Quay.io credentials
+
+Quay.io setup is an optionnal step when configuring sxcm enviroment. It allow you to use personnalized credentials to access quay.io registry (no restricted anonymous acces).
+Used when publishing builded images.
+
+```bash
+# setup the sxcm dockerhub environment (interactive)
+sxcm setup quay
+# setup the sxcm dockerhub environment (static)
+sxcm setup quay username password
 ```
 
 ### Aws credentials
