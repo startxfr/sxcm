@@ -19,8 +19,8 @@ The objectif of this version is :
 
 | Release                                                         | Date     | Description                         |
 | --------------------------------------------------------------- | -------- | ----------------------------------- |
-| [8.13.1](https://github.com/startxfr/sxcm/releases/tag/v8.13.1) | 21-09-23 | Stable for openshift 4.8.13 release |
-| [8.3.3](https://github.com/startxfr/sxcm/releases/tag/v8.3.3)   | 21-08-03 | Stable for openshift 8.3.3 release  |
+| [8.13.1](https://github.com/startxfr/sxcm/releases/tag/v8.13.1) | 21-10-07 | Stable for openshift 4.8.13 release |
+| 8.3.3                                                           | 21-08-03 | Stable for openshift 8.3.3 release  |
 
 ## version 7.22.x (chaumeil)
 
@@ -46,9 +46,9 @@ The objectif of this version is :
 - Finish to add demo in the example-catalog
 - Move documentation to readthedocs infrastructure
 
-| Release                                                         | Date     | Description                         |
-| --------------------------------------------------------------- | -------- | ----------------------------------- |
-| [6.1.1](https://github.com/startxfr/sxcm/releases/tag/v6.1.1)   | 21-08-03 | Stable for openshift 4.6.1 release |
+| Release                                                       | Date     | Description                        |
+| ------------------------------------------------------------- | -------- | ---------------------------------- |
+| [6.1.1](https://github.com/startxfr/sxcm/releases/tag/v6.1.1) | 21-08-03 | Stable for openshift 4.6.1 release |
 
 ## version 0.1.x (chauzu)
 
