@@ -75,6 +75,7 @@ objects:
         prune: false
         selfHeal: false
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=false
     ignoreDifferences:

@@ -215,6 +215,7 @@ objects:
 #         prune: true
 #         selfHeal: false
 #       syncOptions:
+#         - ApplyOutOfSyncOnly=true
 #         - CreateNamespace=false
 #         - Validate=true
 #       retry:

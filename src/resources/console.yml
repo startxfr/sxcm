@@ -70,6 +70,7 @@ objects:
         prune: true
         selfHeal: false
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
       retry:
@@ -80,10 +81,8 @@ objects:
           maxDuration: 20s
     ignoreDifferences:
       - kind: ConfigMap
-        name: custom-logo
-        namespace: "openshift-console"
         jsonPointers:
-          - /
+          - /data
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to

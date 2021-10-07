@@ -70,6 +70,7 @@ objects:
         prune: true
         selfHeal: false
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
       retry:
@@ -80,7 +81,6 @@ objects:
           maxDuration: 20s
     ignoreDifferences:
       - kind: Secret
-        namespace: "openshift-authentication"
         jsonPointers:
           - /
 parameters:

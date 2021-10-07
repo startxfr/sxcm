@@ -131,6 +131,7 @@ objects:
         prune: true
         selfHeal: true
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
 - kind: Application
@@ -178,6 +179,7 @@ objects:
         prune: true
         selfHeal: true
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
       retry:

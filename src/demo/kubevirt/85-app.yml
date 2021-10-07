@@ -85,6 +85,7 @@ objects:
             value: "true"
     syncPolicy:
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
       retry:
@@ -145,6 +146,7 @@ objects:
         prune: true
         selfHeal: true
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
       retry:

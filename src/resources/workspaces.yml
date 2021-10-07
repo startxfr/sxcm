@@ -140,6 +140,7 @@ objects:
         prune: true
         selfHeal: false
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
       retry:
@@ -195,6 +196,7 @@ objects:
         prune: false
         selfHeal: false
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
       retry:
