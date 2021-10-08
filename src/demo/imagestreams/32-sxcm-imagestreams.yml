@@ -81,8 +81,7 @@ objects:
     ignoreDifferences:
       - group: image.openshift.io
         kind: ImageStream
-        jsonPointers:
-          - /spec
+        jsonPointers: [ "/spec" ]
 parameters:
   - name: NS
     displayName: Openshift namespace

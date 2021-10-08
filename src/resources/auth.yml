@@ -81,8 +81,7 @@ objects:
           maxDuration: 20s
     ignoreDifferences:
       - kind: Secret
-        jsonPointers:
-          - /
+        jsonPointers: [ "/" ]
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to

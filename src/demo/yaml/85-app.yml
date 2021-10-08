@@ -88,8 +88,7 @@ objects:
       - group: batch
         kind: Job
         namespace: "${NS}"
-        jsonPointers:
-          - /spec/ttlSecondsAfterFinished
+        jsonPointers: [ "/spec/ttlSecondsAfterFinished" ]
 parameters:
   - name: NS
     displayName: The namespace where objects goes to

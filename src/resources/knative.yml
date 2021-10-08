@@ -102,8 +102,7 @@ objects:
           maxDuration: 5m
     ignoreDifferences:
       - kind: Namespace
-        jsonPointers:
-        - /metadata/annotations
+        jsonPointers: [ "/metadata/annotations" ]
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -178,8 +177,7 @@ objects:
       - group: operators.coreos.com
         kind: OperatorGroup
         namespace: "${NS}"
-        jsonPointers:
-          - /metadata/annotations/olm.providedAPIs
+        jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:

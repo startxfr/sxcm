@@ -87,8 +87,7 @@ objects:
       - group: operators.coreos.com
         kind: OperatorGroup
         namespace: "${NS}"
-        jsonPointers:
-          - /metadata/annotations/olm.providedAPIs
+        jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to

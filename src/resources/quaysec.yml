@@ -97,8 +97,7 @@ objects:
     ignoreDifferences:
       - group: operators.coreos.com
         kind: OperatorGroup
-        jsonPointers:
-          - /metadata/annotations/olm.providedAPIs
+        jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to

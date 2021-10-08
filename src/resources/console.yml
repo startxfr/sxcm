@@ -81,12 +81,11 @@ objects:
           maxDuration: 20s
     ignoreDifferences:
       - kind: ConfigMap
-        jsonPointers:
-          - /data
+        jsonPointers: [ "/data" ]
       - kind: ConfigMap
         name: custom-logo
         namespace: openshift-console
-        jsonPointers: "/"
+        jsonPointers: [ "/" ]
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to

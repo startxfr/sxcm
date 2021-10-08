@@ -141,8 +141,7 @@ objects:
     ignoreDifferences:
       - group: admissionregistration.k8s.io
         kind: MutatingWebhookConfiguration
-        jsonPointers:
-          - /webhooks/0/clientConfig/caBundle
+        jsonPointers: [ "/webhooks/0/clientConfig/caBundle" ]
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
