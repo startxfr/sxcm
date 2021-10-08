@@ -83,6 +83,10 @@ objects:
       - kind: ConfigMap
         jsonPointers:
           - /data
+      - kind: ConfigMap
+        name: custom-logo
+        namespace: openshift-console
+        jsonPointers: "/"
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
