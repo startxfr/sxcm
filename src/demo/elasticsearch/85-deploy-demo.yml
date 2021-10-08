@@ -69,7 +69,7 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "priority"
+            value: "elasticsearch"
           - name: demo.elasticsearch.namespace
             value: "${NS}"
     syncPolicy:

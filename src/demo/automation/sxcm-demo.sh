@@ -59,7 +59,7 @@ function myDemoUsage {
 # Get information about the demo scenario
 function myDemoInfo {
     cat <<EOF
-Description : Deployment of the awx operator and a demo report. This allow 
+Description : Deployment of the automation operator and a demo report. This allow 
               demostrator to show how Openshift 4 infrastructure could report status of
               compliancy again private or public policies
 Require     : ocs

@@ -1,47 +1,104 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-awx-app-project
+  name: sxcm-demo-automation-project
   annotations:
-    openshift.io/display-name: Demo STARTX - 3Scale App
-    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/awx
+    openshift.io/display-name: Demo STARTX - AWX
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/automation
     openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of a awx infra and a sample application using this infrastructure to 
-      demonstrate the API management capacities of 3Scale solution running under an 
-      openshift 4 environment
-    iconClass: icon-awx
-    tags: startx,awx,demo,dev
+      Deployment of the automation operator and a demo report. This allow 
+      demostrator to show how Openshift 4 infrastructure could report status of
+      compliancy again private or public policies
+    iconClass: icon-load-balancer
+    tags: startx,automation,demo,dev
   labels:
-    template: sxcm-demo-awx-app-project
+    template: sxcm-demo-automation-project
 message: |-
-  Your demo application ${NS} for awx technology is now created.
+  Your demo project ${NS} for AWX technology is now created.
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
+  Service        : automation
   Project        : ${NS}
 
 labels:
-  template: sxcm-demo-awx-app-project
+  template: sxcm-demo-automation-project
   app.kubernetes.io/managed-by: sxcm
 objects:
-- kind: Application
+- kind: AppProject
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${NS}-app
+    name: ${NS}
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "${NS}"
-      app.kubernetes.io/name: "${NS}-application"
+      app.kubernetes.io/name: "${NS}-appproject"
       app.kubernetes.io/part-of: ${NS}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "${NS}-project"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    sourceRepos:
+      - '*'
+    destinations:
+      - namespace: ${NS}
+        server: '*'
+    clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+    roles:
+    - name: dev
+      description: Read-only privileges to group dev in ${NS} project
+      policies:
+      - g, dev, role:readonly
+      - p, role:startx-dev, *, get, .${NS}/*, allow
+      groups:
+      - dev
+    - name: ops
+      description: Read-only (and sync) privileges to group ops in ${NS} project
+      policies:
+      - p, role:startx-ops, *, get, .${NS}/*, allow
+      - p, role:startx-ops, *, sync, .${NS}/*, allow
+      - g, ops, role:startx-ops
+      groups:
+      - ops
+    - name: devops
+      description: Read-only privileges to group devops in ${NS} project
+      policies:
+      - p, role:startx-devops, *, get, .${NS}/*, allow
+      - p, role:startx-devops, applications, sync, .${NS}/*, allow
+      - p, role:startx-devops, repositories, sync, .${NS}/*, allow
+      - g, devops, role:startx-devops
+      groups:
+      - devops
+    - name: admin
+      description: All privileges to group admin in ${NS} project
+      policies:
+      - p, role:startx-admin, *, *, ${NS}/*, allow
+      - g, system:cluster-admins, role:admin
+      groups:
+      - my-oidc-group
+      - system:cluster-admins
+      - admin
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${NS}-project
+    namespace: "${ARGOCD_NS}"
+    labels:
+      <<: *basic_labels
+      app.kubernetes.io/name: "${NS}-project-application"
+    annotations:
+      <<: *basic_annotations
+      # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
   spec:
@@ -51,14 +108,14 @@ objects:
     info:
       - name: teammail
         value: dev@startx.fr
-    project: ${NS}
+    project: cluster-admin
     source:
-      path: charts/example-catalog/
+      path: charts/project/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: devel
       helm:
         valueFiles:
-          - values-awx.yaml
+          - values-demo-automation.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -68,10 +125,8 @@ objects:
             value: "${ENV}"
           - name: context.version
             value: "${VERSION}"
-          - name: context.app
-            value: "priority"
-          - name: demo.awx.namespace
-            value: "${NS}"
+          - name: project.requester
+            value: "sxcm"
     syncPolicy:
       automated:
         prune: true
@@ -85,17 +140,17 @@ objects:
         backoff:
           duration: 5s
           factor: 2
-          maxDuration: 20s
+          maxDuration: 5m
 parameters:
-  - name: NS
-    displayName: demo namespace for awx instance
-    description: "Name of the awx namespace"
-    value: demo-awx
-    required: true
   - name: OPERATOR_NS
     displayName: The namespace where operator goes to
     description: "Namespace to place objects to"
-    value: startx-awx
+    value: startx-automation
+    required: true
+  - name: NS
+    displayName: The namespace where objects goes to
+    description: "Namespace to place objects to"
+    value: demo-automation
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
@@ -126,10 +181,4 @@ parameters:
     displayName: Project service
     description: "Project service"
     value: demo
-    required: true
-  - name: RANDRUN
-    displayName: Random string for job execution
-    description: Random string suffix to use for job uniqueness
-    from: "[a-z0-9]{10}"
-    generate: expression
     required: true
