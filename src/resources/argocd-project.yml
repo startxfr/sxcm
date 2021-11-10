@@ -190,35 +190,31 @@ objects:
   - kind: OperatorGroup
     apiVersion: operators.coreos.com/v1
     metadata:
-      name: ${ARGOCD_NS}
-      namespace: ${ARGOCD_NS}
+      name: gitops
+      namespace: ${OPERATOR_NS}
       labels:
         <<: *basic_labels
         app.kubernetes.io/name: "${ARGOCD_NS}-operatorgroup"
       annotations:
-        olm.providedAPIs: AppProject.v1alpha1.argoproj.io,Application.v1alpha1.argoproj.io,ArgoCD.v1alpha1.argoproj.io,ArgoCDExport.v1alpha1.argoproj.io
+        olm.providedAPIs: AppProject.v1alpha1.argoproj.io,Application.v1alpha1.argoproj.io,ApplicationSet.v1alpha1.argoproj.io,ArgoCD.v1alpha1.argoproj.io,GitopsService.v1alpha1.pipelines.openshift.io
         <<: *basic_annotations
-    spec:
-      targetNamespaces:
-        - ${ARGOCD_NS}
+    spec: {}
   - kind: Subscription
     apiVersion: operators.coreos.com/v1alpha1
     metadata:
-      name: argocd-operator
-      namespace: "${ARGOCD_NS}"
+      name: openshift-gitops-operator
+      namespace: "${OPERATOR_NS}"
       labels:
         <<: *basic_labels
         app.kubernetes.io/name: "argocd-operator-subscription"
       annotations:
         <<: *basic_annotations
     spec:
-      channel: alpha
-      startingCSV: argocd-operator.v0.0.14
-      # channel: argocd-v3.3
-      # startingCSV: red-hat-argocd.v3.3.2-20200903
+      channel: stable
+      startingCSV: openshift-gitops-operator.v1.3.1
       installPlanApproval: Automatic
-      name: argocd-operator
-      source: community-operators
+      name: openshift-gitops-operator
+      source: redhat-operators
       sourceNamespace: ${MARKETPLACE_NS}
   - kind: NetworkPolicy
     apiVersion: networking.k8s.io/v1

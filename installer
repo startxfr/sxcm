@@ -32,15 +32,15 @@ echo "Move to /tmp"
 cd /tmp/
 echo "Download $SXCM_ARCHIVE_URL"
 curl -O -L  $SXCM_ARCHIVE_URL &> /dev/null
-echo "Unzip $SXCM_VERSION.zip archive"
-unzip -qq $SXCM_VERSION.zip
+echo "Unzip $SXCM_INSTALLER_VERSION.zip archive"
+unzip -qq $SXCM_INSTALLER_VERSION.zip
 echo "Install sxcm resources"
 cd - &> /dev/null
-cd /tmp/sxcm-$SXCM_VERSION &> /dev/null
+cd /tmp/sxcm-$SXCM_INSTALLER_VERSION &> /dev/null
 mv src/completion $SXCM_COMPLETION_PATH
 mv src/cli $SXCM_BIN_PATH
 mv src $SXCM_PATH
 cd - &> /dev/null
-rm -rf /tmp/sxcm-$SXCM_VERSION /tmp/$SXCM_VERSION.zip &> /dev/null
+rm -rf /tmp/sxcm-$SXCM_INSTALLER_VERSION /tmp/$SXCM_INSTALLER_VERSION.zip &> /dev/null
 echo "sxcm is now installed"
 

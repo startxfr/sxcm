@@ -150,6 +150,9 @@ objects:
             memory: 64Mi
       rbac:
         defaultPolicy: edit
+        policy: |
+          g, system:cluster-admins, role:admin
+      initialSSHKnownHosts: {}
       grafana:
         enabled: true
         size: 2
