@@ -16,9 +16,10 @@ The objectif of this version is :
 
 - Stable support for cluster service running under an Openshift 4.8.x cluster
 - Stable helm-repository catalog
-
+ 
 | Release                                                         | Date     | Description                         |
 | --------------------------------------------------------------- | -------- | ----------------------------------- |
+| [8.20.1](https://github.com/startxfr/sxcm/releases/tag/v8.20.1) | 21-11-11 | Stable for openshift 4.8.20 release |
 | [8.13.1](https://github.com/startxfr/sxcm/releases/tag/v8.13.1) | 21-10-07 | Stable for openshift 4.8.13 release |
 | 8.3.3                                                           | 21-08-03 | Stable for openshift 8.3.3 release  |
 

@@ -13,7 +13,7 @@ This cluster resource is based on the [argocd-deploy openshift template](https:/
 | **provider**  | STARTX                                                |
 | **format**    | openshift template + script                           |
 | **content**   | 1 ArgoCD + 2 AppProject + 1 ClusterRoleBinding        |
-| **namespace** | startx-argocd                                         |
+| **namespace** | openshift-gitops                                         |
 | **operator**  | argocd-operator@0.0.14                                |
 
 ## Add to a cluster

@@ -834,7 +834,7 @@ parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
     description: "Namespace to place argocd server to"
-    value: startx-argocd
+    value: openshift-gitops
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"

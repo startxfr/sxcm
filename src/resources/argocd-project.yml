@@ -155,7 +155,7 @@ objects:
       namespace: ${ARGOCD_NS}
       labels:
         <<: *basic_labels
-        app.kubernetes.io/name: "dev-rolebinding"
+        app.kubernetes.io/name: "dev-argocd-rolebinding"
       annotations:
         <<: *basic_annotations
     roleRef:
@@ -173,7 +173,7 @@ objects:
       namespace: ${ARGOCD_NS}
       labels:
         <<: *basic_labels
-        app.kubernetes.io/name: "devops-rolebinding"
+        app.kubernetes.io/name: "devops-argocd-rolebinding"
       annotations:
         <<: *basic_annotations
     roleRef:
@@ -187,18 +187,41 @@ objects:
       - kind: Group
         apiGroup: rbac.authorization.k8s.io
         name: "system:cluster-admins"
-  - kind: OperatorGroup
-    apiVersion: operators.coreos.com/v1
+  - kind: RoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
     metadata:
-      name: gitops
-      namespace: ${OPERATOR_NS}
+      name: sa-admin-argocdctl-appprojects-rb
+      namespace: ${ARGOCD_NS}
       labels:
         <<: *basic_labels
-        app.kubernetes.io/name: "${ARGOCD_NS}-operatorgroup"
+        app.kubernetes.io/name: "sa-admin-argocdctl-appprojects-rolebinding"
       annotations:
-        olm.providedAPIs: AppProject.v1alpha1.argoproj.io,Application.v1alpha1.argoproj.io,ApplicationSet.v1alpha1.argoproj.io,ArgoCD.v1alpha1.argoproj.io,GitopsService.v1alpha1.pipelines.openshift.io
         <<: *basic_annotations
-    spec: {}
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: appprojects.argoproj.io-v1alpha1-admin
+    subjects:
+      - kind: ServiceAccount
+        name: ${ARGOCD_NS}-argocd-application-controller
+        namespace: ${ARGOCD_NS}
+  - kind: ClusterRoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: sa-admin-argocdctl-rb
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "sa-admin-argocdctl-rolebinding"
+      annotations:
+        <<: *basic_annotations
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cluster-admin
+    subjects:
+      - kind: ServiceAccount
+        name: ${ARGOCD_NS}-argocd-application-controller
+        namespace: ${ARGOCD_NS}
   - kind: Subscription
     apiVersion: operators.coreos.com/v1alpha1
     metadata:
@@ -234,7 +257,7 @@ parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
     description: "Namespace to place argocd server to"
-    value: startx-argocd
+    value: openshift-gitops
   - name: OPERATOR_NS
     displayName: The operator namespace where objects goes to
     description: "operator namespace to place objects to"

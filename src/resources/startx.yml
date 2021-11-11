@@ -71,18 +71,20 @@ objects:
             value: "true"
           - name: project.enabled
             value: "true"
+          - name: project.hooked
+            value: "false"
           - name: rbac.enabled
-            value: "true"
+            value: "false"
           - name: networkpolicy.enabled
-            value: "true"
+            value: "false"
           - name: limits.enabled
-            value: "true"
+            value: "false"
           - name: quotas.enabled
-            value: "true"
+            value: "false"
           - name: serviceAccounts.enabled
-            value: "true"
+            value: "false"
           - name: dockercfg.enabled
-            value: "true"
+            value: "false"
           - name: dockercfg.list[0].username
             value: "${QUAYIO_LOGIN}"
           - name: dockercfg.list[0].password
@@ -146,7 +148,7 @@ objects:
       targetRevision: devel
       helm:
         valueFiles:
-          - values-startx-argocd.yaml
+          - values-openshift-gitops.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -245,7 +247,7 @@ parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
     description: "Namespace to place argocd server to"
-    value: startx-argocd
+    value: openshift-gitops
   - name: NS
     displayName: STARTX namespace
     description: "STARTX namespace"

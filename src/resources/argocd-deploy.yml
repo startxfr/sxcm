@@ -27,13 +27,13 @@ objects:
   - kind: ArgoCD
     apiVersion: argoproj.io/v1alpha1
     metadata:
-      name: "startx"
+      name: "openshift-gitops"
       namespace: "${ARGOCD_NS}"
       labels: 
         app.startx.fr/scope: "${SCOPE}"
         app.startx.fr/cluster: "${CLUSTER}"
         app.startx.fr/component: "argocd"
-        app.kubernetes.io/name: "startx-argocd"
+        app.kubernetes.io/name: "openshift-gitops"
         # app.kubernetes.io/part-of: "${CLUSTER}"
         app.kubernetes.io/version: "${VERSION}"
         app.kubernetes.io/component: "argocd"
@@ -83,7 +83,7 @@ objects:
             scaleTargetRef:
               apiVersion: apps/v1
               kind: Deployment
-              name: startx-server
+              name: openshift-gitops
             targetCPUUtilizationPercentage: 60
         insecure: true
         resources:
@@ -142,11 +142,11 @@ objects:
         resources:
           limits:
             cpu: 200m
-            ephemeral-storage: 100Mi
+            ephemeral-storage: 300Mi
             memory: 128Mi
           requests:
             cpu: 50m
-            ephemeral-storage: 50Mi
+            ephemeral-storage: 100Mi
             memory: 64Mi
       rbac:
         defaultPolicy: edit
@@ -154,7 +154,7 @@ objects:
           g, system:cluster-admins, role:admin
       initialSSHKnownHosts: {}
       grafana:
-        enabled: true
+        enabled: false
         size: 2
         resources:
           limits:
@@ -281,6 +281,7 @@ objects:
         - my-oidc-group
         - system:cluster-admins
         - admin
+        - "system:serviceaccount:${ARGOCD_NS}"
   - kind: AppProject
     apiVersion: argoproj.io/v1alpha1
     metadata:
@@ -343,16 +344,87 @@ objects:
         description: All privileges to group admin in cluster-admin project
         policies:
         - p, role:startx-admin, *, *, cluster-admin/*, allow
-        - g, system:cluster-admins, role:admin
+        - g, system:cluster-admins, role:startx-admin
+        - g, "system:serviceaccount:${ARGOCD_NS}", role:startx-admin
         groups:
         - my-oidc-group
+        - system:cluster-admins
+        - "system:serviceaccount:${ARGOCD_NS}"
+        - admin
+  - kind: AppProject
+    apiVersion: argoproj.io/v1alpha1
+    metadata:
+      name: default
+      namespace: "${ARGOCD_NS}"
+      labels:
+        app.startx.fr/scope: "${SCOPE}"
+        app.startx.fr/cluster: "${CLUSTER}"
+        app.startx.fr/component: "argocd"
+        # app.kubernetes.io/part-of: "${CLUSTER}"
+        app.kubernetes.io/version: "${VERSION}"
+        app.kubernetes.io/component: "argocd"
+        app.kubernetes.io/name: "default-appproject"
+      annotations: 
+        openshift.io/generated-by: sxcm
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      sourceRepos:
+        - '*'
+      destinations:
+        - namespace: '*'
+          server: '*'
+      clusterResourceWhitelist:
+        - group: '*'
+          kind: '*'
+      roles:
+      - name: dev
+        description: Read-only privileges to group dev in default project
+        policies:
+        - g, dev, role:readonly
+        - p, role:startx-dev, *, get, default/*, allow
+        groups:
+        - dev
+        - system:authenticated
+      - name: ops
+        description: Read-only (and sync) privileges to group ops in default project
+        policies:
+        - p, role:startx-ops, clusters, get, default/*, allow
+        - p, role:startx-ops, projects, get, default/*, allow
+        - p, role:startx-ops, applications, get, default/*, allow
+        - p, role:startx-ops, applications, sync, default/*, allow
+        - p, role:startx-ops, repositories, get, default/*, allow
+        - p, role:startx-ops, repositories, sync, default/*, allow
+        - p, role:startx-ops, certificates, get, default/*, allow
+        - g, ops, role:startx-ops
+        groups:
+        - ops
+      - name: devops
+        description: Read-only privileges to group devops in default project
+        policies:
+        - p, role:startx-devops, clusters, get, default/*, allow
+        - p, role:startx-devops, projects, get, default/*, allow
+        - p, role:startx-devops, applications, get, default/*, allow
+        - p, role:startx-devops, repositories, get, default/*, allow
+        - p, role:startx-devops, certificates, get, default/*, allow
+        - g, devops, role:startx-devops
+        groups:
+        - devops
+      - name: admin
+        description: All privileges to group admin in default project
+        policies:
+        - p, role:startx-admin, *, *, default/*, allow
+        - g, system:defaults, role:admin
+        groups:
+        - my-oidc-group
+        - "system:serviceaccount:${ARGOCD_NS}"
         - system:cluster-admins
         - admin
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
     description: "Namespace to place argocd server to"
-    value: startx-argocd
+    value: openshift-gitops
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
