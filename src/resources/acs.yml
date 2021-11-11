@@ -1,42 +1,42 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-kubevirt-project
+  name: sxcm-cluster-acs-project
   annotations:
-    openshift.io/display-name: STARTX cluster KubeVirt (admin)
-    description: Deploy cluster-wide resources to enable KubeVirt support according to sxcm definitions
+    openshift.io/display-name: STARTX Advanced Security Management (admin)
+    description: Deploy cluster-wide resources to enable ACS support for multi-cluster management
     iconClass: icon-openshift
-    tags: startx,cluster,config,admin,kubevirt
+    tags: startx,cluster,config,admin,acs,multi-cloud,management
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxcm_console_timeout: "40"
+    sxcm_console_timeout: "30"
   labels:
-    template: sxcm-cluster-kubevirt-project
-    app.kubernetes.io/name: "sxcm-cluster-kubevirt-project"
+    template: sxcm-cluster-acs-project
+    app.kubernetes.io/name: "sxcm-cluster-acs-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
-  Your cluster-wide KubeVirt support is now enabled. Pay attention to hardware requirements before attempting to run VMs.
+  Your cluster-wide ACS support for multi-cluster security management is now enabled.
 
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
-  Operator          : kubevirt-hyperconverged-operator.v2.3.0
+  Operator          : rhacs.3.65.1
 labels:
-  template: sxcm-cluster-kubevirt-project
+  template: sxcm-cluster-acs-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-kubevirt-project
+    name: startx-cluster-acs-project
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-kubevirt"
-      app.kubernetes.io/name: "argoapp-cluster-kubevirt-project-application"
+      app.startx.fr/component: "cluster-acs"
+      app.kubernetes.io/name: "startx-cluster-acs-project-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-kubevirt"
+      app.kubernetes.io/component: "cluster-acs"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -51,9 +51,9 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-kubevirt/
+      path: charts/cluster-acs/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: master
+      targetRevision: devel
       helm:
         valueFiles:
           - values-startx.yaml
@@ -67,21 +67,21 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "openshift-kubevirt"
+            value: "openshift-acs"
           - name: project.enabled
             value: "true"
           - name: project.project.requester
             value: "sxcm"
           - name: operator.enabled
             value: "false"
-          - name: hyperconvergedCluster.enabled
+          - name: acs.enabled
             value: "false"
-          - name: vms.enabled
+          - name: acs.central.enabled
             value: "false"
     syncPolicy:
       automated:
         prune: true
-        selfHeal: true
+        selfHeal: false
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
@@ -95,16 +95,16 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-kubevirt-operator
+    name: startx-cluster-acs-operator
     namespace: "${ARGOCD_NS}"
     labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-kubevirt"
-      app.kubernetes.io/name: "argoapp-cluster-kubevirt-operator-application"
+      app.startx.fr/component: "cluster-acs"
+      app.kubernetes.io/name: "startx-cluster-acs-operator-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-kubevirt"
+      app.kubernetes.io/component: "cluster-acs"
     annotations:
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -119,9 +119,9 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-kubevirt/
+      path: charts/cluster-acs/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: master
+      targetRevision: devel
       helm:
         valueFiles:
           - values-startx.yaml
@@ -135,19 +135,19 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "openshift-kubevirt"
+            value: "openshift-acs"
           - name: project.enabled
             value: "false"
           - name: operator.enabled
             value: "true"
-          - name: hyperconvergedCluster.enabled
+          - name: acs.enabled
             value: "false"
-          - name: vms.enabled
+          - name: acs.central.enabled
             value: "false"
     syncPolicy:
-      automated:
-        prune: true
-        selfHeal: true
+      automated: 
+        prune: false
+        selfHeal: false
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
@@ -166,16 +166,16 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-kubevirt-instance
+    name: startx-cluster-acs-instance
     namespace: "${ARGOCD_NS}"
-    labels:
+    labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-kubevirt"
-      app.kubernetes.io/name: "argoapp-cluster-kubevirt-instance-application"
+      app.startx.fr/component: "cluster-acs"
+      app.kubernetes.io/name: "startx-cluster-acs-instance-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-kubevirt"
+      app.kubernetes.io/component: "cluster-acs"
     annotations:
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -190,9 +190,9 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-kubevirt/
+      path: charts/cluster-acs/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: master
+      targetRevision: devel
       helm:
         valueFiles:
           - values-startx.yaml
@@ -206,19 +206,19 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "openshift-kubevirt"
+            value: "openshift-acs"
           - name: project.enabled
             value: "false"
           - name: operator.enabled
             value: "false"
-          - name: hyperconvergedCluster.enabled
+          - name: acs.enabled
             value: "true"
-          - name: vms.enabled
-            value: "false"
+          - name: acs.central.enabled
+            value: "true"
     syncPolicy:
       automated:
         prune: true
-        selfHeal: true
+        selfHeal: false
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
@@ -226,9 +226,9 @@ objects:
       retry:
         limit: 3
         backoff:
-          duration: 30s
+          duration: 60s
           factor: 1
-          maxDuration: 90s
+          maxDuration: 60s
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
@@ -237,7 +237,7 @@ parameters:
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
-    value: openshift-cnv
+    value: open-cluster-management
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"

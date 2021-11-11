@@ -6,8 +6,8 @@ metadata:
     hourlyCost: "13,1"
     description: "3 master (8Vcpu, 16Go RAM, 500Go io1 2000iop) +  3 worker (96Vcpu, 192Go RAM, 500Go io1 4000iop) - [AWS Paris ]"
     descriptionTab: "| 3  | 8  | 16  | 500 | io1 | 2000 | 3  | 96 | 192 | 500 | io1 | 4000 | AWS Paris "
-    descriptionClusterconfig: argocd,pipeline,istio,quaysec,machine,workspaces,couchbase,sso,vault,Knative,logging,RHACM,quay,OCS,metering,3Scale,Kubevirt
-    clusterconfig: argocd-project,argocd-deploy,startx,infra,auth,rbac,infra,machine,console,storage,ocs,pipeline,istio,couchbase,sso,knative,3scale,quay,vault,workspaces,logging,acm,metering,kubevirt
+    descriptionClusterconfig: argocd,pipeline,istio,quaysec,machine,workspaces,couchbase,sso,vault,Knative,logging,RHACMS,quay,OCS,metering,3Scale,Kubevirt
+    clusterconfig: argocd-project,argocd-deploy,startx,infra,auth,rbac,infra,machine,console,storage,ocs,pipeline,istio,couchbase,sso,knative,3scale,quay,vault,workspaces,logging,acm,acs,metering,kubevirt
 compute:
   - name: worker
     hyperthreading: Enabled

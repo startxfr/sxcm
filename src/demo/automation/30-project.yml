@@ -1,31 +1,31 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-awx-project
+  name: sxcm-demo-automation-project
   annotations:
     openshift.io/display-name: Demo STARTX - AWX
-    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/awx
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/automation
     openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of the awx operator and a demo report. This allow 
+      Deployment of the automation operator and a demo report. This allow 
       demostrator to show how Openshift 4 infrastructure could report status of
       compliancy again private or public policies
     iconClass: icon-load-balancer
-    tags: startx,awx,demo,dev
+    tags: startx,automation,demo,dev
   labels:
-    template: sxcm-demo-awx-project
+    template: sxcm-demo-automation-project
 message: |-
   Your demo project ${NS} for AWX technology is now created.
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
-  Service        : awx
+  Service        : automation
   Project        : ${NS}
 
 labels:
-  template: sxcm-demo-awx-project
+  template: sxcm-demo-automation-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: AppProject
@@ -115,7 +115,7 @@ objects:
       targetRevision: devel
       helm:
         valueFiles:
-          - values-demo-awx.yaml
+          - values-demo-automation.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -132,6 +132,7 @@ objects:
         prune: true
         selfHeal: true
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
       retry:
@@ -144,17 +145,17 @@ parameters:
   - name: OPERATOR_NS
     displayName: The namespace where operator goes to
     description: "Namespace to place objects to"
-    value: startx-awx
+    value: startx-automation
     required: true
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
-    value: demo-awx
+    value: demo-automation
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
     description: "Namespace to place argocd server to"
-    value: startx-argocd
+    value: openshift-gitops
     required: true
   - name: SCOPE
     displayName: Project scope

@@ -98,6 +98,7 @@ objects:
         prune: true
         selfHeal: true
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
       retry:
@@ -156,7 +157,7 @@ objects:
           - name: context.app
             value: "startx-infra"
           - name: redhat.operators
-            value: "false" 
+            value: "true" 
           - name: operatorElastic.enabled
             value: "true" 
     syncPolicy:
@@ -164,6 +165,7 @@ objects:
         prune: false
         selfHeal: true
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
       retry:
@@ -177,8 +179,7 @@ objects:
         kind: OperatorGroup
         namespace: "openshift-operators-redhat"
         name: elasticsearch-operator
-        jsonPointers:
-          - /metadata/annotations/olm.providedAPIs
+        jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -230,6 +231,7 @@ objects:
         prune: false
         selfHeal: true
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
       retry:
@@ -242,14 +244,12 @@ objects:
       - group: operators.coreos.com
         kind: OperatorGroup
         namespace: "openshift-operators"
-        jsonPointers:
-          - /metadata/annotations
-          - /metadata/labels
+        jsonPointers: [ "/metadata" ]
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
     description: "Namespace to place argocd server to"
-    value: startx-argocd
+    value: openshift-gitops
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
