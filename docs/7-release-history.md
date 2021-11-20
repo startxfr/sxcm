@@ -4,9 +4,20 @@
 
 _The objectif of this release is to stabilize the content for a stable post-configuration of an OCP cluster in version 4.10.x._
 
-## version 9.0.x (claux)
+## version 9.x.x (claux)
 
-_The objectif of this release is to stabilize the content for a stable post-configuration of an OCP cluster in version 4.9.x._
+This version is designed and stabilized for the [Openshift](https://docs.openshift.com) **[4.9 release](https://docs.openshift.com/container-platform/4.9)**.
+
+The objectif of this version is :
+
+- Stable support for cluster service running under an Openshift 4.9.x cluster
+- Stable helm-repository catalog
+- Stable artfacthub and readthedocs publication
+- move to gitlab-ci backend
+
+| Release                                                         | Date     | Description                         |
+| --------------------------------------------------------------- | -------- | ----------------------------------- |
+| [9.8.1](https://github.com/startxfr/sxcm/releases/tag/v9.8.1) | 21-11-20 | Stable for openshift 4.9.8 release |
 
 ## version 8.x.x (charbonnel)
 
@@ -16,10 +27,12 @@ The objectif of this version is :
 
 - Stable support for cluster service running under an Openshift 4.8.x cluster
 - Stable helm-repository catalog
- 
+
 | Release                                                         | Date     | Description                         |
 | --------------------------------------------------------------- | -------- | ----------------------------------- |
-| [8.20.1](https://github.com/startxfr/sxcm/releases/tag/v8.20.1) | 21-11-11 | Stable for openshift 4.8.20 release |
+| [8.20.7](https://github.com/startxfr/sxcm/releases/tag/v8.20.7) | 21-11-20 | Stable for openshift 4.8.21 release |
+| [8.20.5](https://github.com/startxfr/sxcm/releases/tag/v8.20.5) | 21-11-14 | Revamped CI pipeline                | 
+| [8.20.3](https://github.com/startxfr/sxcm/releases/tag/v8.20.3) | 21-11-11 | Stable for openshift 4.8.20 release |
 | [8.13.1](https://github.com/startxfr/sxcm/releases/tag/v8.13.1) | 21-10-07 | Stable for openshift 4.8.13 release |
 | 8.3.3                                                           | 21-08-03 | Stable for openshift 8.3.3 release  |
 

@@ -153,7 +153,7 @@ objects:
           - name: operatorKiali.enabled
             value: "true"
           - name: operatorJaeger.enabled
-            value: "true"
+            value: "false"
           - name: operatorElastic.enabled
             value: "false" # provisionning done during cluster-infra config
           - name: operatorIstio.enabled
