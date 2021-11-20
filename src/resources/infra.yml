@@ -157,7 +157,7 @@ objects:
           - name: context.app
             value: "startx-infra"
           - name: redhat.operators
-            value: "true" 
+            value: "false" 
           - name: operatorElastic.enabled
             value: "true" 
     syncPolicy:

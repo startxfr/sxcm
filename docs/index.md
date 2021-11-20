@@ -1,6 +1,6 @@
 # startx cluster manager (sxcm)
 
-![sxcm](https://img.shields.io/badge/latest-v8.20.5-blue.svg) [![last commit](https://img.shields.io/github/last-commit/startxfr/sxcm.svg)](https://github.com/startxfr/sxcm) [![Doc](https://readthedocs.org/projects/sxcm/badge)](https://sxcm.readthedocs.io)
+![sxcm](https://img.shields.io/badge/latest-v9.8.1-blue.svg) [![last commit](https://img.shields.io/github/last-commit/startxfr/sxcm.svg)](https://github.com/startxfr/sxcm) [![Doc](https://readthedocs.org/projects/sxcm/badge)](https://sxcm.readthedocs.io)
 
 STARTX Openshift installer for various infrastructure configuration deployed under an AWS account.
 

@@ -95,8 +95,7 @@ objects:
     ignoreDifferences:
       - group: v1
         kind: Namespace
-        namespace: "${NS}"
-        jsonPointers: [ "/metadata/labels" ]
+        jsonPointers: [ "/" ]
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
