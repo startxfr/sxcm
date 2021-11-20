@@ -92,6 +92,11 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 5m
+    ignoreDifferences:
+      - group: v1
+        kind: Namespace
+        namespace: "${NS}"
+        jsonPointers: [ "/metadata/labels" ]
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
