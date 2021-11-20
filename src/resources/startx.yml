@@ -148,7 +148,7 @@ objects:
       targetRevision: devel
       helm:
         valueFiles:
-          - values-openshift-gitops.yaml
+          - values-startx-gitops.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"

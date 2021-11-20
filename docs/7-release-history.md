@@ -19,6 +19,7 @@ The objectif of this version is :
 
 | Release                                                         | Date     | Description                         |
 | --------------------------------------------------------------- | -------- | ----------------------------------- |
+| [8.20.7](https://github.com/startxfr/sxcm/releases/tag/v8.20.7) | 21-11-20 | Stable for openshift 4.8.21 release |
 | [8.20.5](https://github.com/startxfr/sxcm/releases/tag/v8.20.5) | 21-11-14 | Revamped CI pipeline                |
 | [8.20.3](https://github.com/startxfr/sxcm/releases/tag/v8.20.3) | 21-11-11 | Stable for openshift 4.8.20 release |
 | [8.13.1](https://github.com/startxfr/sxcm/releases/tag/v8.13.1) | 21-10-07 | Stable for openshift 4.8.13 release |
