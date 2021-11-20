@@ -1,6 +1,6 @@
 # startx cluster manager (sxcm)
 
-![sxcm](https://img.shields.io/badge/latest-v8.13.1-blue.svg) [![last commit](https://img.shields.io/github/last-commit/startxfr/sxcm.svg)](https://github.com/startxfr/sxcm) [![Doc](https://readthedocs.org/projects/sxcm/badge)](https://sxcm.readthedocs.io)
+![sxcm](https://img.shields.io/badge/latest-v9.8.1-blue.svg) [![last commit](https://img.shields.io/github/last-commit/startxfr/sxcm.svg)](https://github.com/startxfr/sxcm) [![Doc](https://readthedocs.org/projects/sxcm/badge)](https://sxcm.readthedocs.io)
 
 STARTX Openshift installer for various infrastructure configuration deployed under an AWS account.
 
@@ -15,7 +15,7 @@ If you have a good knowledge in Openshift structucture and how helm chart are ma
 - `sxcm` is only build and supported for AWS infrstructure backend. Even if experienced user can build it install-openshift,yaml file on top of another infrstructure provider (kvm, openstack, azure, gcp, vmware), only AWS backend are supported at this time.
 - `sxcm` use extensivly the [startx helm-repository](https://helm-repository.readthedocs.io) resources. Read more in theses resources and how 
   argoCD use it to know how to addapt this tools.
-- All `sxcm` components (with exception of the argocd-xxx cluster resources), are managed using argoCD `Application` resource deployed under the `startx-argocd` namespace. You can follow the sxcm configuration applyed by running `oc get application -n startx-argocd`
+- All `sxcm` components (with exception of the argocd-xxx cluster resources), are managed using argoCD `Application` resource deployed under the `openshift-gitops` namespace. You can follow the sxcm configuration applyed by running `oc get application -n openshift-gitops`
 
 ## Architecture
 
@@ -86,8 +86,8 @@ The gitops repository is here to share, track changes and act as a reference for
 
 All these commands produce creation of multiple kubernetes resource that you can monitor globally with :
 
-- `oc get application -n startx-argocd` to get all application
-- go to `https://startx-server-startx-argocd.apps.<mycluster>.startx.fr`
+- `oc get application -n openshift-gitops` to get all application
+- go to `https://startx-server-openshift-gitops.apps.<mycluster>.startx.fr`
 - `oc get pod --all-namespaces` to see what is deployed into your cluster
 
 ### Active cluster

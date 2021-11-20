@@ -84,6 +84,7 @@ objects:
       #   prune: false
       #   selfHeal: false
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
       retry:
@@ -96,8 +97,7 @@ objects:
       - group: operators.coreos.com
         kind: OperatorGroup
         namespace: "${OPERATOR_NS}"
-        jsonPointers:
-          - /metadata/annotations/olm.providedAPIs
+        jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
 # - kind: Application
 #   apiVersion: argoproj.io/v1alpha1
 #   metadata:
@@ -150,6 +150,7 @@ objects:
 #         prune: true
 #         selfHeal: true
 #       syncOptions:
+#         - ApplyOutOfSyncOnly=true
 #         - CreateNamespace=false
 #         - Validate=true
 #       retry:
@@ -172,7 +173,7 @@ parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
     description: "Namespace to place argocd server to"
-    value: startx-argocd
+    value: openshift-gitops
     required: true
   - name: SCOPE
     displayName: Project scope

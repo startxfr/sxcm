@@ -225,7 +225,7 @@ parameters:
   - name: ARGOCD_NS
     displayName: The namespace where helm server goes to
     description: "Namespace to place helm server to"
-    value: startx-argocd
+    value: openshift-gitops
     required: true
   - name: SCOPE
     displayName: Project scope

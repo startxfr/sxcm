@@ -1,42 +1,42 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-acm-project
+  name: sxcm-cluster-acs-project
   annotations:
-    openshift.io/display-name: STARTX Advanced Cluster Management (admin)
-    description: Deploy cluster-wide resources to enable ACM support for multi-cluster management
+    openshift.io/display-name: STARTX Advanced Security Management (admin)
+    description: Deploy cluster-wide resources to enable ACS support for multi-cluster management
     iconClass: icon-openshift
-    tags: startx,cluster,config,admin,acm,multi-cloud,management
+    tags: startx,cluster,config,admin,acs,multi-cloud,management
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "30"
   labels:
-    template: sxcm-cluster-acm-project
-    app.kubernetes.io/name: "sxcm-cluster-acm-project"
+    template: sxcm-cluster-acs-project
+    app.kubernetes.io/name: "sxcm-cluster-acs-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
-  Your cluster-wide ACM support for multi-cluster management is now enabled.
+  Your cluster-wide ACS support for multi-cluster security management is now enabled.
 
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
-  Operator          : advanced-cluster-management.2.1.2
+  Operator          : rhacs.3.65.1
 labels:
-  template: sxcm-cluster-acm-project
+  template: sxcm-cluster-acs-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-acm-project
+    name: startx-cluster-acs-project
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-acm"
-      app.kubernetes.io/name: "startx-cluster-acm-project-application"
+      app.startx.fr/component: "cluster-acs"
+      app.kubernetes.io/name: "startx-cluster-acs-project-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-acm"
+      app.kubernetes.io/component: "cluster-acs"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -51,9 +51,9 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-acm/
+      path: charts/cluster-acs/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: stable
+      targetRevision: devel
       helm:
         valueFiles:
           - values-startx.yaml
@@ -67,21 +67,21 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "openshift-acm"
+            value: "openshift-acs"
           - name: project.enabled
             value: "true"
           - name: project.project.requester
             value: "sxcm"
           - name: operator.enabled
             value: "false"
-          - name: acm.enabled
+          - name: acs.enabled
             value: "false"
-          - name: acm.mch.enabled
+          - name: acs.central.enabled
             value: "false"
     syncPolicy:
       automated:
         prune: true
-        selfHeal: true
+        selfHeal: false
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
@@ -95,16 +95,16 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-acm-operator
+    name: startx-cluster-acs-operator
     namespace: "${ARGOCD_NS}"
     labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-acm"
-      app.kubernetes.io/name: "startx-cluster-acm-operator-application"
+      app.startx.fr/component: "cluster-acs"
+      app.kubernetes.io/name: "startx-cluster-acs-operator-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-acm"
+      app.kubernetes.io/component: "cluster-acs"
     annotations:
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -119,9 +119,9 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-acm/
+      path: charts/cluster-acs/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: stable
+      targetRevision: devel
       helm:
         valueFiles:
           - values-startx.yaml
@@ -135,19 +135,19 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "openshift-acm"
+            value: "openshift-acs"
           - name: project.enabled
             value: "false"
           - name: operator.enabled
             value: "true"
-          - name: acm.enabled
+          - name: acs.enabled
             value: "false"
-          - name: acm.mch.enabled
+          - name: acs.central.enabled
             value: "false"
     syncPolicy:
-      automated:
-        prune: true
-        selfHeal: true
+      automated: 
+        prune: false
+        selfHeal: false
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
@@ -166,16 +166,16 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-acm-instance
+    name: startx-cluster-acs-instance
     namespace: "${ARGOCD_NS}"
     labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-acm"
-      app.kubernetes.io/name: "startx-cluster-acm-instance-application"
+      app.startx.fr/component: "cluster-acs"
+      app.kubernetes.io/name: "startx-cluster-acs-instance-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-acm"
+      app.kubernetes.io/component: "cluster-acs"
     annotations:
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -190,9 +190,9 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-acm/
+      path: charts/cluster-acs/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: stable
+      targetRevision: devel
       helm:
         valueFiles:
           - values-startx.yaml
@@ -206,19 +206,19 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "openshift-acm"
+            value: "openshift-acs"
           - name: project.enabled
             value: "false"
           - name: operator.enabled
             value: "false"
-          - name: acm.enabled
+          - name: acs.enabled
             value: "true"
-          - name: acm.mch.enabled
+          - name: acs.central.enabled
             value: "true"
     syncPolicy:
       automated:
         prune: true
-        selfHeal: true
+        selfHeal: false
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=false

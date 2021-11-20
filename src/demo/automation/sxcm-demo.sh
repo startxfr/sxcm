@@ -19,7 +19,7 @@ k8cmdGet="oc $SXCM_OCAPPLY_OPTS --cluster=$clusterK8s -o wide get "
 function myDemoBegin {
     echo "-- Demo $demo - Begin"
     echo "---- Status of the ArgoCD Applications"
-    $k8cmdGet Application -n startx-argocd --no-headers=true -l app.startx.fr/component="${namespace}"
+    $k8cmdGet Application -n openshift-gitops --no-headers=true -l app.startx.fr/component="${namespace}"
     echo "---- List of the exposed route to use"
     $k8cmdGet route -n ${namespace} --no-headers=true
     echo "---- Nothing special to perform to begin this demo scenario"
@@ -59,7 +59,7 @@ function myDemoUsage {
 # Get information about the demo scenario
 function myDemoInfo {
     cat <<EOF
-Description : Deployment of the awx operator and a demo report. This allow 
+Description : Deployment of the automation operator and a demo report. This allow 
               demostrator to show how Openshift 4 infrastructure could report status of
               compliancy again private or public policies
 Require     : ocs

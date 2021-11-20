@@ -6,10 +6,10 @@ VERSION=$4
 OCTOKEN=$5
 OCCLUSTER=$6
 OCCLUSTERNAME=$7
-ARGOCDPREFIX=startx
-PROJECT=startx-argocd
+ARGOCDPREFIX=openshift-gitops
+PROJECT=openshift-gitops
 DIR=`dirname $(readlink -f $0)`
-DIR="$DIR/_console/okd-cluster-resources/argod-deploy"
+DIR="$DIR/_console/okd-cluster-resources/argcod-deploy"
 SERVER_NAME="$ARGOCDPREFIX-server"
 DELAY="60"
 
