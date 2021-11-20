@@ -75,13 +75,13 @@ objects:
         prune: false
         selfHeal: false
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=false
     ignoreDifferences:
       - group: image.openshift.io
         kind: ImageStream
-        jsonPointers:
-          - /spec
+        jsonPointers: [ "/spec" ]
 parameters:
   - name: NS
     displayName: Openshift namespace
@@ -91,7 +91,7 @@ parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
     description: "Namespace to place argocd server to"
-    value: startx-argocd
+    value: openshift-gitops
     required: true
   - name: BASE_REPO
     displayName: Base repository

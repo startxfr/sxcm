@@ -1,103 +1,47 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-storage-project
+  name: sxcm-demo-automation-app-project
   annotations:
-    openshift.io/display-name: Demo STARTX - Storage
-    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/storage
+    openshift.io/display-name: Demo STARTX - 3Scale App
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/automation
     openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of various applications using PVC consuming startx storage class
-      persistent storage to demonstrate how to run stateful application under
-      an openshift 4 infrastructure
-    iconClass: icon-nodejs
-    tags: startx,storage,demo,dev
+      Deployment of a automation infra and a sample application using this infrastructure to 
+      demonstrate the API management capacities of 3Scale solution running under an 
+      openshift 4 environment
+    iconClass: icon-automation
+    tags: startx,automation,demo,dev
   labels:
-    template: sxcm-demo-storage-project
+    template: sxcm-demo-automation-app-project
 message: |-
-  Your demo project ${NS} for SXAPI technology is now created.
+  Your demo application ${NS} for automation technology is now created.
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
-  Service        : storage
   Project        : ${NS}
 
 labels:
-  template: sxcm-demo-storage-project
+  template: sxcm-demo-automation-app-project
   app.kubernetes.io/managed-by: sxcm
 objects:
-- kind: AppProject
+- kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${NS}
+    name: ${NS}-operator
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "${NS}"
-      app.kubernetes.io/name: "${NS}-appproject"
+      app.kubernetes.io/name: "${NS}-application"
       app.kubernetes.io/part-of: ${NS}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "${NS}-project"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
-    finalizers:
-      - resources-finalizer.argocd.argoproj.io
-  spec:
-    sourceRepos:
-      - '*'
-    destinations:
-      - namespace: ${NS}
-        server: '*'
-    clusterResourceWhitelist:
-      - group: '*'
-        kind: '*'
-    roles:
-    - name: dev
-      description: Read-only privileges to group dev in ${NS} project
-      policies:
-      - g, dev, role:readonly
-      - p, role:startx-dev, *, get, .${NS}/*, allow
-      groups:
-      - dev
-    - name: ops
-      description: Read-only (and sync) privileges to group ops in ${NS} project
-      policies:
-      - p, role:startx-ops, *, get, .${NS}/*, allow
-      - p, role:startx-ops, *, sync, .${NS}/*, allow
-      - g, ops, role:startx-ops
-      groups:
-      - ops
-    - name: devops
-      description: Read-only privileges to group devops in ${NS} project
-      policies:
-      - p, role:startx-devops, *, get, .${NS}/*, allow
-      - p, role:startx-devops, applications, sync, .${NS}/*, allow
-      - p, role:startx-devops, repositories, sync, .${NS}/*, allow
-      - g, devops, role:startx-devops
-      groups:
-      - devops
-    - name: admin
-      description: All privileges to group admin in ${NS} project
-      policies:
-      - p, role:startx-admin, *, *, ${NS}/*, allow
-      - g, system:cluster-admins, role:admin
-      groups:
-      - my-oidc-group
-      - system:cluster-admins
-      - admin
-- kind: Application
-  apiVersion: argoproj.io/v1alpha1
-  metadata:
-    name: ${NS}-project
-    namespace: "${ARGOCD_NS}"
-    labels:
-      <<: *basic_labels
-      app.kubernetes.io/name: "${NS}-project-application"
-    annotations:
-      <<: *basic_annotations
     finalizers:
       - resources-finalizer.argocd.argoproj.io
   spec:
@@ -109,12 +53,12 @@ objects:
         value: dev@startx.fr
     project: ${NS}
     source:
-      path: charts/project/
+      path: charts/example-catalog/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: stable
+      targetRevision: devel
       helm:
         valueFiles:
-          - values-demo-storage.yaml
+          - values-automation.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -124,8 +68,12 @@ objects:
             value: "${ENV}"
           - name: context.version
             value: "${VERSION}"
-          - name: project.requester
-            value: "sxcm"
+          - name: context.app
+            value: "automation"
+          - name: demo.automation.namespace
+            value: "${NS}"
+          - name: demo.automation.enabledOperator
+            value: "true"
     syncPolicy:
       automated:
         prune: true
@@ -134,14 +82,20 @@ objects:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 20s
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${NS}-context
+    name: ${NS}-controller
     namespace: "${ARGOCD_NS}"
-    labels:
+    labels: 
       <<: *basic_labels
-      app.kubernetes.io/name: "${NS}-context-application"
+      app.kubernetes.io/name: "${NS}-application"
     annotations:
       <<: *basic_annotations
     finalizers:
@@ -157,10 +111,10 @@ objects:
     source:
       path: charts/example-catalog/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: stable
+      targetRevision: devel
       helm:
         valueFiles:
-          - values-storage_context.yaml
+          - values-automation.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -171,9 +125,67 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "storage_context"
-          - name: demo.storage_context.namespace
+            value: "automation"
+          - name: demo.automation.namespace
             value: "${NS}"
+          - name: demo.automation.enabledController
+            value: "true"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 20s
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${NS}-backup
+    namespace: "${ARGOCD_NS}"
+    labels: 
+      <<: *basic_labels
+      app.kubernetes.io/name: "${NS}-application"
+    annotations:
+      <<: *basic_annotations
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: ${NS}
+    source:
+      path: charts/example-catalog/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: devel
+      helm:
+        valueFiles:
+          - values-automation.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "automation"
+          - name: demo.automation.namespace
+            value: "${NS}"
+          - name: demo.automation.enabledBackup
+            value: "true"
     syncPolicy:
       automated:
         prune: true
@@ -190,9 +202,14 @@ objects:
           maxDuration: 20s
 parameters:
   - name: NS
-    displayName: The namespace where objects goes to
+    displayName: demo namespace for automation instance
+    description: "Name of the automation namespace"
+    value: demo-automation
+    required: true
+  - name: OPERATOR_NS
+    displayName: The namespace where operator goes to
     description: "Namespace to place objects to"
-    value: demo-storage
+    value: startx-automation
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
@@ -201,7 +218,7 @@ parameters:
     required: true
   - name: SCOPE
     displayName: Project scope
-    description: "Project scope (ex: demo)"
+    description: "Project scope (ex: sxv4)"
     value: demo
     required: true
   - name: CLUSTER
@@ -223,4 +240,10 @@ parameters:
     displayName: Project service
     description: "Project service"
     value: demo
+    required: true
+  - name: RANDRUN
+    displayName: Random string for job execution
+    description: Random string suffix to use for job uniqueness
+    from: "[a-z0-9]{10}"
+    generate: expression
     required: true

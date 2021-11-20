@@ -1,42 +1,41 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-awx-app-project
+  name: sxcm-demo-automation-manpage
   annotations:
-    openshift.io/display-name: Demo STARTX - 3Scale App
-    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/awx
+    openshift.io/display-name: Demo STARTX - AWX
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/automation
     openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of a awx infra and a sample application using this infrastructure to 
-      demonstrate the API management capacities of 3Scale solution running under an 
-      openshift 4 environment
-    iconClass: icon-awx
-    tags: startx,awx,demo,dev
+      Deployment of AWX demo
+    iconClass: icon-load-balancer
+    tags: startx,automation,demo,dev
   labels:
-    template: sxcm-demo-awx-app-project
+    template: sxcm-demo-automation-manpage
 message: |-
-  Your demo application ${NS} for awx technology is now created.
+  Your demo manpage in ${NS} is deployed.
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
+  Service        : automation
   Project        : ${NS}
 
 labels:
-  template: sxcm-demo-awx-app-project
+  template: sxcm-demo-automation-manpage
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${NS}-app
+    name: ${NS}-manpage
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "${NS}"
-      app.kubernetes.io/name: "${NS}-application"
+      app.kubernetes.io/name: "${NS}-manpage-application"
       app.kubernetes.io/part-of: ${NS}
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "${NS}-project"
@@ -53,12 +52,12 @@ objects:
         value: dev@startx.fr
     project: ${NS}
     source:
-      path: charts/example-catalog/
+      path: charts/example-html/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: devel
       helm:
         valueFiles:
-          - values-awx.yaml
+          - values-demo-automation-manpage.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -69,14 +68,15 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "priority"
-          - name: demo.awx.namespace
+            value: "manpage"
+          - name: html.namespace
             value: "${NS}"
     syncPolicy:
       automated:
         prune: true
         selfHeal: true
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=false
         - Validate=true
       retry:
@@ -86,20 +86,20 @@ objects:
           factor: 2
           maxDuration: 20s
 parameters:
-  - name: NS
-    displayName: demo namespace for awx instance
-    description: "Name of the awx namespace"
-    value: demo-awx
-    required: true
   - name: OPERATOR_NS
     displayName: The namespace where operator goes to
     description: "Namespace to place objects to"
-    value: startx-awx
+    value: startx-automation
+    required: true
+  - name: NS
+    displayName: The namespace where objects goes to
+    description: "Namespace to place objects to"
+    value: demo-automation
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
     description: "Namespace to place argocd server to"
-    value: startx-argocd
+    value: openshift-gitops
     required: true
   - name: SCOPE
     displayName: Project scope
@@ -125,10 +125,4 @@ parameters:
     displayName: Project service
     description: "Project service"
     value: demo
-    required: true
-  - name: RANDRUN
-    displayName: Random string for job execution
-    description: Random string suffix to use for job uniqueness
-    from: "[a-z0-9]{10}"
-    generate: expression
     required: true
