@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-awx-manpage
+  name: sxcm-demo-automation-manpage
   annotations:
     openshift.io/display-name: Demo STARTX - AWX
     openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/ansible
@@ -13,17 +13,17 @@ metadata:
     iconClass: icon-sso
     tags: startx,sso,demo,dev
   labels:
-    template: sxcm-demo-awx-manpage
+    template: sxcm-demo-automation-manpage
 message: |-
   Your demo manpage in ${NS} is deployed.
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
-  Service        : awx
+  Service        : automation
   Project        : ${NS}
 
 labels:
-  template: sxcm-demo-awx-manpage
+  template: sxcm-demo-automation-manpage
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -57,7 +57,7 @@ objects:
       targetRevision: devel
       helm:
         valueFiles:
-          - values-demo-awx-manpage.yaml
+          - values-demo-automation-manpage.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -87,9 +87,9 @@ objects:
           maxDuration: 20s
 parameters:
   - name: NS
-    displayName: AWX namespace for awx instance
-    description: "Name of the awx namespace"
-    value: demo-awx
+    displayName: AWX namespace for automation instance
+    description: "Name of the automation namespace"
+    value: demo-automation
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
