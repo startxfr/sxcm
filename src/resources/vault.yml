@@ -124,6 +124,8 @@ objects:
             value: "true"
           - name: vault.global.enabled
             value: "true"
+          - name: vault.fullnameOverride
+            value: startx-vault
     syncPolicy:
       automated:
         prune: false

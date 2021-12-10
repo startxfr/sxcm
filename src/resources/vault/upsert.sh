@@ -9,7 +9,7 @@ OCCLUSTERNAME=$7
 PROJECT=startx-vault
 VAULT_RELEASE=0.7.0
 DIR=`dirname $(readlink -f $0)`
-DIR="$DIR/_console/okd-cluster-resources/vault"
+DIR="$DIR/resources/vault"
 ACTION="install"
 ACTIONNAME="Installation de vault (helm)"
 
@@ -42,12 +42,17 @@ oc adm policy add-scc-to-user privileged system:serviceaccount:$PROJECT:vault-ag
 
 
 echo -e "Attente du demarrage de vault"
-oc wait po -l app.kubernetes.io/name=vault --for=condition=Ready --timeout=2000ms -n $PROJECT --token=$OCTOKEN --cluster=$OCCLUSTERNAME &>/dev/null
+oc wait po -l app.kubernetes.io/name=vault --for=condition=Ready --timeout=30000ms -n $PROJECT --token=$OCTOKEN --cluster=$OCCLUSTERNAME &>/dev/null
 if [[ $? == "0" ]]
 then
-    echo -e "Attente de l'initialisation de vault"
-    sleep 10
+    if [[ $ACTION == "install" ]]
+    then
+        echo -e "Attente de l'initialisation de vault"
+        sleep 10
+    fi
     echo -e "Integration de vault avec kubernetes"
-    oc cp -n $PROJECT --token=$OCTOKEN --cluster=$OCCLUSTERNAME $DIR/config-k8s.sh $PROJECT/vault-0:/tmp/config-k8s.sh
-    oc exec -n $PROJECT --token=$OCTOKEN --cluster=$OCCLUSTERNAME -t vault-0 -- sh /tmp/config-k8s.sh
+    echo "oc cp -n $PROJECT --token=$OCTOKEN --cluster=$OCCLUSTERNAME $DIR/config-k8s.sh $PROJECT-0:/tmp/config-k8s.sh"
+    echo "oc exec -n $PROJECT --token=$OCTOKEN --cluster=$OCCLUSTERNAME -t $PROJECT-0 -- sh /tmp/config-k8s.sh"
+    oc cp -n $PROJECT --token=$OCTOKEN --cluster=$OCCLUSTERNAME $DIR/config-k8s.sh $PROJECT-0:/tmp/config-k8s.sh
+    oc exec -n $PROJECT --token=$OCTOKEN --cluster=$OCCLUSTERNAME -t $PROJECT-0 -- sh /tmp/config-k8s.sh
 fi
