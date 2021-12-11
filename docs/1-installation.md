@@ -2,12 +2,8 @@
 
 ## Requirements
 
-```bash
-# get an updated system
-yum update -y && yum clean all
-# install system dependencies
-yum install ansible yq helm oc -y
-```
+The **sxcm installer** must be executed under Red Hat like distribution (`fedora`, `centos`, `rhel`).
+It must be run by a user with privilegied permissions. (If not root user, will use sudo for privilegied commands).
 
 ## Client install
 
@@ -17,7 +13,7 @@ If you run on a supported plateform and [meet the requirements](#requirements), 
 following command.
 
 ```bash
-source <(curl -s https://raw.githubusercontent.com/startxfr/sxcm/stable/installer)
+source <(curl -s https://gitlab.com/sxcm/installer/-/raw/main/installer)
 ```
 
 ## Client Setup
@@ -89,6 +85,15 @@ sxcm setup aws accessId accessKey dcName
 ```
 
 ## Client test
+
+Check to see if your sxcm environment is properly defined.
+
+```bash
+# get the list of the defined cluster
+sxcm list
+```
+
+## Quick start
 
 Check to see if your sxcm environment is properly defined.
 
