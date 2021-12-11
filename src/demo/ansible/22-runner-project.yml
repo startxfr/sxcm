@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-awx-runner-project
+  name: sxcm-demo-automation-runner-project
   annotations:
     openshift.io/display-name: Demo STARTX - Tower runner
     openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/ansible
@@ -10,21 +10,21 @@ metadata:
     openshift.io/provider-display-name: STARTX
     description:
       Deployment of Tower runner project to demonstrate the dynamic and flexibility of
-      running awx job inside a containerized environment in openshift 4
+      running automation job inside a containerized environment in openshift 4
     iconClass: icon-nodejs
-    tags: startx,awx,runner,knative,demo,dev
+    tags: startx,automation,runner,knative,demo,dev
   labels:
-    template: sxcm-demo-awx-runner-project
+    template: sxcm-demo-automation-runner-project
 message: |-
   Your demo project ${NS} for Tower runner technology is now created.
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
-  Service        : awx-runner
+  Service        : automation-runner
   Project        : ${NS}
 
 labels:
-  template: sxcm-demo-awx-runner-project
+  template: sxcm-demo-automation-runner-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: AppProject
@@ -113,7 +113,7 @@ objects:
       targetRevision: stable
       helm:
         valueFiles:
-          - values-demo-awx-runner.yaml
+          - values-demo-automation-runner.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -137,7 +137,7 @@ parameters:
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
-    value: demo-awx-runner
+    value: demo-automation-runner
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to

@@ -177,7 +177,7 @@ objects:
       helm:
         releaseName: startx-workspace-operator
         valueFiles:
-          - values-crw-2.3.0.yaml
+          - values-crw-2.13.100.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"

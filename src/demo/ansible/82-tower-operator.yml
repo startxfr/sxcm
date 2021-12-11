@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-awx-operator
+  name: sxcm-demo-automation-operator
   annotations:
     openshift.io/display-name: Demo STARTX - AWX
     openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/ansible
@@ -14,17 +14,17 @@ metadata:
     iconClass: icon-sso
     tags: startx,sso,demo,dev
   labels:
-    template: sxcm-demo-awx-operator
+    template: sxcm-demo-automation-operator
 message: |-
   Your demo project ${NS} for AWX technology is now created.
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
-  Service        : awx
+  Service        : automation
   Project        : ${NS}
 
 labels:
-  template: sxcm-demo-awx-operator
+  template: sxcm-demo-automation-operator
   app.kubernetes.io/managed-by: sxcm
 objects:
 # - kind: ClusterRole
@@ -196,7 +196,7 @@ objects:
 # - kind: Tower
 #   apiVersion: tower.ansible.com/v1alpha1
 #   metadata:
-#     name: awx
+#     name: automation
 #     namespace: ${NS}
 #   spec:
 #     tower_hostname: tower.mycompany.com
@@ -204,15 +204,15 @@ objects:
 #     tower_admin_user: test
 #     tower_admin_email: test@example.com
 #     tower_admin_password: changeme
-#     tower_task_image: ansible/awx_task:9.2.0
-#     tower_web_image: ansible/awx_web:9.2.0
+#     tower_task_image: ansible/automation_task:9.2.0
+#     tower_web_image: ansible/automation_web:9.2.0
 #     tower_ingress_type: Route
 #     # tower_postgres_storage_class: generic-retain
 parameters:
   - name: NS
-    displayName: AWX namespace for awx instance
-    description: "Name of the awx namespace"
-    value: demo-awx
+    displayName: AWX namespace for automation instance
+    description: "Name of the automation namespace"
+    value: demo-automation
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
