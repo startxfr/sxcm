@@ -1,5 +1,6 @@
 
 setup() {
+    export SXPATH=../src
     source ../src/cli
 }
 

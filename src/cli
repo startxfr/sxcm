@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SXCM_PATH=/usr/share/sxcm
+SXCM_PATH=${SXPATH:-/usr/share/sxcm}
 SXCM_PROFILES_PATH=$SXCM_PATH/profiles
 SXCM_RESOURCES_PATH=$SXCM_PATH/resources
 SXCM_DEMOS_PATH=$SXCM_PATH/demo
