@@ -29,7 +29,7 @@ markdown:
 # Shell check on current branch
 shell:
   stage: "check"
-  script: "source .gitlab/ci/startx-library.sh && shellcheck --exclude SC1091 src/cli"
+  script: "source .gitlab/ci/startx-library.sh && shellcheck --exclude SC1091,SC2034,SC1090 src/cli"
   only:
     - devel
     - main
