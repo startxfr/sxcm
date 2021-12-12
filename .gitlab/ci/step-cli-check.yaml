@@ -29,7 +29,7 @@ markdown:
 # Shell check on current branch
 shell:
   stage: "check"
-  script: "source .gitlab/ci/startx-library.sh && shellcheck --exclude SC1091 installer"
+  script: "source .gitlab/ci/startx-library.sh && shellcheck --exclude SC1091 src/cli"
   only:
     - devel
     - main
@@ -53,16 +53,34 @@ requirements:
       echo "NO README.md found"; 
       exit 1; 
     fi
-    if [[ -f installer ]]; then 
-      echo "installer found"; 
-      if [[ -x installer ]]; then 
-        echo "installer executable"; 
+    if [[ -f src/cli ]]; then 
+      echo "sxcm binary found"; 
+      if [[ -x src/cli ]]; then 
+        echo "sxcm binary executable"; 
       else 
-        echo "Could not execute installer"; 
+        echo "Could not execute sxcm binary"; 
         exit 1; 
       fi
     else 
-      echo "NO installer found"; 
+      echo "NO sxcm binary file found"; 
+      exit 1; 
+    fi
+    if [[ -f src/completion ]]; then 
+      echo "completion found"; 
+    else 
+      echo "NO completion found"; 
+      exit 1; 
+    fi
+    if [[ -f src/config ]]; then 
+      echo "config found"; 
+    else 
+      echo "NO config file found"; 
+      exit 1; 
+    fi
+    if [[ -d src/lib ]]; then 
+      echo "sxcm library found"; 
+    else 
+      echo "NO sxcm library found"; 
       exit 1; 
     fi
   only:
