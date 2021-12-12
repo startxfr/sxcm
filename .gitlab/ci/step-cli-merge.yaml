@@ -46,7 +46,7 @@ merge-version:
     fi
     SXGLCI_LAST_TAG=`cat /tmp/last`
     echo "== Found $SXGLCI_LAST_TAG as last tag"
-    source installer
+    source src/config
     eval x=$(git tag | tail -n 1 | grep $SXCM_VERSION)
     if [[ $x != "" ]]; then
       echo "!! Tag $SXCM_VERSION already exist" && exit 0
