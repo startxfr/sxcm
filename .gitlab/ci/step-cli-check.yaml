@@ -1,0 +1,89 @@
+##
+## CHECK
+##
+
+# Return debug informations on current branch
+debug:
+  stage: "check"
+  script: "source .gitlab/ci/startx-library.sh && DisplayCheckDebug"
+  only:
+    - devel
+
+# Return informations details on current branch
+info:
+  stage: "check"
+  script: "source .gitlab/ci/startx-library.sh && DisplayCheckInfo"
+  only:
+    - devel
+    - main
+
+# Markdown check on current branch
+markdown:
+  stage: "check"
+  script: "source .gitlab/ci/startx-library.sh && DoCheckMarkdown *.md"
+  only:
+    - devel
+    - main
+    - stable
+
+# Shell check on current branch
+shell:
+  stage: "check"
+  script: "source .gitlab/ci/startx-library.sh && shellcheck --exclude SC1091,SC2034,SC1090,SC2221,SC2222 src/cli"
+  only:
+    - devel
+    - main
+    - stable
+
+# Check stage, used to check for good context
+requirements:
+  stage: "check"
+  image: "busybox:latest"
+  script: |
+    #!/bin/bash
+    if [[ -f LICENSE ]]; then 
+      echo "LICENSE found"; 
+    else 
+      echo "NO LICENSE found"; 
+      exit 1; 
+    fi
+    if [[ -f README.md ]]; then 
+      echo "README.md found"; 
+    else 
+      echo "NO README.md found"; 
+      exit 1; 
+    fi
+    if [[ -f src/cli ]]; then 
+      echo "sxcm binary found"; 
+      if [[ -x src/cli ]]; then 
+        echo "sxcm binary executable"; 
+      else 
+        echo "Could not execute sxcm binary"; 
+        exit 1; 
+      fi
+    else 
+      echo "NO sxcm binary file found"; 
+      exit 1; 
+    fi
+    if [[ -f src/completion ]]; then 
+      echo "completion found"; 
+    else 
+      echo "NO completion found"; 
+      exit 1; 
+    fi
+    if [[ -f src/config ]]; then 
+      echo "config found"; 
+    else 
+      echo "NO config file found"; 
+      exit 1; 
+    fi
+    if [[ -d src/lib ]]; then 
+      echo "sxcm library found"; 
+    else 
+      echo "NO sxcm library found"; 
+      exit 1; 
+    fi
+  only:
+    - devel
+    - main
+    - stable
