@@ -59,7 +59,7 @@ objects:
   #     source:
   #       path: charts/cluster-argocd/
   #       repoURL: 'https://github.com/startxfr/helm-repository.git'
-  #       targetRevision: HEAD
+  #       targetRevision: devel
   #       helm:
   #         valueFiles:
   #           - values-startx.yaml
@@ -115,7 +115,7 @@ objects:
       source:
         path: charts/example-pod/
         repoURL: 'https://github.com/startxfr/helm-repository.git'
-        targetRevision: HEAD
+        targetRevision: devel
         helm:
           valueFiles:
             - values-demo.yaml
@@ -153,7 +153,7 @@ objects:
           namePrefix: argocd-
         path: kustomizes/demo-pod/overlays/default
         repoURL: 'https://github.com/startxfr/kustomize-repository.git'
-        targetRevision: HEAD
+        targetRevision: devel
       syncPolicy:
         automated:
           prune: true
