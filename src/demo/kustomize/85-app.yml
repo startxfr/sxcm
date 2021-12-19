@@ -61,7 +61,7 @@ objects:
           namePrefix: kustomize-
         path: kustomizes/demo-pod/overlays/default
         repoURL: 'https://github.com/startxfr/kustomize-repository.git'
-        targetRevision: HEAD
+        targetRevision: devel
       syncPolicy:
         automated:
           prune: true
@@ -91,7 +91,7 @@ objects:
           namePrefix: kustomize-
         path: kustomizes/demo-deployment/overlays/default
         repoURL: 'https://github.com/startxfr/kustomize-repository.git'
-        targetRevision: HEAD
+        targetRevision: devel
       syncPolicy:
         automated:
           prune: true

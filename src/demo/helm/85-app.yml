@@ -59,7 +59,7 @@ objects:
       source:
         path: charts/example-pod/
         repoURL: 'https://github.com/startxfr/helm-repository.git'
-        targetRevision: HEAD
+        targetRevision: devel
         helm:
           valueFiles:
             - values-demo.yaml
@@ -95,7 +95,7 @@ objects:
       source:
         path: charts/example-deployment/
         repoURL: 'https://github.com/startxfr/helm-repository.git'
-        targetRevision: HEAD
+        targetRevision: devel
         helm:
           valueFiles:
             - values-demo.yaml
@@ -131,7 +131,7 @@ objects:
       source:
         path: charts/example-deployment/
         repoURL: 'https://github.com/startxfr/helm-repository.git'
-        targetRevision: HEAD
+        targetRevision: devel
         helm:
           valueFiles:
             - values-mariadb.yaml
@@ -167,7 +167,7 @@ objects:
       source:
         path: charts/example-sxapi/
         repoURL: 'https://github.com/startxfr/helm-repository.git'
-        targetRevision: HEAD
+        targetRevision: devel
         helm:
           valueFiles:
             - values-dev.yaml
@@ -203,7 +203,7 @@ objects:
       source:
         path: charts/example-sxapi/
         repoURL: 'https://github.com/startxfr/helm-repository.git'
-        targetRevision: HEAD
+        targetRevision: devel
         helm:
           valueFiles:
             - values-v0.0.1.yaml
