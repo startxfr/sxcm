@@ -58,6 +58,10 @@ function extractOCPInstallDescription {
     elif [[ $2 == 'service' ]]
     then
         echo "$descClusterConfig"
+    elif [[ $2 == 'multiline' ]]
+    then
+        echo "$3 $desc"
+        echo "$3 $descClusterConfig"
     else
         echo "$desc - $descClusterConfig"
     fi
@@ -212,7 +216,8 @@ function recordAdminTokenFromCreatedCluster {
     getCredentialsFromCreatedCluster $cn
     local clusterName=$(echo $SXCM_CLUSTER_URL | sed -e 's|https://||g')
     clusterName=$(echo $clusterName | sed -e 's|\.|-|g')
-    oc login --insecure-skip-tls-verify -u $SXCM_ADM -p "$SXCM_ADMPWD" $SXCM_CLUSTER_URL  &> /dev/null
+    echo "oc login --insecure-skip-tls-verify -u $SXCM_ADM -p "$SXCM_ADMPWD" $SXCM_CLUSTER_URL "
+    oc login --insecure-skip-tls-verify -u $SXCM_ADM -p "$SXCM_ADMPWD" $SXCM_CLUSTER_URL 
     if [[ "$?" != 0 ]]; then
         echo -e "Cluster \e[1m$cn\e[0m : \e[1m\e[31mCould not login\e[0m to \e[1m$cn\e[0m with user \e[1m$SXCM_ADM\e[0m"
         echo -e "Log to openshift cluster first \e[90;4moc login -u $SXCM_ADM -p <pwd> $SXCM_CLUSTER_URL\e[0m"
@@ -440,7 +445,7 @@ function doClusterConfigurationCreate {
                 echo -e "  you should run \e[90;4msxcm destroy $cn\e[0m before"
                 exit 1;
             fi
-            if [[ -r $clusterConfDir/terraform.tfstate ]]; then
+            if [[ -r $clusterConfDir/.openshift_install.log ]]; then
                 echo -en "  Do you want to connect to the running cluster [Y/n] : "
                 read connectOCP
                 echo -e ""
@@ -615,7 +620,7 @@ function doClusterConfigurationInfo {
             admpwd=$(cat $clusterConfDir/auth/kubeadmin-password)
         fi
         local STATE=""
-        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]]
+        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]]
         then
             if [[ -r $clusterConfDir/deployed ]]
             then
@@ -721,7 +726,7 @@ function doClusterConfigurationEdit {
         echo -e "You can create one using \e[90;4msxcm create $cn\e[0m" ;
         exit 2;
     else
-        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]]; then
+        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]]; then
             echo -e "Could not edit because cluster is already deployed"
             echo -e "you should run \e[90;4msxcm destroy $cn\e[0m before"
             exit 21;
@@ -770,7 +775,7 @@ function doClusterConfigurationUpdate {
         exit 1;
     fi
     echo -e "\e[1m\e[33mUpdate\e[0m the cluster \e[1m$cn\e[0m profile in $clusterConfDir"
-    if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]]; then
+    if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]]; then
         updateClusterResources $cn
         updateClusterDemos $cn
         echo -e "Cluster configuration \e[1m$cn\e[0m \e[36mupdated\e[0m "
@@ -804,7 +809,6 @@ function doClusterConfigurationDelete {
     fi
     reloadIndividualClusterConf $cn
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
-    echo $clusterConfDir
     if [[ $cn == '' ]]; then
         echo -e "You must give a \e[1mcluster configuration name\e[0m"
         echo -e "You can create one using \e[90;4msxcm create mycluster\e[0m" ;
@@ -816,7 +820,7 @@ function doClusterConfigurationDelete {
         echo -e "You can create one using \e[90;4msxcm create $cn\e[0m" ;
         return 2;
     else
-        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]]; then
+        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]]; then
             echo -e "\e[1m$cn\e[0m cluster configuration already \e[36mdeployed\e[0m"
             echo -e "You must destroy it first with \e[90;4msxcm destroy $cn\e[0m" ;
         else
@@ -850,7 +854,7 @@ function doClusterConfigurationList {
         echo -e "\e[34mList\e[0m \e[1m$COUNT\e[0m cluster configuration in the cluster stack"
         for cluster in $LIST
         do
-            if [[ -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/metadata.json || -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/terraform.tfstate ]]
+            if [[ -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/metadata.json || -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/.openshift_install.log ]]
             then
                 local URL=$(cat $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/auth/kubeconfig | grep server | cut -d: -f2-10 | xargs)
                 if [[ -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/deployed ]]
@@ -872,11 +876,11 @@ function doClusterConfigurationList {
                 . $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/$SXCM_USER_CONF_FILE;
                 export SXCM_CLUSTER_NAME=$(getActiveCluster);
             fi
-            desc=$(extractOCPInstallDescription $clusterConfOCPInstallFile)
+            desc=$(extractOCPInstallDescription $clusterConfOCPInstallFile multiline "                ")
             if [[ $cluster == $SXCM_CLUSTER_NAME ]]; then
-                printf "\e[1mx %-14s\e[0m $STATE %s\n" $cluster "$desc"
+                printf "\e[1mx %-14s\e[0m $STATE \n%s\n" $cluster "$desc"
             else
-                printf "  %-14s $STATE %s\n" $cluster "$desc"
+                printf "  %-14s $STATE \n%s\n" $cluster "$desc"
             fi
             desc=""
         done
@@ -986,7 +990,7 @@ function doClusterDeploy {
         cn=`getActiveCluster`
     fi
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
-    if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]]; then
+    if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]]; then
         echo -e "\e[1m$cn\e[0m cluster configuration already \e[36mdeployed\e[0m"
         cd $clusterConfDir &> /dev/null
         git checkout $cn &> /dev/null
@@ -1066,7 +1070,7 @@ function doClusterDestroy {
             exit;
         fi
     else
-        echo -e "\e[1m$cn\e[0m cluster configuration doesn't have metadata.json and terraform.tfstate files"
+        echo -e "\e[1m$cn\e[0m cluster configuration doesn't have metadata.json and .openshift_install.log files"
         echo -e "You can create it using \e[90;4msxcm deploy $cn\e[0m" ;
     fi
 }
@@ -1099,11 +1103,11 @@ function doClusterConnect {
     fi
     local cn=`getActiveCluster`
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
-    if [[ -r $clusterConfDir/metadata.json && -r $clusterConfDir/terraform.tfstate ]]; then
+    if [[ -r $clusterConfDir/metadata.json && -r $clusterConfDir/.openshift_install.log ]]; then
         recordAdminTokenFromCreatedCluster $cn
         echo -e "\e[1\e[36mconnected\e[0m to cluster \e[1m$cn\e[0m "
     else
-        echo -e "\e[1m$cn\e[0m cluster configuration doesn't have metadata.json and terraform.tfstate files"
+        echo -e "\e[1m$cn\e[0m cluster configuration doesn't have metadata.json and .openshift_install.log files"
         echo -e "You can create it using \e[90;4msxcm deploy $cn\e[0m" ;
     fi
 }
@@ -1287,7 +1291,7 @@ function menuClusterConnect {
 }
 
 # sub-menu for clone command
-function menuClusterClone {
+function menuClusterClone { 
     if [[ -z "$1" || "$1" == "" ]]; then
         menuHeadArt
             cat <<EOF

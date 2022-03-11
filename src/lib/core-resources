@@ -533,14 +533,14 @@ function doResourceEnable {
     else
         echo -e "\e[1m\e[96mEnable\e[0m the cluster resource \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
         doResourceAssociate $rn $cn
-        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]] && [[ -r $clusterConfDir/deployed ]]
+        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]] && [[ -r $clusterConfDir/deployed ]]
         then
             IsDeployed=true
         fi
         if [[ "$IsDeployed" == "true" ]]
         then
             applyClusterResource "update" $cn $rn
-            cd $clusterConfDir &>/dev/null
+            cd $clusterConfDir &>/dev/null || exit
             git add . &>/dev/null
             git commit -am "[$cn] Enable the $rn cluster resource from the $cn cluster" &>/dev/null
             git push origin $cn &> /dev/null
@@ -575,7 +575,7 @@ function doResourceDisable {
     if [[ ! -r $localConfOCPInstallFile ]]; then
         echo -e "No cluster config found at \e[1m$localConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
     else
-        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/terraform.tfstate ]] && [[ -r $clusterConfDir/deployed ]]
+        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]] && [[ -r $clusterConfDir/deployed ]]
         then
             IsDeployed=true
         fi

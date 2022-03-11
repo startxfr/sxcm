@@ -1,0 +1,18 @@
+#!/bin/bash
+
+SXCM_PATH=${SXPATH:-/usr/share/sxcm}
+SXCM_LIB_PATH="$SXCM_PATH/lib"
+
+source "$SXCM_PATH"/config
+source "$SXCM_LIB_PATH"/core
+source "$SXCM_LIB_PATH"/core-version
+source "$SXCM_LIB_PATH"/core-course
+
+## Start prog switch
+LoadConfig
+
+if [[ "$1" != "" ]]; then
+    menuCourse "$1" "$2" "$3" "$4" "$5"
+else
+    menuCourseUsage
+fi

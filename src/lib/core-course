@@ -1,0 +1,425 @@
+#!/bin/bash
+
+LAB_CONFIG_DIR=~/.sxcm-course
+LAST_COURSE_FILE=current-course
+COURSE_CONFIG_FILE=config
+COURSE_REPO_DIR=content
+EDITOR=gedit
+
+
+# sub-menu for install command
+function menuCourseDemo {
+    isPametersContainHelpers $1 $2 $3 $4
+    local isparamreturn=$?
+    if [[ "$1" == "install" ]]; then
+        doCourseDemoInstall $2 $3 $4
+    elif [[ "$1" == "start" ]]; then
+        doCourseDemoStart $2 $3 $4
+    elif [[ "$1" == "stop" ]]; then
+        doCourseDemoStop $2 $3 $4
+    elif [[ "$1" == "uninstall" ]]; then
+        doCourseDemoUninstall $2 $3 $4
+    elif [[ $isparamreturn == "0" || "$1" == "" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm-course demo sub-command to manage demo lifecycle
+
+# Usage
+
+[user@localhost]$ sxcm-course demo sub-command
+
+
+# Examples
+
+# List all demo in a course
+sxcm-course demo list
+# Install the mydemo demo
+sxcm-course demo install mydemo
+# Start the mydemo demo
+sxcm-course demo start mydemo
+# Stop the mydemo demo
+sxcm-course demo stop mydemo
+# Uninstall the mydemo demo
+sxcm-course demo uninstall mydemo
+
+EOF
+    else
+        doCourseDemoList
+    fi
+}
+
+# install a particular demo
+function doCourseDemoInstall {
+    doCourseDemoGeneric $1 install
+}
+
+# start a particular demo
+function doCourseDemoStart {
+    doCourseDemoGeneric $1 start
+}
+
+# stop a particular demo
+function doCourseDemoStop {
+    doCourseDemoGeneric $1 stop
+}
+
+# uninstall a particular demo
+function doCourseDemoUninstall {
+    doCourseDemoGeneric $1 uninstall
+}
+
+# list all course demo
+function doCourseDemoGeneric {
+    local demo_name=$1
+    local action=$2
+    local action_script=${action}.sh
+    local last_course_name="mycourse"
+    local last_course_dir="$LAB_CONFIG_DIR/mycourse"
+    last_course_name="$(cat $LAB_CONFIG_DIR/$LAST_COURSE_FILE)"
+    last_course_dir="$LAB_CONFIG_DIR/$last_course_name"
+    local config_file=$last_course_dir/$COURSE_CONFIG_FILE
+    local local_repo=$last_course_dir/$COURSE_REPO_DIR
+
+    if doCourseDemoCheckExist "$demo_name"
+    then
+        echo -e "\e[1m\e[34mINFO\e[0m  Found \e[1m$demo_name\e[0m demo"
+        cd "$local_repo" &> /dev/null || exit
+        if [[ ! -x $local_repo/demos/$demo_name/$action_script ]]; then
+            echo -e "\e[1m\e[34mERROR\e[0m could not execute $local_repo/demos/$demo_name/$action_script"
+        else
+            exec $local_repo/demos/$demo_name/$action_script
+            echo -e "\e[1m\e[34mINFO\e[0m Executed  $action $demo_name demo"
+        fi
+        cd - &> /dev/null || exit
+    else
+        echo -e "\e[1m\e[34mERROR\e[0m Could not find $demo_name demo"
+    fi
+}
+
+# list all course demo
+function doCourseDemoList {
+    local last_course_name="mycourse"
+    local last_course_dir="$LAB_CONFIG_DIR/mycourse"
+    last_course_name="$(cat $LAB_CONFIG_DIR/$LAST_COURSE_FILE)"
+    last_course_dir="$LAB_CONFIG_DIR/$last_course_name"
+    local config_file=$last_course_dir/$COURSE_CONFIG_FILE
+    local local_repo=$last_course_dir/$COURSE_REPO_DIR
+    cd "$local_repo" &> /dev/null || exit
+    if [[ ! -r $local_repo/demos.yml ]]; then
+        echo -e "\e[1m\e[34mERROR\e[0m could not read $local_repo/demos.yml"
+    else
+        local sample="[]"
+        local counter=0
+        sample=$(cat $local_repo/demos.yml)
+        for row in $(echo "${sample}" | yq -c '.' | jq -r '.[] | @base64'); do
+            _jq() {
+                echo ${row} | base64 --decode | jq -r ${1} ${2}
+            }
+            echo -e "\e[1m\e[34mDEMO\e[0m " $(_jq '.name')
+            echo -e "     " $(_jq '.description')
+            ((counter=counter+1))
+        done
+        echo -e "\e[1m\e[34mINFO\e[0m Displayed $counter demo"
+    fi
+    cd - &> /dev/null || exit
+}
+
+# list all course demo
+function doCourseDemoCheckExist {
+    local demo_name=$1
+    local last_course_name="mycourse"
+    local last_course_dir="$LAB_CONFIG_DIR/mycourse"
+    last_course_name="$(cat $LAB_CONFIG_DIR/$LAST_COURSE_FILE)"
+    last_course_dir="$LAB_CONFIG_DIR/$last_course_name"
+    local config_file=$last_course_dir/$COURSE_CONFIG_FILE
+    local local_repo=$last_course_dir/$COURSE_REPO_DIR
+    cd "$local_repo" &> /dev/null || exit
+    if [[ -r $local_repo/demos.yml ]]; then
+        local sample="[]"
+        local counter=0
+        sample=$(cat $local_repo/demos.yml)
+        cd - &> /dev/null || exit
+        for row in $(echo "${sample}" | yq -c '.' | jq -r '.[] | @base64'); do
+            _jq() {
+                echo ${row} | base64 --decode | jq -r ${1} ${2}
+            }
+            if [[ $(_jq '.name') == "$demo_name" ]]; then
+                return 0
+            else
+                return 2
+            fi
+        done
+    fi
+    return 1
+}
+
+
+# sub-menu for install command
+function menuCourseInstall {
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm-course install sub-command to install the course content into the current cluster
+
+# Usage
+
+[user@localhost]$ sxcm-course install
+
+
+# Examples
+
+# Install course content on top of an sxcm cluster
+sxcm-course install
+
+EOF
+    else
+        doCourseInstall
+    fi
+}
+
+
+# Install course materials
+function doCourseInstall {
+    local last_course_name="mycourse"
+    local last_course_dir="$LAB_CONFIG_DIR/mycourse"
+    last_course_name="$(cat $LAB_CONFIG_DIR/$LAST_COURSE_FILE)"
+    last_course_dir="$LAB_CONFIG_DIR/$last_course_name"
+    local config_file=$last_course_dir/$COURSE_CONFIG_FILE
+    local local_repo=$last_course_dir/$COURSE_REPO_DIR
+    cd "$local_repo" &> /dev/null || exit
+    if [[ ! -x $local_repo/install/execute.sh ]]; then
+        echo -e "\e[1m\e[34mERROR\e[0m could not execute $local_repo/install/execute.sh"
+    else
+        exec "$local_repo"/install/execute.sh
+        echo -e "\e[1m\e[34mINFO\e[0m executed course $COURSE_NAME installation"
+    fi
+    cd - &> /dev/null || exit
+
+}
+
+
+
+# sub-menu for uninstall command
+function menuCourseUninstall {
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm-course uninstall sub-command to uninstall the course content into the current cluster
+
+# Usage
+
+[user@localhost]$ sxcm-course uninstall
+
+
+# Examples
+
+# Uninstall course content on top of an sxcm cluster
+sxcm-course uninstall
+
+EOF
+    else
+        doCourseUninstall
+    fi
+}
+
+
+# Uninstall course materials
+function doCourseUninstall {
+    local last_course_name="mycourse"
+    local last_course_dir="$LAB_CONFIG_DIR/mycourse"
+    last_course_name="$(cat $LAB_CONFIG_DIR/$LAST_COURSE_FILE)"
+    last_course_dir="$LAB_CONFIG_DIR/$last_course_name"
+    local config_file=$last_course_dir/$COURSE_CONFIG_FILE
+    local local_repo=$last_course_dir/$COURSE_REPO_DIR
+    cd "$local_repo" &> /dev/null || exit
+    if [[ ! -x $local_repo/uninstall/execute.sh ]]; then
+        echo -e "\e[1m\e[34mERROR\e[0m could not execute $local_repo/uninstall/execute.sh"
+    else
+        exec "$local_repo"/uninstall/execute.sh
+        echo -e "\e[1m\e[34mINFO\e[0m executed course $COURSE_NAME uninstallation"
+    fi
+    cd - &> /dev/null || exit
+
+}
+
+
+
+# sub-menu for edit command
+function menuCourseConfig {
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm-course config sub-command to change content of a course stored into the local course stack
+
+# Usage
+
+[user@localhost]$ sxcm-course config
+
+
+# Examples
+
+# Start editor on the current course
+sxcm-course config
+
+EOF
+    else
+        doCourseConfig
+    fi
+}
+
+
+# edit course configuration
+function doCourseConfig {
+    local last_course_name="mycourse"
+    local last_course_dir="$LAB_CONFIG_DIR/mycourse"
+    last_course_name="$(cat $LAB_CONFIG_DIR/$LAST_COURSE_FILE)"
+    last_course_dir="$LAB_CONFIG_DIR/$last_course_name"
+    local config_file=$last_course_dir/$COURSE_CONFIG_FILE
+    if ! $EDITOR "$config_file";
+    then
+        echo -e "\e[1m\e[34mERROR\e[0m in course $COURSE_NAME edition"
+    else
+        echo -e "\e[1m\e[34mINFO\e[0m recorded new course $COURSE_NAME state"
+        # shellcheck source=/dev/null
+        source "$config_file"
+    fi
+}
+
+
+
+# sub-menu for info command
+function menuCourseInfo {
+    isPametersContainHelpers $1 $2 $3 $4
+    if [[ $? == "0" ]]; then
+        menuHeadArt
+        cat <<EOF
+
+sxcm-course info sub-command to read detail from a curent course
+
+# Usage
+
+[user@localhost]$ sxcm-course info
+
+
+# Examples
+
+# Read a course info from the local course stack
+sxcm-course info
+
+EOF
+    else
+        doCourseInfo
+    fi
+}
+
+
+# information course configuration
+function doCourseInfo {
+    local last_course_name="mycourse"
+    local last_course_dir="$LAB_CONFIG_DIR/mycourse"
+    last_course_name="$(cat $LAB_CONFIG_DIR/$LAST_COURSE_FILE)"
+    last_course_dir="$LAB_CONFIG_DIR/$last_course_name"
+    echo -e "Title       : \e[1m\e[34mCOURSE\e[0m $COURSE_NAME"
+    echo -e "Repo        : $COURSE_REPO_REMOTE"
+    echo -e "Local       : $last_course_dir"
+    exit
+}
+
+
+
+# information course configuration
+function doSxcmCourseInitContext {
+    if [[ ! -d $LAB_CONFIG_DIR ]]; then
+        mkdir $LAB_CONFIG_DIR
+    fi
+    if [[ ! -r $LAB_CONFIG_DIR/$LAST_COURSE_FILE ]]; then
+        echo "mycourse" > $LAB_CONFIG_DIR/$LAST_COURSE_FILE
+    fi
+    local LAST_COURSE_NAME="mycourse"
+    local LAST_COURSE_DIR="$LAB_CONFIG_DIR/mycourse"
+    LAST_COURSE_NAME="$(cat $LAB_CONFIG_DIR/$LAST_COURSE_FILE)"
+    LAST_COURSE_DIR="$LAB_CONFIG_DIR/$LAST_COURSE_NAME"
+    export LAST_COURSE_DIR
+    export LAST_COURSE_NAME
+    if [[ ! -d $LAST_COURSE_DIR ]]; then
+        mkdir "$LAST_COURSE_DIR"
+    fi
+    if [[ ! -f $LAST_COURSE_DIR/$COURSE_CONFIG_FILE ]]; then
+        cat <<EOF > "$LAST_COURSE_DIR/$COURSE_CONFIG_FILE"
+# Example config file
+COURSE_NAME=mycourse
+COURSE_REPO_REMOTE=https://gitlab.com/sxcm/courses/example.git
+EOF
+    fi
+    # shellcheck source=/dev/null
+    source "$LAST_COURSE_DIR/$COURSE_CONFIG_FILE"
+    if [[ ! -d $LAST_COURSE_DIR/$COURSE_REPO_DIR ]]; then
+        mkdir -p "$LAST_COURSE_DIR/$COURSE_REPO_DIR"
+        cd "$LAST_COURSE_DIR"/$COURSE_REPO_DIR || exit
+        git clone "$COURSE_REPO_REMOTE" .
+        cd - || exit
+    fi
+}
+
+
+
+# menu switch for course usage command
+function menuCourseUsage {
+    menuHeadArt
+    cat <<EOF
+
+This client helps you manage demo and labs availables for a given course
+
+Available actions are : config, install, info, demo, lab and uninstall
+
+# Usage
+
+[user@localhost]$ sxcm-course ACTION [options]
+
+# Availables actions
+
+## Course commands actions :
+  - config                                 Configure course context
+  - install                                Install course context into sxcm cluster
+  - info                                   Get course status informations
+  - uninstall                              Uninstall course context from sxcm cluster
+
+## Demo commands actions :
+  - demo list                              Get full list of course demo content
+  - demo install DEMONAME                  Create the demo context
+  - demo start DEMONAME                    Start the demo context
+  - demo stop DEMONAME                     Stop the demo context
+  - demo uninstall DEMONAME                Destroy the demo context
+
+## Lab commands actions :
+  - lab list                               Get full list of lab course content
+  - lab install LABNAME                    Create the lab context
+  - lab start LABNAME                      Start the lab context
+  - lab stop LABNAME                       Stop the lab context
+  - lab uninstall LABNAME                  Destroy the lab context
+
+EOF
+
+    exit
+}
+
+doSxcmCourseInitContext
+
+# main menu for the cluster sub-command
+function menuCourse {
+    case $1 in
+    info) menuCourseInfo ${2} ${3} ${4} ;;
+    config) menuCourseConfig ${2} ${3} ${4} ;;
+    install) menuCourseInstall ${2} ${3} ${4} ;;
+    uninstall) menuCourseUninstall ${2} ${3} ${4} ${5};;
+    demo) menuCourseDemo ${2} ${3} ${4} ${5};;
+    *) menuCourseUsage ;;
+    esac
+}
