@@ -50,14 +50,17 @@ function listClusterConfigs {
 
 # read the content of the cluster description in an install-config.yaml
 function extractOCPInstallDescription {
-    local descClusterConfig=$(grep -A0 -P '^    descriptionClusterconfig:' $1 | cut -d: -f2 | sed -r 's/["]+//g')
+    local descClusterConfig=$(grep -A0 -P '^    descriptionClusterconfig:' $1 | cut -d: -f2  | sed -r 's/["]+//g')
     local desc=$(grep -A0 -P '^    description:' $1 | cut -d: -f2 | sed -r 's/["]+//g')
     if [[ $2 == 'desc' ]]
     then
         echo "$desc"
-    elif [[ $2 == 'service' ]]
+    elif [[ $2 == 'service-desc' ]]
     then
         echo "$descClusterConfig"
+    elif [[ $2 == 'service' ]]
+    then
+        echo $(grep -A0 -P '^    clusterconfig:' $1 | cut -d: -f2  | sed -r 's/["]+//g' | tr "," " ")
     elif [[ $2 == 'multiline' ]]
     then
         echo "$3 $desc"
@@ -440,12 +443,12 @@ function doClusterConfigurationCreate {
         else
             installClusterInstallerIfNotPresent
             echo -e "  Start \e[1m$SXCM_OCPI_RELEASE\e[0m openshift installer \e[32mconfiguration\e[0m"
-            if [[ -r $clusterConfDir/metadata.json ]]; then
-                echo -e "  Could not configure because cluster is \e[1malready configured\e[0m"
+            if [[ -r $clusterConfDir/deployed ]]; then
+                echo -e "  Could not configure because cluster is \e[1malready deployed\e[0m"
                 echo -e "  you should run \e[90;4msxcm destroy $cn\e[0m before"
                 exit 1;
             fi
-            if [[ -r $clusterConfDir/.openshift_install.log ]]; then
+            if [[ -r $clusterConfDir/auth ]]; then
                 echo -en "  Do you want to connect to the running cluster [Y/n] : "
                 read connectOCP
                 echo -e ""
@@ -611,16 +614,24 @@ function doClusterConfigurationInfo {
     if [[ -r $clusterConfDir/$SXCM_USER_CONF_FILE ]]; then
         . $clusterConfDir/$SXCM_USER_CONF_FILE;
         local sourceConfFile=$SXCM_PROFILES_PATH/install-config-$SXCM_CLUSTER_PROFILE.yml
-        local desc=$(extractOCPInstallDescription $sourceConfFile desc)
-        local service=$(extractOCPInstallDescription $sourceConfFile service)
+        if [[ -r $clusterConfDir/deployed ]]
+        then
+            local clusterConfOCPInstallFile=$clusterConfDir/install-config.yaml.back
+        elif [[ -r $clusterConfDir/install-config.yaml ]]; then
+            local clusterConfOCPInstallFile=$clusterConfDir/install-config.yaml
+        else
+            local clusterConfOCPInstallFile=$sourceConfFile
+        fi
+        local desc=$(extractOCPInstallDescription $clusterConfOCPInstallFile desc)
+        local service=$(extractOCPInstallDescription $clusterConfOCPInstallFile service)
         local demos=$(listDemosCluster $cn)
-        local hourlyCost=$(extractOCPInstallHourlyCost $sourceConfFile)
+        local hourlyCost=$(extractOCPInstallHourlyCost $clusterConfOCPInstallFile)
         local admpwd=""
         if [[ -r $clusterConfDir/auth/kubeadmin-password ]]; then
             admpwd=$(cat $clusterConfDir/auth/kubeadmin-password)
         fi
         local STATE=""
-        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]]
+        if [[ -r $clusterConfDir/metadata.json && -r $clusterConfDir/.openshift_install.log ]]
         then
             if [[ -r $clusterConfDir/deployed ]]
             then
@@ -639,7 +650,7 @@ function doClusterConfigurationInfo {
         printf "\e[1m%-10s\e[0m %s\n" profile $SXCM_CLUSTER_PROFILE
         printf "\e[1m%-10s\e[0m %s$STATE\n" state ""
         printf "\e[1m%-10s\e[0m%s\n" desc "$desc"
-        printf "\e[1m%-10s\e[0m%s\n" services "$service"
+        printf "\e[1m%-10s\e[0m %s\n" services "$service"
         printf "\e[1m%-10s\e[0m %s\n" demos "$demos"
         printf "\e[1m%-10s\e[0m%s\n" cost " $hourlyCost €/h"
         printf "\e[1m%-10s\e[0m %s\n" "git repo" "$SXCM_GIT_REPO"
@@ -726,7 +737,7 @@ function doClusterConfigurationEdit {
         echo -e "You can create one using \e[90;4msxcm create $cn\e[0m" ;
         exit 2;
     else
-        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]]; then
+        if [[ -r $clusterConfDir/deployed ]]; then
             echo -e "Could not edit because cluster is already deployed"
             echo -e "you should run \e[90;4msxcm destroy $cn\e[0m before"
             exit 21;
@@ -775,7 +786,7 @@ function doClusterConfigurationUpdate {
         exit 1;
     fi
     echo -e "\e[1m\e[33mUpdate\e[0m the cluster \e[1m$cn\e[0m profile in $clusterConfDir"
-    if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]]; then
+    if [[ -r $clusterConfDir/deployed ]]; then
         updateClusterResources $cn
         updateClusterDemos $cn
         echo -e "Cluster configuration \e[1m$cn\e[0m \e[36mupdated\e[0m "
@@ -820,7 +831,7 @@ function doClusterConfigurationDelete {
         echo -e "You can create one using \e[90;4msxcm create $cn\e[0m" ;
         return 2;
     else
-        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]]; then
+        if [[ -r $clusterConfDir/deployed ]]; then
             echo -e "\e[1m$cn\e[0m cluster configuration already \e[36mdeployed\e[0m"
             echo -e "You must destroy it first with \e[90;4msxcm destroy $cn\e[0m" ;
         else
@@ -854,8 +865,9 @@ function doClusterConfigurationList {
         echo -e "\e[34mList\e[0m \e[1m$COUNT\e[0m cluster configuration in the cluster stack"
         for cluster in $LIST
         do
-            if [[ -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/metadata.json || -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/.openshift_install.log ]]
+            if [[ -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/metadata.json && -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/.openshift_install.log ]]
             then
+
                 local URL=$(cat $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/auth/kubeconfig | grep server | cut -d: -f2-10 | xargs)
                 if [[ -r $SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cluster/deployed ]]
                 then
@@ -990,7 +1002,7 @@ function doClusterDeploy {
         cn=`getActiveCluster`
     fi
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
-    if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]]; then
+    if [[ -r $clusterConfDir/deployed ]]; then
         echo -e "\e[1m$cn\e[0m cluster configuration already \e[36mdeployed\e[0m"
         cd $clusterConfDir &> /dev/null
         git checkout $cn &> /dev/null
@@ -1046,7 +1058,7 @@ function doClusterDestroy {
         cn=`getActiveCluster`
     fi
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
-    if [[ -r $clusterConfDir/metadata.json ]]; then
+    if [[ -r $clusterConfDir/deployed ]]; then
         echo -en "Do you want to \e[31mdestroy\e[0m cluster $cn [y/N] : "
         read doDestroy
         if [[ "$doDestroy" == "y" ]]; then
@@ -1103,12 +1115,12 @@ function doClusterConnect {
     fi
     local cn=`getActiveCluster`
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
-    if [[ -r $clusterConfDir/metadata.json && -r $clusterConfDir/.openshift_install.log ]]; then
+    if [[ -r $clusterConfDir/deployed ]]; then
         recordAdminTokenFromCreatedCluster $cn
         echo -e "\e[1\e[36mconnected\e[0m to cluster \e[1m$cn\e[0m "
     else
-        echo -e "\e[1m$cn\e[0m cluster configuration doesn't have metadata.json and .openshift_install.log files"
-        echo -e "You can create it using \e[90;4msxcm deploy $cn\e[0m" ;
+        echo -e "\e[1m$cn\e[0m cluster is not deployed"
+        echo -e "You can deploy it using \e[90;4msxcm deploy $cn\e[0m" ;
     fi
 }
 

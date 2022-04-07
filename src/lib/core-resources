@@ -484,6 +484,7 @@ function doResourceDissociate {
     if [[ ! -r $localConfOCPInstallFile ]]; then
         echo -e "\e[1mNo cluster\e[0m config found at \e[1m$localConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
     else
+        echo $localConfOCPInstallFile
         for resource in $(extractOCPInstallResourceList $localConfOCPInstallFile); do
             if [[ "$resource" == "$rn" ]]; then
                 resourceIsFoundInOCPInstall="true"
@@ -533,7 +534,7 @@ function doResourceEnable {
     else
         echo -e "\e[1m\e[96mEnable\e[0m the cluster resource \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
         doResourceAssociate $rn $cn
-        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]] && [[ -r $clusterConfDir/deployed ]]
+        if [[ -r $clusterConfDir/deployed ]]
         then
             IsDeployed=true
         fi
@@ -575,7 +576,7 @@ function doResourceDisable {
     if [[ ! -r $localConfOCPInstallFile ]]; then
         echo -e "No cluster config found at \e[1m$localConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m cluster resources"
     else
-        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]] && [[ -r $clusterConfDir/deployed ]]
+        if [[ -r $clusterConfDir/deployed ]]
         then
             IsDeployed=true
         fi
@@ -587,11 +588,11 @@ function doResourceDisable {
             echo -e "Could not \e[1mdisable $rn\e[0m cluster resource on cluster \e[1m$cn\e[0m because cluster is \e[1m\e[35mnot deployed\e[0m"
         fi
         doResourceDissociate $rn $cn
-        cd $clusterConfDir &>/dev/null
+        cd "$clusterConfDir" &>/dev/null || exit
         git add . &>/dev/null
         git commit -am "[$cn] Disable the $rn cluster resource from the $cn cluster" &>/dev/null
         git push origin $cn
-        cd - &>/dev/null
+        cd - &>/dev/null || exit
     fi
 }
 

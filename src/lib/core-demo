@@ -258,7 +258,7 @@ function doDemoUpdate {
         echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterDir\e[0m for enabling the \e[1m$rn\e[0m demos"
     else
         echo -e "\e[1m\e[96mUpdate\e[0m the demo \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
-        if [[ -r $clusterDir/metadata.json || -r $clusterDir/.openshift_install.log ]] && [[ -r $clusterDir/deployed ]]
+        if [[ -r $clusterDir/deployed ]]
         then
             IsDeployed=true
         fi
@@ -369,7 +369,7 @@ function doDemoRun {
         echo -e "\e[1mNo cluster\e[0m config found at \e[1m$clusterConfDir\e[0m for enabling the \e[1m$rn\e[0m demos"
     else
         echo -e "\e[1m\e[96mRun\e[0m the demo \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
-        if [[ -r $clusterConfDir/metadata.json || -r $clusterConfDir/.openshift_install.log ]] && [[ -r $clusterConfDir/deployed ]]
+        if [[ -r $clusterConfDir/deployed ]]
         then
             IsDeployed=true
         fi
@@ -497,7 +497,7 @@ function doDemoEnable {
     else
         echo -e "\e[1m\e[96mEnable\e[0m the demo \e[1m$rn\e[0m with the cluster \e[1m$cn\e[0m"
         doDemoAssociate $rn $cn
-        if [[ -r $clusterDir/metadata.json || -r $clusterDir/.openshift_install.log ]] && [[ -r $clusterDir/deployed ]]
+        if [[ -r $clusterDir/deployed ]]
         then
             IsDeployed=true
         fi
@@ -538,7 +538,7 @@ function doDemoDisable {
     if [[ ! -r $clusterConfOCPInstallFile ]]; then
         echo -e "No cluster config found at \e[1m$clusterConfOCPInstallFile\e[0m for loading the \e[1m$cn\e[0m demos"
     else
-        if [[ -r $clusterDir/metadata.json || -r $clusterDir/.openshift_install.log ]] && [[ -r $clusterDir/deployed ]]
+        if [[ -r $clusterDir/deployed ]]
         then
             IsDeployed=true
         fi
