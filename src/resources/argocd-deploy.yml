@@ -182,11 +182,11 @@ objects:
         resources:
           limits:
             cpu: 1000m
-            ephemeral-storage: 800Mi
+            ephemeral-storage: 2Gi
             memory: 2500Mi
           requests:
             cpu: 500m
-            ephemeral-storage: 400Mi
+            ephemeral-storage: 500Mi
             memory: 1500Mi
   # !!!!! warning sur les droits confies a argocd (creation de resources cluster)
   - kind: ClusterRoleBinding
@@ -489,3 +489,7 @@ parameters:
     displayName: Password to use for pulling images from the quay.io registry
     description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
     value: myQuayioPassword
+  - name: HELM_RELEASE
+    displayName: Helm repository release
+    description: "Branch or release name for the helm repository holding all charts"
+    value: devel

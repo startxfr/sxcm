@@ -54,7 +54,7 @@ objects:
     source:
       path: charts/project/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
           - values-startx-vault.yaml
@@ -109,7 +109,7 @@ objects:
     source:
       path: charts/cluster-vault/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
           - values-startx.yaml
@@ -189,3 +189,7 @@ parameters:
     displayName: Password to use for pulling images from the quay.io registry
     description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
     value: myQuayioPassword
+  - name: HELM_RELEASE
+    displayName: Helm repository release
+    description: "Branch or release name for the helm repository holding all charts"
+    value: devel

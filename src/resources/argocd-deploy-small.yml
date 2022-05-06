@@ -165,7 +165,7 @@ objects:
         resources:
           limits:
             cpu: 400m
-            ephemeral-storage: 700Mi
+            ephemeral-storage: 800Mi
             memory: 800Mi
           requests:
             cpu: 200m
@@ -470,3 +470,7 @@ parameters:
     displayName: Password to use for pulling images from the quay.io registry
     description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
     value: myQuayioPassword
+  - name: HELM_RELEASE
+    displayName: Helm repository release
+    description: "Branch or release name for the helm repository holding all charts"
+    value: devel

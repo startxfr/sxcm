@@ -114,7 +114,7 @@ objects:
             memory: "32Mi"
           max:
             cpu: 6
-            ephemeral-storage: "1Gi"
+            ephemeral-storage: "2Gi"
             memory: "5Gi"
         - type: "Container"
           defaultRequest:
@@ -128,7 +128,7 @@ objects:
             memory: "32Mi"
           max:
             cpu: 6
-            ephemeral-storage: "1Gi"
+            ephemeral-storage: "2Gi"
             memory: "5Gi"
   - kind: RoleBinding
     apiVersion: rbac.authorization.k8s.io/v1
@@ -234,7 +234,7 @@ objects:
         <<: *basic_annotations
     spec:
       channel: stable
-      startingCSV: openshift-gitops-operator.v1.3.1
+      startingCSV: openshift-gitops-operator.v1.5.0
       installPlanApproval: Automatic
       name: openshift-gitops-operator
       source: redhat-operators
@@ -302,3 +302,7 @@ parameters:
     displayName: Password to use for pulling images from the quay.io registry
     description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
     value: myQuayioPassword
+  - name: HELM_RELEASE
+    displayName: Helm repository release
+    description: "Branch or release name for the helm repository holding all charts"
+    value: devel
