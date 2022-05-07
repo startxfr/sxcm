@@ -70,6 +70,11 @@ objects:
           clusters:
           - "*"
       server:
+        config:
+          repositories: |
+            - type: helm
+              name: stable
+              url: https://startxfr.github.io/helm-repository/packages/
         autoscale:
           enabled: false
         insecure: true
@@ -104,13 +109,13 @@ objects:
           status: 15
         resources:
           limits:
-            cpu: 1500m
-            ephemeral-storage: 256Mi
-            memory: 4Gi
+            cpu: 1000m
+            ephemeral-storage: 1024Mi
+            memory: 3Gi
           requests:
-            cpu: 800m
-            ephemeral-storage: 64Mi
-            memory: 2Gi
+            cpu: 600m
+            ephemeral-storage: 512Mi
+            memory: 1.5Gi
       ha:
         enabled: false
       redis:
@@ -124,11 +129,12 @@ objects:
             ephemeral-storage: 10Mi
             memory: 128Mi
       dex:
+        # !!!!!! Must change argocd-utils to argocd-dex in deployment of the dex-server
         openShiftOAuth: true
         resources:
           limits:
             cpu: 200m
-            ephemeral-storage: 200Mi
+            ephemeral-storage: 300Mi
             memory: 128Mi
           requests:
             cpu: 50m
@@ -136,6 +142,9 @@ objects:
             memory: 64Mi
       rbac:
         defaultPolicy: edit
+        policy: |
+          g, system:cluster-admins, role:admin
+      initialSSHKnownHosts: {}
       grafana:
         enabled: false
         size: 1
@@ -164,13 +173,13 @@ objects:
             value: "5m"
         resources:
           limits:
-            cpu: 400m
-            ephemeral-storage: 800Mi
-            memory: 800Mi
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 3Gi
           requests:
-            cpu: 200m
-            ephemeral-storage: 400Mi
-            memory: 512Mi
+            cpu: 300m
+            ephemeral-storage: 500Mi
+            memory: 1500Mi
   # !!!!! warning sur les droits confies a argocd (creation de resources cluster)
   - kind: ClusterRoleBinding
     apiVersion: rbac.authorization.k8s.io/v1
@@ -261,10 +270,10 @@ objects:
         - p, role:startx-admin, *, *, default/*, allow
         - g, system:cluster-admins, role:admin
         groups:
-        - "system:serviceaccount:${ARGOCD_NS}"
         - my-oidc-group
         - system:cluster-admins
         - admin
+        - "system:serviceaccount:${ARGOCD_NS}"
   - kind: AppProject
     apiVersion: argoproj.io/v1alpha1
     metadata:
@@ -327,10 +336,12 @@ objects:
         description: All privileges to group admin in cluster-admin project
         policies:
         - p, role:startx-admin, *, *, cluster-admin/*, allow
-        - g, system:cluster-admins, role:admin
+        - g, system:cluster-admins, role:startx-admin
+        - g, "system:serviceaccount:${ARGOCD_NS}", role:startx-admin
         groups:
         - my-oidc-group
         - system:cluster-admins
+        - "system:serviceaccount:${ARGOCD_NS}"
         - admin
   - kind: AppProject
     apiVersion: argoproj.io/v1alpha1
@@ -366,7 +377,6 @@ objects:
         - p, role:startx-dev, *, get, default/*, allow
         groups:
         - dev
-        - "system:serviceaccount:${ARGOCD_NS}"
         - system:authenticated
       - name: ops
         description: Read-only (and sync) privileges to group ops in default project
@@ -399,6 +409,7 @@ objects:
         - g, system:defaults, role:admin
         groups:
         - my-oidc-group
+        - "system:serviceaccount:${ARGOCD_NS}"
         - system:cluster-admins
         - admin
 parameters:
