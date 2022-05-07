@@ -52,13 +52,13 @@ objects:
         openshift.io/generated-by: sxcm
     spec:
       hard:
-        limits.cpu: "12000m"
-        limits.memory: "16Gi"
-        requests.cpu: "4000m"
-        requests.memory: "10Gi"
+        limits.cpu: "12"
+        limits.memory: "24Gi"
+        requests.cpu: "6Gi"
+        requests.memory: "12Gi"
         requests.storage: "0"
         persistentvolumeclaims: "0"
-        ephemeral-storage: "10Gi"
+        ephemeral-storage: "30Gi"
         gp2.storageclass.storage.k8s.io/requests.storage: "0Gi"
         gp2.storageclass.storage.k8s.io/persistentvolumeclaims: "0"
         aws-generic-retain.storageclass.storage.k8s.io/requests.storage: "0"
