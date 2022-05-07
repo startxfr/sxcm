@@ -533,6 +533,10 @@ parameters:
     description: "Project environment (ex: dev, factory, preprod or prod)"
     value: dev
     required: true
+  - name: HELM_RELEASE
+    displayName: Helm repository release
+    description: "Branch or release name for the helm repository holding all charts"
+    value: devel
   - name: VERSION
     displayName: Project version
     description: "Project deployed release"

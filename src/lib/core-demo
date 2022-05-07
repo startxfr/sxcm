@@ -96,6 +96,7 @@ function applyClusterDemo {
     local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
     local localEnv=${SXCM_CLUSTER_ENV:-dev}
     local localVersion=${SXCM_VERSION:-beta}
+    local localHelmRelease=${SXCM_HELM_RELEASE:-devel}
     local localScope=${SXCM_CLUSTER_SCOPE:-scope}
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
     local clusterConfDirDemo=$clusterConfDir/$SXCM_USER_CONF_DIR_DEMOS
@@ -148,6 +149,7 @@ function applyClusterDemo {
                         -p CLUSTER=$cn \
                         -p ENV=$localEnv \
                         -p VERSION=$localVersion \
+                        -p HELM_RELEASE=$localHelmRelease \
                         -p DOCKERHUB_LOGIN=$SXCM_DOCKER_LOGIN \
                         -p DOCKERHUB_PWD=$SXCM_DOCKER_PWD \
                         -p QUAYIO_LOGIN=$SXCM_QUAYIO_LOGIN \
@@ -166,6 +168,7 @@ function applyClusterDemo {
                         -p CLUSTER=$cn \
                         -p ENV=$SXCM_CLUSTER_ENV \
                         -p VERSION=$localVersion \
+                        -p HELM_RELEASE=$localHelmRelease \
                         -p AWS_ZONE=$SXCM_AWS_ZONE \
                         -p AWS_ACCESS_ID=$SXCM_AWS_ID \
                         -p AWS_ACCESS_KEY=$SXCM_AWS_KEY \
@@ -177,6 +180,7 @@ function applyClusterDemo {
                         -p CLUSTER=$cn \
                         -p ENV=$localEnv \
                         -p VERSION=$localVersion \
+                        -p HELM_RELEASE=$localHelmRelease \
                         -p CLUSTERID=$clusterID \
                         -p CLUSTER_REGION=$clusterRegion \
                         -p RHN_USER=$SXCM_RHN_USER \
@@ -187,6 +191,7 @@ function applyClusterDemo {
                         -p CLUSTER=$cn \
                         -p ENV=$localEnv \
                         -p VERSION=$localVersion \
+                        -p HELM_RELEASE=$localHelmRelease \
                         | $CMD
                     fi
                 fi

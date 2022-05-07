@@ -58,7 +58,7 @@ objects:
     source:
       path: charts/example-catalog/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
           - values-istio.yaml
@@ -114,7 +114,7 @@ objects:
     source:
       path: charts/cluster-istio/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: devel
+      targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
           - values-members-demo-istio.yaml
@@ -165,6 +165,10 @@ parameters:
     description: "Project environment (ex: dev, factory, preprod or prod)"
     value: dev
     required: true
+  - name: HELM_RELEASE
+    displayName: Helm repository release
+    description: "Branch or release name for the helm repository holding all charts"
+    value: devel
   - name: VERSION
     displayName: Project version
     description: "Project deployed release"

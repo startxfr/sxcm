@@ -39,7 +39,8 @@ SXCM_AWS_ZONE=eu-west-3
 # SXCM_RHN_USER=startx_cl
 # SXCM_RHN_PASSWORD=xxxx
 # SXCM_RHN_EMAIL=cl@startx.fr
-# SXCM_RHN_PULLSECRET='{"auths":{"cloud.openshift.com":{"auth":"XXXX","email":"cl@startx.fr"},"quay.io":{"auth":"XXXX","email":"cl@startx.fr"},"registry.connect.redhat.com":{"auth":"XXXX","email":"cl@startx.fr"},"registry.redhat.io":{"auth":"XXXX","email":"cl@startx.fr"}}}'
+
+# SXCM_RHN_PULLSECRET='{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}'
 
 ## sxcm GIT configuration (if commented, should be declared using 'sxcm setup git' command)
 SXCM_GIT_BRANCH_MAIN=stable

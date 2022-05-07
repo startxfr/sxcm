@@ -129,6 +129,7 @@ function applyClusterResource {
     local clusterConfOCPInstallFile=$(getOCPInstallFileForCluster $cn)
     local localEnv=${SXCM_CLUSTER_ENV:-dev}
     local localVersion=${SXCM_VERSION:-beta}
+    local localHelmRelease=${SXCM_HELM_RELEASE:-devel}
     local localScope=${SXCM_CLUSTER_SCOPE:-scope}
     local localToken=${SXCM_CLUSTER_ADMIN_TOKEN:-mytoken} 
     local clusterConfDir=$SXCM_USER_CONF_DIR/$SXCM_USER_CONF_DIR_CLUSTER/$cn
@@ -160,6 +161,7 @@ function applyClusterResource {
             -p CLUSTER=$cn \
             -p ENV=$localEnv \
             -p VERSION=$localVersion \
+            -p HELM_RELEASE=$localHelmRelease \
             -p DOCKERHUB_LOGIN=$SXCM_DOCKER_LOGIN \
             -p DOCKERHUB_PWD=$SXCM_DOCKER_PWD \
             -p QUAYIO_LOGIN=$SXCM_QUAYIO_LOGIN \
@@ -178,6 +180,7 @@ function applyClusterResource {
             -p CLUSTER=$cn \
             -p ENV=$SXCM_CLUSTER_ENV \
             -p VERSION=$localVersion \
+            -p HELM_RELEASE=$localHelmRelease \
             -p DOCKERHUB_LOGIN=$SXCM_DOCKER_LOGIN \
             -p DOCKERHUB_PWD=$SXCM_DOCKER_PWD \
             -p QUAYIO_LOGIN=$SXCM_QUAYIO_LOGIN \
@@ -198,6 +201,7 @@ function applyClusterResource {
             -p CLUSTER=$cn \
             -p ENV=$localEnv \
             -p VERSION=$localVersion \
+            -p HELM_RELEASE=$localHelmRelease \
             -p DOCKERHUB_LOGIN=$SXCM_DOCKER_LOGIN \
             -p DOCKERHUB_PWD=$SXCM_DOCKER_PWD \
             -p QUAYIO_LOGIN=$SXCM_QUAYIO_LOGIN \
@@ -214,6 +218,7 @@ function applyClusterResource {
             -p CLUSTER=$cn \
             -p ENV=$localEnv \
             -p VERSION=$localVersion \
+            -p HELM_RELEASE=$localHelmRelease \
             -p DOCKERHUB_LOGIN=$SXCM_DOCKER_LOGIN \
             -p DOCKERHUB_PWD=$SXCM_DOCKER_PWD \
             -p QUAYIO_LOGIN=$SXCM_QUAYIO_LOGIN \

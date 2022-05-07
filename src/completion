@@ -171,7 +171,6 @@ _sxcm_all() {
     fi
 }
 
-
 _sxcm_course() {
     local available="config info install uninstall"
     local availableService="list create edit info delete associate dissociate enable disable"

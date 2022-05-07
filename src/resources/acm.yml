@@ -215,6 +215,9 @@ objects:
             value: "true"
           - name: acm.mch.enabled
             value: "true"
+          - name: observability.enabled
+            value: "false"
+            
     syncPolicy:
       automated:
         prune: true

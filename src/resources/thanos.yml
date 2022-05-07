@@ -116,9 +116,10 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-thanos/
+      path: charts/cluster-acm/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: "${HELM_RELEASE}"
+      # targetRevision: "${HELM_RELEASE}"
+      targetRevision: "devel"
       helm:
         valueFiles:
           - values-startx.yaml
@@ -132,23 +133,27 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "openshift-thanos"
+            value: "openshift-observability"
           - name: project.enabled
             value: "false"
           - name: project.project.requester
             value: "sxcm"
-          - name: thanos.enabled
+          - name: acm.enabled
+            value: "false"
+          - name: acm.mch.enabled
+            value: "false"
+          - name: observability.enabled
             value: "true"
-          - name: thanos.clusterPullSecret
-            value: '{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}'
-          - name: thanos.bucket.s3bucket
-            value: ""
-          - name: thanos.bucket.s3host
-            value: ""
-          - name: thanos.bucket.s3accesskey
-            value: ""
-          - name: thanos.bucket.s3secretkey
-            value: ""
+          # - name: observability.clusterPullSecret
+          #   value: '{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}'
+          - name: observability.bucket.s3bucket
+            value: "s3bucket"
+          - name: observability.bucket.s3host
+            value: "s3host"
+          - name: observability.bucket.s3accesskey
+            value: "s3accesskey"
+          - name: observability.bucket.s3secretkey
+            value: "s3secretkey"
     syncPolicy:
       automated:
         prune: true
