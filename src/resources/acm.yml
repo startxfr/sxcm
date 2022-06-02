@@ -134,6 +134,8 @@ objects:
             value: "openshift-acm"
           - name: project.enabled
             value: "false"
+          - name: project.project.enabled
+            value: "false"
           - name: operator.enabled
             value: "true"
     syncPolicy:
