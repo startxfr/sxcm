@@ -136,7 +136,7 @@ function applyClusterResource {
     local clusterConfDirResource=$clusterConfDir/$SXCM_USER_CONF_DIR_RESOURCES
     local clusterRegion=$(extractOCPInstallAWSRegion $clusterConfOCPInstallFile)
     local clusterProfile=$(extractOCPInstallProfile $clusterConfOCPInstallFile)
-    local clusterID=$(oc get machineset -n openshift-machine-api -o jsonpath="{.items[0].metadata.labels}" | cut -d \" -f 4)
+    local clusterID=$(oc get machineset -n openshift-machine-api --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[0].metadata.labels.machine\.openshift\.io/cluster-api-cluster}")
     local clusterName=$(echo $SXCM_CLUSTER_URL | sed -e 's|https://||g')
     clusterName=$(echo $clusterName | sed -e 's|\.|-|g')
     local CLUSTERTIMEOUT=5

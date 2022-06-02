@@ -29,7 +29,7 @@ objects:
   metadata:
     name: startx-cluster-machine-health
     namespace: "${ARGOCD_NS}"
-    labels:  &basic_labels
+    labels: &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
       app.startx.fr/component: "cluster-machine"
@@ -80,20 +80,64 @@ objects:
             value: "false"
           - name: machineSet.enabled
             value: "false"
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: false
-      syncOptions:
-        - ApplyOutOfSyncOnly=true
-        - CreateNamespace=false
-        - Validate=true
-      retry:
-        limit: 5
-        backoff:
-          duration: 5s
-          factor: 2
-          maxDuration: 5m
+    syncPolicy: {}
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: startx-cluster-machine-set
+    namespace: "${ARGOCD_NS}"
+    labels: 
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "cluster-machine"
+      app.kubernetes.io/name: "startx-cluster-machine-set-application"
+      app.kubernetes.io/part-of: ${CLUSTER}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "cluster-machine"
+    annotations: 
+      openshift.io/generated-by: sxcm
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-machine/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: "${HELM_RELEASE}"
+      helm:
+        valueFiles:
+          - values-startx-${CLUSTER_PROFILE}.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "${NS}"
+          - name: cluster.id
+            value: "${CLUSTERID}"
+          - name: cluster.region
+            value: "${CLUSTER_REGION}"
+          - name: cluster.autoscaler.enabled
+            value: "false"
+          - name: machineHealthCheck.enabled
+            value: "false"
+          - name: machineAutoscaler.enabled
+            value: "false"
+          - name: machineSet.enabled
+            value: "true"
+    syncPolicy: {}
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -142,24 +186,18 @@ objects:
             value: "${CLUSTERID}"
           - name: cluster.region
             value: "${CLUSTER_REGION}"
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: false
-      syncOptions:
-        - ApplyOutOfSyncOnly=true
-        - CreateNamespace=false
-        - Validate=true
-      retry:
-        limit: 5
-        backoff:
-          duration: 5s
-          factor: 2
-          maxDuration: 5m
+          - name: cluster.autoscaler.enabled
+            value: "false"
+          - name: machineHealthCheck.enabled
+            value: "false"
+          - name: machineAutoscaler.enabled
+            value: "true"
+          - name: machineSet.enabled
+            value: "false"
+    syncPolicy: {}
     # ignoreDifferences:
     #   - group: operators.coreos.com
     #     kind: OperatorGroup
-    #     namespace: "${NS}"
     #     jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
 parameters:
   - name: ARGOCD_NS

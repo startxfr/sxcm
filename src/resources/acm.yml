@@ -56,7 +56,7 @@ objects:
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values-startx.yaml
+          - values-startx-requirements.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -73,10 +73,6 @@ objects:
           - name: project.project.requester
             value: "sxcm"
           - name: operator.enabled
-            value: "false"
-          - name: acm.enabled
-            value: "false"
-          - name: acm.mch.enabled
             value: "false"
     syncPolicy:
       automated:
@@ -124,7 +120,7 @@ objects:
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values-startx.yaml
+          - values-startx-requirements.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -140,10 +136,6 @@ objects:
             value: "false"
           - name: operator.enabled
             value: "true"
-          - name: acm.enabled
-            value: "false"
-          - name: acm.mch.enabled
-            value: "false"
     syncPolicy:
       automated: 
         prune: false
@@ -161,7 +153,6 @@ objects:
     ignoreDifferences:
       - group: operators.coreos.com
         kind: OperatorGroup
-        namespace: "${NS}"
         jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
@@ -195,7 +186,7 @@ objects:
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values-startx.yaml
+          - values-startx-acm.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -215,9 +206,66 @@ objects:
             value: "true"
           - name: acm.mch.enabled
             value: "true"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: false
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 3
+        backoff:
+          duration: 60s
+          factor: 1
+          maxDuration: 60s
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: startx-cluster-acm-observability
+    namespace: "${ARGOCD_NS}"
+    labels: 
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "cluster-acm"
+      app.kubernetes.io/name: "startx-cluster-acm-observability-application"
+      app.kubernetes.io/part-of: ${CLUSTER}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "cluster-acm"
+    annotations:
+      openshift.io/generated-by: sxcm
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-acm/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: "${HELM_RELEASE}"
+      helm:
+        valueFiles:
+          - values-startx-observability.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "openshift-acm"
           - name: observability.enabled
-            value: "false"
-            
+            value: "true"
     syncPolicy:
       automated:
         prune: true

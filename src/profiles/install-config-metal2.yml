@@ -3,7 +3,7 @@ baseDomain: startx.fr
 metadata:
   name: __mycluster__
   annotations:
-    hourlyCost: "10,3"
+    hourlyCost: "13,3"
     description: "3 master (8Vcpu, 16Go RAM, 500Go io1 2000iop) +  3 worker (96Vcpu, 192Go RAM, 500Go io1 4000iop) - [AWS Mumbai]"
     descriptionTab: "| 3  | 8  | 16  | 500 | io1 | 2000 | 3  | 96 | 192 | 500 | io1 | 4000 | AWS Mumbai"
     descriptionClusterconfig: argocd,pipeline,istio,quaysec,machine,workspaces,couchbase,sso,vault,Knative,logging,RHACMS,quay,OCS,3Scale,Kubevirt

@@ -1,42 +1,42 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-3scale-project
+  name: sxcm-cluster-acm-import-project
   annotations:
-    openshift.io/display-name: STARTX cluster 3Scale (admin)
-    description: Deploy cluster-wide resources to enable 3Scale registry support according to sxcm definitions
+    openshift.io/display-name: STARTX Advanced Cluster Management (admin)
+    description: Deploy cluster-wide resources to enable ACM support for multi-cluster management
     iconClass: icon-openshift
-    tags: startx,cluster,config,admin,3scale
+    tags: startx,cluster,config,admin,acm,multi-cloud,management
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "30"
   labels:
-    template: sxcm-cluster-3scale-project
-    app.kubernetes.io/name: "sxcm-cluster-3scale-project"
+    template: sxcm-cluster-acm-import-project
+    app.kubernetes.io/name: "sxcm-cluster-acm-import-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
-  Your cluster enterprise api-management support is now enabled
+  Your cluster-wide ACM support for multi-cluster management is now enabled.
 
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
-  Operator          : red-hat-3scale.v0.6.1
+  Operator          : advanced-cluster-management.2.1.2
 labels:
-  template: sxcm-cluster-3scale-project
+  template: sxcm-cluster-acm-import-project
   app.kubernetes.io/managed-by: sxcm
-objects: 
+objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-3scale-project
+    name: startx-cluster-acm-import-project
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-3scale"
-      app.kubernetes.io/name: "startx-cluster-3scale-project-application"
+      app.startx.fr/component: "cluster-acm"
+      app.kubernetes.io/name: "startx-cluster-acm-import-project-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-3scale"
+      app.kubernetes.io/component: "cluster-acm"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -51,12 +51,12 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-3scale/
+      path: charts/cluster-acm/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values-startx.yaml
+          - values-startx-import.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -67,25 +67,21 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "startx-3scale"
+            value: "openshift-acm"
           - name: project.enabled
             value: "true"
+          - name: project.project.name
+            value: "managed"
+          - name: project.project.display_name
+            value: "ACM Cluster managed"
+          - name: project.project.description
+            value: "ACM managed cluster named managed"
           - name: project.project.requester
             value: "sxcm"
           - name: operator.enabled
             value: "false"
-          - name: manager.enabled
+          - name: import.enabled
             value: "false"
-          - name: project.serviceAccounts.enabled
-            value: "true"
-          - name: project.dockercfg.enabled
-            value: "true"
-          - name: project.dockercfg.list[0].username
-            value: "${RHN_USER}"
-          - name: project.dockercfg.list[0].password
-            value: "${RHN_PASSWORD}"
-          - name: project.dockercfg.list[0].email
-            value: "clarue@startx.fr"
     syncPolicy:
       automated:
         prune: true
@@ -100,99 +96,20 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 5m
-    ignoreDifferences:
-      - kind: ServiceAccount
-        jsonPointers:
-        - /imagePullSecrets
-        - /secrets
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-3scale-operator
-    namespace: "${ARGOCD_NS}"
-    labels:  
-      app.startx.fr/scope: "${SCOPE}"
-      app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-3scale"
-      app.kubernetes.io/name: "startx-cluster-3scale-operator-application"
-      app.kubernetes.io/part-of: ${CLUSTER}
-      app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-3scale"
-    annotations: 
-      openshift.io/generated-by: sxcm
-      # argocd.argoproj.io/manifest-generate-paths: .
-    finalizers:
-      - resources-finalizer.argocd.argoproj.io
-  spec:
-    destination:
-      namespace: "${NS}"
-      server: 'https://kubernetes.default.svc'
-    info:
-      - name: teammail
-        value: dev@startx.fr
-    project: cluster-admin
-    source:
-      path: charts/cluster-3scale/
-      repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: "${HELM_RELEASE}"
-      helm:
-        valueFiles:
-          - values-startx.yaml
-        parameters:
-          - name: context.scope
-            value: "${SCOPE}"
-          - name: context.cluster
-            value: "${CLUSTER}"
-          - name: context.environment
-            value: "${ENV}"
-          - name: context.version
-            value: "${VERSION}"
-          - name: context.app
-            value: "startx-3scale"
-          - name: project.enabled
-            value: "false"
-          - name: operator.enabled
-            value: "true"
-          - name: manager.enabled
-            value: "false"
-          - name: rhn.enabled
-            value: "false"
-          - name: rhn.user
-            value: "${RHN_USER}"
-          - name: rhn.pwd
-            value: "${RHN_PASSWORD}"
-    syncPolicy:
-      automated: 
-        prune: false
-        selfHeal: false
-      syncOptions:
-        - ApplyOutOfSyncOnly=true
-        - CreateNamespace=false
-        - Validate=true
-      retry:
-        limit: 5
-        backoff:
-          duration: 5s
-          factor: 2
-          maxDuration: 5m
-    ignoreDifferences:
-      - group: operators.coreos.com
-        kind: OperatorGroup
-        jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
-- kind: Application
-  apiVersion: argoproj.io/v1alpha1
-  metadata:
-    name: startx-cluster-3scale-instance
+    name: startx-cluster-acm-import-instance
     namespace: "${ARGOCD_NS}"
     labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-3scale"
-      app.kubernetes.io/name: "startx-cluster-3scale-instance-application"
+      app.startx.fr/component: "cluster-acm"
+      app.kubernetes.io/name: "startx-cluster-acm-import-instance-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-3scale"
-    annotations: 
+      app.kubernetes.io/component: "cluster-acm"
+    annotations:
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
@@ -206,12 +123,12 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-3scale/
+      path: charts/cluster-acm/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values-startx.yaml
+          - values-startx-import.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -222,19 +139,21 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "startx-3scale"
+            value: "openshift-acm"
           - name: project.enabled
             value: "false"
+          - name: project.project.name
+            value: "managed"
           - name: operator.enabled
             value: "false"
-          - name: manager.enabled
+          - name: import.enabled
             value: "true"
-          - name: rhn.enabled
-            value: "false"
-          - name: rhn.user
-            value: "${RHN_USER}"
-          - name: rhn.pwd
-            value: "${RHN_PASSWORD}"
+          - name: import.name
+            value: "managed"
+          - name: import.token
+            value: "mytokenargocd"
+          - name: import.server
+            value: "myserverargocd"
     syncPolicy:
       automated:
         prune: true
@@ -257,7 +176,7 @@ parameters:
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
-    value: startx-3scale
+    value: open-cluster-management
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
@@ -274,12 +193,6 @@ parameters:
     displayName: Project version
     description: "Project deployed release"
     value: 3.9.x-dev
-  - name: RHN_USER
-    displayName: RHN container access user
-    description: Redhat Network access user to the RH container catalog
-  - name: RHN_PASSWORD
-    displayName: RHN container access password
-    description: Redhat Network access password to the Rh container catalog
   - name: CLUSTER_PROFILE
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"

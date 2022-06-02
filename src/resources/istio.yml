@@ -177,11 +177,6 @@ objects:
     # ignoreDifferences:
     #   - group: operators.coreos.com
     #     kind: OperatorGroup
-    #     namespace: "${NS}"
-    #     jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
-    #   - group: operators.coreos.com
-    #     kind: OperatorGroup
-    #     namespace: "openshift-operators"
     #     jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
 - kind: Application
   apiVersion: argoproj.io/v1alpha1

@@ -115,7 +115,7 @@ objects:
     source:
       path: charts/project/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: "${HELM_RELEASE}"
+      targetRevision: devel
       helm:
         releaseName: startx-workspace-project
         valueFiles:
@@ -173,7 +173,7 @@ objects:
     source:
       path: charts/operator/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: "${HELM_RELEASE}"
+      targetRevision: devel
       helm:
         releaseName: startx-workspace-operator
         valueFiles:
@@ -208,7 +208,6 @@ objects:
     ignoreDifferences:
       - group: operators.coreos.com
         kind: OperatorGroup
-        namespace: "${NS}"
         jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
 parameters:
   - name: ARGOCD_NS
@@ -255,7 +254,3 @@ parameters:
     displayName: Password to use for pulling images from the quay.io registry
     description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
     value: myQuayioPassword
-  - name: HELM_RELEASE
-    displayName: Helm repository release
-    description: "Branch or release name for the helm repository holding all charts"
-    value: devel

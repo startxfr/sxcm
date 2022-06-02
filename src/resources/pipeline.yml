@@ -86,7 +86,6 @@ objects:
     ignoreDifferences:
       - group: operators.coreos.com
         kind: OperatorGroup
-        namespace: "${NS}"
         jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
 parameters:
   - name: ARGOCD_NS

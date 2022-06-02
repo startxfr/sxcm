@@ -73,12 +73,22 @@ objects:
             value: "false"
           - name: alertmanager.enabled 
             value: "false"
+          - name: ingresscontroller.enabled 
+            value: "false"
+          - name: ingresscontroller.infra_enabled 
+            value: "false"
+          - name: registryconfig.enabled 
+            value: "false"
+          - name: registryconfig.infra_enabled 
+            value: "false"
           - name: alertmanager.pagerDutty.key
             value: "_pager_dutty_startx_key_"
           - name: alertmanager.api.endpoint
             value: "_startx_api_endpoint_"
           - name: monitoring.enabled
             value: "true"
+          - name: monitoring.infra_enabled 
+            value: "false"
           - name: imageprunner.enabled
             value: "true"
           - name: imageprunner.schedule
@@ -179,8 +189,6 @@ objects:
     ignoreDifferences:
       - group: operators.coreos.com
         kind: OperatorGroup
-        namespace: "openshift-operators-redhat"
-        name: elasticsearch-operator
         jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
