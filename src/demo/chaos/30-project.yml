@@ -146,6 +146,66 @@ objects:
       - my-oidc-group
       - system:cluster-admins
       - admin
+- kind: AppProject
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${NS}-mesh
+    namespace: "${ARGOCD_NS}"
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "${NS}-mesh"
+      app.kubernetes.io/name: "${NS}-mesh-appproject"
+      app.kubernetes.io/part-of: ${NS}-mesh
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "${NS}-mesh-project"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxcm
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    sourceRepos:
+      - '*'
+    destinations:
+      - namespace: ${NS}-mesh
+        server: '*'
+    clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+    roles:
+    - name: dev
+      description: Read-only privileges to group dev in ${NS}-mesh project
+      policies:
+      - g, dev, role:readonly
+      - p, role:startx-dev, *, get, .${NS}-mesh/*, allow
+      groups:
+      - dev
+    - name: ops
+      description: Read-only (and sync) privileges to group ops in ${NS}-mesh project
+      policies:
+      - p, role:startx-ops, *, get, .${NS}-mesh/*, allow
+      - p, role:startx-ops, *, sync, .${NS}-mesh/*, allow
+      - g, ops, role:startx-ops
+      groups:
+      - ops
+    - name: devops
+      description: Read-only privileges to group devops in ${NS}-mesh project
+      policies:
+      - p, role:startx-devops, *, get, .${NS}-mesh/*, allow
+      - p, role:startx-devops, applications, sync, .${NS}-mesh/*, allow
+      - p, role:startx-devops, repositories, sync, .${NS}-mesh/*, allow
+      - g, devops, role:startx-devops
+      groups:
+      - devops
+    - name: admin
+      description: All privileges to group admin in ${NS}-mesh project
+      policies:
+      - p, role:startx-admin, *, *, ${NS}-mesh/*, allow
+      - g, system:cluster-admins, role:admin
+      groups:
+      - my-oidc-group
+      - system:cluster-admins
+      - admin
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -173,7 +233,7 @@ objects:
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values.yaml
+          - values-startx-project.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -183,9 +243,9 @@ objects:
             value: "${ENV}"
           - name: context.version
             value: "${VERSION}"
-          - name: kraken_project.project.requester
+          - name: project.project.requester
             value: "sxcm"
-          - name: kraken_project.enable
+          - name: project.enable
             value: "true"
     syncPolicy:
       automated:
@@ -228,7 +288,7 @@ objects:
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values.yaml
+          - values-startx-project-kraken.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -242,7 +302,61 @@ objects:
             value: "sxcm"
           - name: kraken_project.enable
             value: "true"
-            
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${NS}-mesh-project
+    namespace: "${ARGOCD_NS}"
+    labels:
+      <<: *basic_labels
+      app.kubernetes.io/name: "${NS}-mesh-project-application"
+    annotations:
+      <<: *basic_annotations
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}-mesh"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/example-chaos/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: "${HELM_RELEASE}"
+      helm:
+        valueFiles:
+          - values-startx-project-mesh.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: mesh_project.project.requester
+            value: "sxcm"
+          - name: mesh_project.enable
+            value: "true"
     syncPolicy:
       automated:
         prune: true
@@ -266,7 +380,7 @@ parameters:
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
-    value: example-chaos
+    value: startx-chaos
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
