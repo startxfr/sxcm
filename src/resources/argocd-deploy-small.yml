@@ -174,7 +174,7 @@ objects:
         resources:
           limits:
             cpu: 500m
-            ephemeral-storage: 1Gi
+            ephemeral-storage: 1.5Gi
             memory: 3Gi
           requests:
             cpu: 300m

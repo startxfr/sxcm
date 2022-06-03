@@ -40,6 +40,13 @@ objects:
       annotations: 
         openshift.io/generated-by: sxcm
     spec: 
+      nodePlacement:
+        nodeSelector:
+          node-role.kubernetes.io/infra: '' 
+        tolerations:
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/infra
+            operator: Exists
       applicationInstanceLabelKey: argocd.argoproj.io/instance
       resourceCustomizations: |
         PersistentVolumeClaim:
