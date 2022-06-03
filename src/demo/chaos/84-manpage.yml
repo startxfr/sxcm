@@ -94,7 +94,7 @@ parameters:
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
-    value: example-chaos
+    value: startx-chaos
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
