@@ -1,31 +1,29 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-compliance-project
+  name: sxcm-demo-chaos-project
   annotations:
-    openshift.io/display-name: Demo STARTX - Compliance
-    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/compliance
+    openshift.io/display-name: Demo STARTX - Chaos
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/chaos
     openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description:
-      Deployment of the compliance operator and a demo report. This allow 
-      demostrator to show how Openshift 4 infrastructure could report status of
-      compliancy again private or public policies
+      Deployment of the chaos environment
     iconClass: icon-load-balancer
-    tags: startx,compliance,demo,dev
+    tags: startx,chaos,demo,dev
   labels:
-    template: sxcm-demo-compliance-project
+    template: sxcm-demo-chaos-project
 message: |-
-  Your demo project ${NS} for Nexus technology is now created.
+  Your demo project ${NS} for Chaos test is now created.
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
-  Service        : compliance
+  Service        : chaos
   Project        : ${NS}
 
 labels:
-  template: sxcm-demo-compliance-project
+  template: sxcm-demo-chaos-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: AppProject
@@ -88,67 +86,66 @@ objects:
       - my-oidc-group
       - system:cluster-admins
       - admin
-- kind: Application
+- kind: AppProject
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${OPERATOR_NS}-project
+    name: ${NS}-kraken
     namespace: "${ARGOCD_NS}"
-    labels:
-      <<: *basic_labels
-      app.kubernetes.io/name: "${OPERATOR_NS}-project-application"
-    annotations:
-      <<: *basic_annotations
-      # argocd.argoproj.io/manifest-generate-paths: .
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "${NS}-kraken"
+      app.kubernetes.io/name: "${NS}-kraken-appproject"
+      app.kubernetes.io/part-of: ${NS}-kraken
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "${NS}-kraken-project"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxcm
     finalizers:
       - resources-finalizer.argocd.argoproj.io
   spec:
-    destination:
-      namespace: "${OPERATOR_NS}"
-      server: 'https://kubernetes.default.svc'
-    info:
-      - name: teammail
-        value: dev@startx.fr
-    project: cluster-admin
-    source:
-      path: charts/cluster-compliance/
-      repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: "${HELM_RELEASE}"
-      helm:
-        valueFiles:
-          - values-startx.yaml
-        parameters:
-          - name: context.scope
-            value: "${SCOPE}"
-          - name: context.cluster
-            value: "${CLUSTER}"
-          - name: context.environment
-            value: "${ENV}"
-          - name: context.version
-            value: "${VERSION}"
-          - name: context.app
-            value: "${OPERATOR_NS}"
-          - name: project.enabled
-            value: "true"
-          - name: project.project.requester
-            value: "sxcm"
-          - name: operator.enabled
-            value: "false"
-          - name: compliance.enabled
-            value: "false"
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: true
-      syncOptions:
-        - ApplyOutOfSyncOnly=true
-        - CreateNamespace=false
-        - Validate=true
-      retry:
-        limit: 5
-        backoff:
-          duration: 5s
-          factor: 2
-          maxDuration: 5m
+    sourceRepos:
+      - '*'
+    destinations:
+      - namespace: ${NS}-kraken
+        server: '*'
+    clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+    roles:
+    - name: dev
+      description: Read-only privileges to group dev in ${NS}-kraken project
+      policies:
+      - g, dev, role:readonly
+      - p, role:startx-dev, *, get, .${NS}-kraken/*, allow
+      groups:
+      - dev
+    - name: ops
+      description: Read-only (and sync) privileges to group ops in ${NS}-kraken project
+      policies:
+      - p, role:startx-ops, *, get, .${NS}-kraken/*, allow
+      - p, role:startx-ops, *, sync, .${NS}-kraken/*, allow
+      - g, ops, role:startx-ops
+      groups:
+      - ops
+    - name: devops
+      description: Read-only privileges to group devops in ${NS}-kraken project
+      policies:
+      - p, role:startx-devops, *, get, .${NS}-kraken/*, allow
+      - p, role:startx-devops, applications, sync, .${NS}-kraken/*, allow
+      - p, role:startx-devops, repositories, sync, .${NS}-kraken/*, allow
+      - g, devops, role:startx-devops
+      groups:
+      - devops
+    - name: admin
+      description: All privileges to group admin in ${NS}-kraken project
+      policies:
+      - p, role:startx-admin, *, *, ${NS}-kraken/*, allow
+      - g, system:cluster-admins, role:admin
+      groups:
+      - my-oidc-group
+      - system:cluster-admins
+      - admin
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -171,12 +168,12 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/project/
+      path: charts/example-chaos/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values-demo-compliance.yaml
+          - values.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -186,8 +183,66 @@ objects:
             value: "${ENV}"
           - name: context.version
             value: "${VERSION}"
-          - name: project.requester
+          - name: kraken_project.project.requester
             value: "sxcm"
+          - name: kraken_project.enable
+            value: "true"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${NS}-kraken-project
+    namespace: "${ARGOCD_NS}"
+    labels:
+      <<: *basic_labels
+      app.kubernetes.io/name: "${NS}-kraken-project-application"
+    annotations:
+      <<: *basic_annotations
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}-kraken"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/example-chaos/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: "${HELM_RELEASE}"
+      helm:
+        valueFiles:
+          - values.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: kraken_project.project.requester
+            value: "sxcm"
+          - name: kraken_project.enable
+            value: "true"
+            
     syncPolicy:
       automated:
         prune: true
@@ -206,12 +261,12 @@ parameters:
   - name: OPERATOR_NS
     displayName: The namespace where operator goes to
     description: "Namespace to place objects to"
-    value: startx-compliance
+    value: startx-chaos
     required: true
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
-    value: demo-compliance
+    value: example-chaos
     required: true
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
