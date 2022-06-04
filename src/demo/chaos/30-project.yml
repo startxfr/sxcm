@@ -206,6 +206,66 @@ objects:
       - my-oidc-group
       - system:cluster-admins
       - admin
+- kind: AppProject
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${NS}-monkey
+    namespace: "${ARGOCD_NS}"
+    labels:  &basic_labels
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "${NS}-monkey"
+      app.kubernetes.io/name: "${NS}-monkey-appproject"
+      app.kubernetes.io/part-of: ${NS}-monkey
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "${NS}-monkey-project"
+    annotations: &basic_annotations
+      openshift.io/generated-by: sxcm
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    sourceRepos:
+      - '*'
+    destinations:
+      - namespace: ${NS}-monkey
+        server: '*'
+    clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+    roles:
+    - name: dev
+      description: Read-only privileges to group dev in ${NS}-monkey project
+      policies:
+      - g, dev, role:readonly
+      - p, role:startx-dev, *, get, .${NS}-monkey/*, allow
+      groups:
+      - dev
+    - name: ops
+      description: Read-only (and sync) privileges to group ops in ${NS}-monkey project
+      policies:
+      - p, role:startx-ops, *, get, .${NS}-monkey/*, allow
+      - p, role:startx-ops, *, sync, .${NS}-monkey/*, allow
+      - g, ops, role:startx-ops
+      groups:
+      - ops
+    - name: devops
+      description: Read-only privileges to group devops in ${NS}-monkey project
+      policies:
+      - p, role:startx-devops, *, get, .${NS}-monkey/*, allow
+      - p, role:startx-devops, applications, sync, .${NS}-monkey/*, allow
+      - p, role:startx-devops, repositories, sync, .${NS}-monkey/*, allow
+      - g, devops, role:startx-devops
+      groups:
+      - devops
+    - name: admin
+      description: All privileges to group admin in ${NS}-monkey project
+      policies:
+      - p, role:startx-admin, *, *, ${NS}-monkey/*, allow
+      - g, system:cluster-admins, role:admin
+      groups:
+      - my-oidc-group
+      - system:cluster-admins
+      - admin
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
@@ -356,6 +416,61 @@ objects:
           - name: mesh_project.project.requester
             value: "sxcm"
           - name: mesh_project.enable
+            value: "true"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: ${NS}-monkey-project
+    namespace: "${ARGOCD_NS}"
+    labels:
+      <<: *basic_labels
+      app.kubernetes.io/name: "${NS}-monkey-project-application"
+    annotations:
+      <<: *basic_annotations
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}-monkey"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/example-chaos/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: "${HELM_RELEASE}"
+      helm:
+        valueFiles:
+          - values-startx-project-monkey.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: monkey_project.project.requester
+            value: "sxcm"
+          - name: monkey_project.enable
             value: "true"
     syncPolicy:
       automated:
