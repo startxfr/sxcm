@@ -40,10 +40,8 @@ objects:
       app.kubernetes.io/version: "${VERSION}"
       app.kubernetes.io/component: "${NS}-project"
       app.kubernetes.io/name: "${NS}-monkey-instance-application"
-      "argocd.argoproj.io/sync-options": "Replace=true"
     annotations: &basic_annotations
       openshift.io/generated-by: "sxcm"
-      argocd.argoproj.io/sync-options": "Replace=true"
       # argocd.argoproj.io/manifest-generate-paths: .
     finalizers:
       - resources-finalizer.argocd.argoproj.io
