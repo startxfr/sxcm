@@ -69,8 +69,30 @@ objects:
             value: "${ENV}"
           - name: context.version
             value: "${VERSION}"
-          # - name: kraken.enable
-          #   value: "true"
+          - name: kraken.true
+            value: "true"
+          - name: kraken.kubeconfig
+            value: |
+              kind: Config
+              apiVersion: v1
+              current-context: default
+              clusters:
+              - name: default
+                cluster:
+                  certificate-authority-data: XXXXXXX
+                  server: https://localhost:6443
+              users:
+              - name: default
+                user:
+                  client-certificate-data: XXXXXXX
+                  client-key-data: XXXXXXX
+              contexts:
+              - name: default
+                context:
+                  cluster: default
+                  namespace: default
+                  user: default
+              preferences: {}
     syncPolicy:
       automated:
         prune: true
