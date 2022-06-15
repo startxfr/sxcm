@@ -69,8 +69,8 @@ objects:
             value: "${ENV}"
           - name: context.version
             value: "${VERSION}"
-          # - name: mesh.enable
-          #   value: "true"
+          - name: mesh.enable
+            value: "false"
     syncPolicy:
       automated:
         prune: true
