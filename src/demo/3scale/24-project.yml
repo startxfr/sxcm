@@ -258,4 +258,4 @@ parameters:
   - name: QUAYIO_PWD
     displayName: Password to use for pulling images from the quay.io registry
     description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
-    value: myQuayioPassword
+    value: myQuayioPassword 

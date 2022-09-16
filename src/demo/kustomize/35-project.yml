@@ -121,7 +121,7 @@ objects:
       source:
         path: charts/project/
         repoURL: 'https://github.com/startxfr/helm-repository.git'
-        targetRevision: "devel"
+        targetRevision: "${HELM_RELEASE}"
         helm:
           valueFiles:
             - values-demo-kustomize.yaml

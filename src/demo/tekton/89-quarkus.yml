@@ -605,3 +605,7 @@ parameters:
     from: "[a-z0-9]{10}"
     generate: expression
     required: true
+  - name: HELM_RELEASE
+    displayName: Helm repository release
+    description: "Branch or release name for the helm repository holding all charts"
+    value: devel

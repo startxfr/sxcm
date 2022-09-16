@@ -233,7 +233,7 @@ parameters:
   - name: VERSION
     displayName: Project version
     description: "Project deployed release"
-    value: 3.9.x-dev
+    value: 4.10.x-dev
   - name: CLUSTER_PROFILE
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
@@ -254,3 +254,7 @@ parameters:
     displayName: Password to use for pulling images from the quay.io registry
     description: "The Password coresponding to the login for pulling images from the quay.ioi registry"
     value: myQuayioPassword
+  - name: HELM_RELEASE
+    displayName: Helm repository release
+    description: "Branch or release name for the helm repository holding all charts"
+    value: devel

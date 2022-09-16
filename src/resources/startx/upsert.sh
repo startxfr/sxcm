@@ -42,7 +42,7 @@ else
     oc policy add-role-to-group system:image-puller system:authenticated -n $PROJECT
 fi
 
-# https://docs.openshift.com/container-platform/4.9/openshift_images/managing_images/using-image-pull-secrets.html#images-update-global-pull-secret_using-image-pull-secrets
+# https://docs.openshift.com/container-platform/4.10/openshift_images/managing_images/using-image-pull-secrets.html#images-update-global-pull-secret_using-image-pull-secrets
 if [[ "$8" != "" && "$9" != "" ]]
 then
     if [[ $ACTION == "uninstall" ]]
