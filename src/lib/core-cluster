@@ -28,7 +28,7 @@ function installClusterInstallerIfNotPresent {
         echo -e "Start openshift installer \e[32minstallation\e[0m (no $SXCM_OCPI_BIN)"
         installClusterInstaller
     else
-        SXCM_OCPI_RELEASE=$(openshift-install version | grep openshift-install | cut -dv -f2)
+        SXCM_OCPI_RELEASE=$(openshift-install version | grep openshift-install | cut -d ' ' -f2)
     fi
 }
 
