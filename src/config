@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Client configuration
-SXCM_VERSION=10.12.23
+SXCM_VERSION=10.12.24
 
 # Manage OKD remote cluster
 SXCM_OCPI_BRANCH='4.11.7'
@@ -12,7 +12,7 @@ SXCM_OCPI_TMP='/tmp/ocpi'
 SXCM_OCPI_BIN='/usr/local/bin/openshift-install'
 
 # Manage sxcm profiles
-SXCM_PROFILES_ORDERED=(pico nano micro milli centi deci default deca hecto kilo mega giga tera peta)
+SXCM_PROFILES_ORDERED=(pico nano micro milli centi deci default deca hecto kilo mega giga tera peta metal)
 
 # sxcm user configuration
 SXCM_USER_CONF_DIR=~/.sxcm
