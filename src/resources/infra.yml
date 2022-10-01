@@ -98,6 +98,8 @@ objects:
           - name: projecttemplate.enabled
             value: "true" 
           - name: redhat.operators
+            value: "true"
+          - name: tracing.operators
             value: "true" 
           - name: helm_reposistory.enabled
             value: "true"
@@ -167,6 +169,8 @@ objects:
           - name: context.app
             value: "startx-infra"
           - name: redhat.operators
+            value: "false" 
+          - name: tracing.operators
             value: "false" 
           - name: operatorElastic.enabled
             value: "true"
