@@ -20,7 +20,6 @@ compute:
           - us-west-2b
           - us-west-2c
         rootVolume:
-          iops: 40
           size: 40
           type: gp2
 controlPlane:
@@ -35,7 +34,6 @@ controlPlane:
         - us-west-2b
         - us-west-2c
       rootVolume:
-        iops: 50
         size: 50
         type: gp2
 networking:

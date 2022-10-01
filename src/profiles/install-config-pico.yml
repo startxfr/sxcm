@@ -20,7 +20,6 @@ compute:
           - us-east-2b
           - us-east-2c
         rootVolume:
-          iops: 50
           size: 50
           type: gp2
 controlPlane:
@@ -35,7 +34,6 @@ controlPlane:
         - us-east-2b
         - us-east-2c
       rootVolume:
-        iops: 50
         size: 50
         type: gp2
 networking:

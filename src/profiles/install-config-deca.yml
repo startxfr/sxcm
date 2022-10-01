@@ -20,7 +20,6 @@ compute:
           - eu-west-2b
           - eu-west-2c
         rootVolume:
-          iops: 120
           size: 120
           type: gp2
 controlPlane:
@@ -35,7 +34,6 @@ controlPlane:
         - eu-west-2b
         - eu-west-2c
       rootVolume:
-        iops: 120
         size: 120
         type: gp2
 networking:
