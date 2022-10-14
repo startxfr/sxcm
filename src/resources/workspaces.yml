@@ -19,7 +19,7 @@ message: |-
 
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
-  Operator          : crwoperator.v2.3.0
+  Operator          : devspaces.v3.1.0
 labels:
   template: sxcm-cluster-workspaces-project
   app.kubernetes.io/managed-by: sxcm
@@ -177,7 +177,7 @@ objects:
       helm:
         releaseName: startx-workspace-operator
         valueFiles:
-          - values-crw-2.13.100.yaml
+          - values-devspaces-3.1.0.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
