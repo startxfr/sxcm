@@ -103,6 +103,8 @@ objects:
     ignoreDifferences:
       - kind: Namespace
         jsonPointers: [ "/metadata/annotations" ]
+      - kind: Namespace
+        jsonPointers: [ "/metadata/labels" ]
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:

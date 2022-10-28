@@ -89,6 +89,27 @@ objects:
           duration: 5s
           factor: 2
           maxDuration: 20s
+    ignoreDifferences:
+      - group: apps
+        kind: Deployment
+        jsonPointers: [ "spec.template.spec.containers[0].image" ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 parameters:
   - name: NS
     displayName: Keycloak namespace for keycloak instance
