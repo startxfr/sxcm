@@ -138,6 +138,10 @@ objects:
           - name: machineSet.enabled
             value: "true"
     syncPolicy: {}
+    ignoreDifferences:
+      - group: machine.openshift.io
+        kind: MachineSet
+        jsonPointers: [ "/spec/replicas" ]
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
