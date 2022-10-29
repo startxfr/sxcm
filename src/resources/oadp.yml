@@ -1,42 +1,42 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-certmanager-project
+  name: sxcm-cluster-oadp-project
   annotations:
-    openshift.io/display-name: STARTX cluster CertManager (admin)
-    description: Deploy cluster-wide resources to enable CertManager support according to sxcm definitions
+    openshift.io/display-name: STARTX cluster ApplicationDataProtection (admin)
+    description: Deploy cluster-wide resources to enable OADP support according to sxcm definitions
     iconClass: icon-openshift
-    tags: startx,cluster,config,admin,certmanager,security,certificate
+    tags: startx,cluster,config,admin,applicationDataProtection,backup,restore,restic,velero
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "10"
   labels:
-    template: sxcm-cluster-certmanager-project
-    app.kubernetes.io/name: "sxcm-cluster-certmanager-project"
+    template: sxcm-cluster-oadp-project
+    app.kubernetes.io/name: "sxcm-cluster-oadp-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster enterprise registry support is now enabled
 
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
-  Operator          : openshift-cert-manager-operator.v1.7.1
+  Operator          : oadp-operator.v1.1.0
 labels:
-  template: sxcm-cluster-certmanager-project
+  template: sxcm-cluster-oadp-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-certmanager-project
+    name: startx-cluster-oadp-project
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-certmanager"
-      app.kubernetes.io/name: "argoapp-cluster-certmanager-project-application"
+      app.startx.fr/component: "cluster-oadp"
+      app.kubernetes.io/name: "argoapp-cluster-oadp-project-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-certmanager"
+      app.kubernetes.io/component: "cluster-oadp"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -51,7 +51,7 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-certmanager/
+      path: charts/cluster-oadp/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: "${HELM_RELEASE}"
       helm:
@@ -67,14 +67,14 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "startx-certmanager"
+            value: "startx-oadp"
           - name: project.enabled
             value: "true"
           - name: project.project.requester
             value: "sxcm"
           - name: operator.enabled
             value: "false"
-          - name: certmanager.enabled
+          - name: oadp.enabled
             value: "false"
     syncPolicy:
       automated:
@@ -98,16 +98,16 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-certmanager-operator
+    name: startx-cluster-oadp-operator
     namespace: "${ARGOCD_NS}"
     labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-certmanager"
-      app.kubernetes.io/name: "argoapp-cluster-certmanager-operator-application"
+      app.startx.fr/component: "cluster-oadp"
+      app.kubernetes.io/name: "argoapp-cluster-oadp-operator-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-certmanager"
+      app.kubernetes.io/component: "cluster-oadp"
     annotations: 
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -122,7 +122,7 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-certmanager/
+      path: charts/cluster-oadp/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: "${HELM_RELEASE}"
       helm:
@@ -138,12 +138,12 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "startx-certmanager"
+            value: "startx-oadp"
           - name: project.enabled
             value: "false"
           - name: operator.enabled
             value: "true"
-          - name: certmanager.enabled
+          - name: oadp.enabled
             value: "false"
     syncPolicy:
       automated: 
@@ -163,6 +163,70 @@ objects:
       - group: operators.coreos.com
         kind: OperatorGroup
         jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
+- kind: Application
+  apiVersion: argoproj.io/v1alpha1
+  metadata:
+    name: startx-cluster-oadp-instance
+    namespace: "${ARGOCD_NS}"
+    labels: 
+      app.startx.fr/scope: "${SCOPE}"
+      app.startx.fr/cluster: "${CLUSTER}"
+      app.startx.fr/component: "cluster-oadp"
+      app.kubernetes.io/name: "argoapp-cluster-oadp-instance-application"
+      app.kubernetes.io/part-of: ${CLUSTER}
+      app.kubernetes.io/version: "${VERSION}"
+      app.kubernetes.io/component: "cluster-oadp"
+    annotations: 
+      openshift.io/generated-by: sxcm
+      # argocd.argoproj.io/manifest-generate-paths: .
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+  spec:
+    destination:
+      namespace: "${NS}"
+      server: 'https://kubernetes.default.svc'
+    info:
+      - name: teammail
+        value: dev@startx.fr
+    project: cluster-admin
+    source:
+      path: charts/cluster-oadp/
+      repoURL: 'https://github.com/startxfr/helm-repository.git'
+      targetRevision: "${HELM_RELEASE}"
+      helm:
+        valueFiles:
+          - values-startx.yaml
+        parameters:
+          - name: context.scope
+            value: "${SCOPE}"
+          - name: context.cluster
+            value: "${CLUSTER}"
+          - name: context.environment
+            value: "${ENV}"
+          - name: context.version
+            value: "${VERSION}"
+          - name: context.app
+            value: "startx-oadp"
+          - name: project.enabled
+            value: "false"
+          - name: operator.enabled
+            value: "false"
+          - name: oadp.enabled
+            value: "true"
+    syncPolicy:
+      automated: 
+        prune: false
+        selfHeal: false
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to
@@ -171,7 +235,7 @@ parameters:
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
-    value: startx-certmanagervuln
+    value: startx-oadpvuln
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
