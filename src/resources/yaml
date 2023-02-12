@@ -1,0 +1,479 @@
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: cloud-credentials-pfd
+  namespace: openshift-adp
+stringData:
+  cloud: |-
+    [my-cluster]
+    aws_access_key_id=AKIA243PIIFXZVFGI56F
+    aws_secret_access_key=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
+    [dr-cluster]
+    aws_access_key_id=AKIA243PIIFXZVFGI56F
+    aws_secret_access_key=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
+type: Opaque
+---
+apiVersion: oadp.openshift.io/v1alpha1
+kind: DataProtectionApplication
+metadata:
+  name: cluster-pfd
+  namespace: openshift-adp
+spec:
+  backupImages: true
+  backupLocations:
+    - velero:
+        config:
+          profile: my-cluster
+          region: eu-west-3
+        credential:
+          key: cloud
+          name: cloud-credentials-pfd
+        default: true
+        objectStorage:
+          bucket: pfd-backup2
+          prefix: velero
+        provider: aws
+    - velero:
+        config:
+          profile: dr-cluster
+          region: eu-west-3
+        credential:
+          key: cloud
+          name: cloud-credentials-pfd
+        default: false
+        objectStorage:
+          bucket: pfd-backup2-new
+          prefix: velero
+        provider: aws
+  configuration:
+    restic:
+      enable: true
+    velero:
+      defaultPlugins:
+        - openshift
+        - aws
+        # - csi
+      podConfig:
+        resourceAllocations:
+          limits:
+            cpu: '1'
+            memory: 1024Mi
+          requests:
+            cpu: 500m
+            memory: 512Mi
+  snapshotLocations:
+    - velero:
+        config:
+          profile: my-cluster
+          region: eu-west-3
+        provider: aws
+    - velero:
+        config:
+          profile: dr-cluster
+          region: eu-west-3
+        provider: aws
+---
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: daily-data-platform
+  namespace: openshift-adp
+spec:
+  schedule: "0 1 * * *"
+  template:
+    defaultVolumesToRestic: true
+    includeClusterResources: false
+    hooks: {}
+    includedNamespaces:
+      - data-platform-sso
+      - data-platform-airflow
+      - data-platform-api
+      - data-platform-datahub
+      - data-platform-db-preprod
+      - data-platform-db-prod
+      - data-platform-hive-metastore
+      - data-platform-jupyterhub-external
+      - data-platform-jupyterhub-internal
+      - data-platform-kafka
+      - data-platform-kafka-op
+      - data-platform-knox
+      - data-platform-kong
+      - data-platform-portal
+      - data-platform-ranger
+      - data-platform-superset
+      - data-platform-trino
+      - data-platform-usecases
+      - fiware
+      - gitlab-runner
+      - gitlab-system
+    storageLocation: cluster-pfd-1
+    ttl: 0h58m0s
+---
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: weekly-data-platform
+  namespace: openshift-adp
+spec:
+  schedule: "0 4 * * 0"
+  template:
+    defaultVolumesToRestic: true
+    includeClusterResources: false
+    hooks: {}
+    includedNamespaces:
+      - data-platform-sso
+      - data-platform-airflow
+      - data-platform-api
+      - data-platform-datahub
+      - data-platform-db-preprod
+      - data-platform-db-prod
+      - data-platform-hive-metastore
+      - data-platform-jupyterhub-external
+      - data-platform-jupyterhub-internal
+      - data-platform-kafka
+      - data-platform-kafka-op
+      - data-platform-knox
+      - data-platform-kong
+      - data-platform-portal
+      - data-platform-ranger
+      - data-platform-superset
+      - data-platform-trino
+      - data-platform-usecases
+      - fiware
+      - gitlab-runner
+      - gitlab-system
+    storageLocation: cluster-pfd-1
+    ttl: 0h58m0s
+---
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: daily-cluster-infra
+  namespace: openshift-adp
+spec:
+  schedule: "0 2 * * *"
+  template:
+    defaultVolumesToRestic: true
+    includeClusterResources: true
+    hooks: {}
+    includedNamespaces:
+      - openshift-*
+      - demo-*
+      - startx-*
+      - startx
+      - default
+    excludedNamespaces:
+      - openshift-etcd
+    storageLocation: cluster-pfd-1
+    ttl: 0h58m0s
+---
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: daily-cluster-etcd
+  namespace: openshift-adp
+spec:
+  schedule: "0 3 * * *"
+  template:
+    defaultVolumesToRestic: true
+    includeClusterResources: false
+    hooks: {}
+    includedNamespaces:
+      - openshift-etcd
+    storageLocation: cluster-pfd-1
+    ttl: 0h58m0s
+---
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: weekly-cluster-etcd
+  namespace: openshift-adp
+spec:
+  schedule: "0 3 * * 0"
+  template:
+    defaultVolumesToRestic: true
+    includeClusterResources: false
+    hooks: {}
+    includedNamespaces:
+      - openshift-etcd
+    storageLocation: cluster-pfd-1
+    ttl: 0h58m0s
+
+
+
+
+
+
+
+---
+apiVersion: velero.io/v1
+kind: Backup
+metadata:
+  name: manual-demo-web-app-v1
+  namespace: openshift-adp
+spec:
+  csiSnapshotTimeout: 5m
+  defaultVolumesToRestic: true
+  hooks: {}
+  includedNamespaces:
+    - demo-web-app
+  metadata: {}
+  storageLocation: cluster-pfd-1
+  ttl: 0h5m0s
+  volumeSnapshotLocations:
+    - cluster-pfd-1
+---
+apiVersion: velero.io/v1
+kind: Backup
+metadata:
+  name: manual-demo-web-app-v2
+  namespace: openshift-adp
+spec:
+  csiSnapshotTimeout: 5m
+  defaultVolumesToRestic: true
+  hooks: {}
+  includedNamespaces:
+    - demo-web-app
+  metadata: {}
+  storageLocation: cluster-pfd-1
+  ttl: 0h5m0s
+  volumeSnapshotLocations:
+    - cluster-pfd-1
+---
+apiVersion: velero.io/v1
+kind: Backup
+metadata:
+  name: manual-data-platform
+  namespace: openshift-adp
+spec:
+  csiSnapshotTimeout: 5m
+  defaultVolumesToRestic: true
+  hooks: {}
+  includedNamespaces:
+    - data-platform-sso
+    - data-platform-airflow
+    - data-platform-api
+    - data-platform-datahub
+    - data-platform-db-preprod
+    - data-platform-db-prod
+    - data-platform-hive-metastore
+    - data-platform-jupyterhub-external
+    - data-platform-jupyterhub-internal
+    - data-platform-kafka
+    - data-platform-kafka-op
+    - data-platform-knox
+    - data-platform-kong
+    - data-platform-portal
+    - data-platform-ranger
+    - data-platform-superset
+    - data-platform-trino
+    - data-platform-usecases
+    - fiware
+    - gitlab-runner
+    - gitlab-system
+  metadata: {}
+  storageLocation: cluster-pfd-1
+  ttl: 0h30m0s
+  volumeSnapshotLocations:
+    - cluster-pfd-1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: manual-demo-web-app-restore-v1
+  namespace: openshift-adp
+spec:
+  backupName: manual-demo-web-app-v1
+  excludedResources:
+    - nodes
+    - events
+    - events.events.k8s.io
+    - backups.velero.io
+    - restores.velero.io
+    - resticrepositories.velero.io
+  includedNamespaces:
+    - demo-web-app
+  namespaceMapping:
+    demo-web-app: demo-web-app-restored-v1
+  restorePVs: true
+---
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: manual-demo-web-app-restore-v2
+  namespace: openshift-adp
+spec:
+  backupName: manual-demo-web-app-v2
+  excludedResources:
+    - nodes
+    - events
+    - events.events.k8s.io
+    - backups.velero.io
+    - restores.velero.io
+    - resticrepositories.velero.io
+  includedNamespaces:
+    - demo-web-app
+  namespaceMapping:
+    demo-web-app: demo-web-app-restored-v2
+  restorePVs: true
+# ---
+# apiVersion: velero.io/v1
+# kind: Restore
+# metadata:
+#   name: cluster-etcd-lastweek-state
+#   namespace: openshift-adp
+# spec:
+#   scheduleName: weekly-cluster-etcd
+#   excludedResources:
+#     - nodes
+#     - events
+#     - events.events.k8s.io
+#     - backups.velero.io
+#     - restores.velero.io
+#     - resticrepositories.velero.io
+#   includedNamespaces:
+#     - openshift-etcd
+#   restorePVs: true
+# ---
+# apiVersion: velero.io/v1
+# kind: Restore
+# metadata:
+#   name: cluster-etcd-lastday-state
+#   namespace: openshift-adp
+# spec:
+#   scheduleName: daily-cluster-etcd
+#   excludedResources:
+#     - nodes
+#     - events
+#     - events.events.k8s.io
+#     - backups.velero.io
+#     - restores.velero.io
+#     - resticrepositories.velero.io
+#   includedNamespaces:
+#     - openshift-etcd
+#   restorePVs: true
+# ---
+# apiVersion: velero.io/v1
+# kind: Restore
+# metadata:
+#   name: cluster-infra-lastday-state
+#   namespace: openshift-adp
+# spec:
+#   scheduleName: daily-cluster-infra
+#   excludedResources:
+#     - nodes
+#     - events
+#     - events.events.k8s.io
+#     - backups.velero.io
+#     - restores.velero.io
+#     - resticrepositories.velero.io
+#   restorePVs: true
+# ---
+# apiVersion: velero.io/v1
+# kind: Restore
+# metadata:
+#   name: data-platform-lastday-state
+#   namespace: openshift-adp
+# spec:
+#   scheduleName: daily-data-platform
+#   excludedResources:
+#     - nodes
+#     - events
+#     - events.events.k8s.io
+#     - backups.velero.io
+#     - restores.velero.io
+#     - resticrepositories.velero.io
+#   restorePVs: true
+# ---
+# apiVersion: velero.io/v1
+# kind: Restore
+# metadata:
+#   name: data-platform-lastweek-state
+#   namespace: openshift-adp
+# spec:
+#   scheduleName: weekly-data-platform
+#   excludedResources:
+#     - nodes
+#     - events
+#     - events.events.k8s.io
+#     - backups.velero.io
+#     - restores.velero.io
+#     - resticrepositories.velero.io
+#   restorePVs: true
+# ---
+# apiVersion: velero.io/v1
+# kind: Restore
+# metadata:
+#   name: data-platform-lastday-in-restored
+#   namespace: openshift-adp
+# spec:
+#   scheduleName: daily-data-platform
+#   excludedResources:
+#     - nodes
+#     - events
+#     - events.events.k8s.io
+#     - backups.velero.io
+#     - restores.velero.io
+#     - resticrepositories.velero.io
+#   includedNamespaces:
+#     - data-platform-sso
+#     - data-platform-airflow
+#     - data-platform-api
+#     - data-platform-datahub
+#     - data-platform-db-preprod
+#     - data-platform-db-prod
+#     - data-platform-hive-metastore
+#     - data-platform-jupyterhub-external
+#     - data-platform-jupyterhub-internal
+#     - data-platform-kafka
+#     - data-platform-kafka-op
+#     - data-platform-knox
+#     - data-platform-kong
+#     - data-platform-portal
+#     - data-platform-ranger
+#     - data-platform-superset
+#     - data-platform-trino * * *"
+#     - data-platform-usecases
+#     - fiware
+#     - gitlab-runner
+#     - gitlab-system
+#   namespaceMapping:
+#     data-platform-sso: data-platform-restored-sso
+#     data-platform-airflow: data-platform-restored-airflow
+#     data-platform-api: data-platform-restored-api
+#     data-platform-datahub: data-platform-restored-datahub
+#     data-platform-db-preprod: data-platform-restored-db-preprod
+#     data-platform-db-prod: data-platform-restored-db-prod
+#     data-platform-hive-metastore: data-platform-restored-hive-metastore
+#     data-platform-jupyterhub-external: data-platform-restored-jupyterhub-external
+#     data-platform-jupyterhub-internal: data-platform-restored-jupyterhub-internal
+#     data-platform-kafka: data-platform-restored-kafka
+#     data-platform-kafka-op: data-platform-restored-kafka-op
+#     data-platform-knox: data-platform-restored-knox
+#     data-platform-kong: data-platform-restored-kong
+#     data-platform-portal: data-platform-restored-portal
+#     data-platform-ranger: data-platform-restored-ranger
+#     data-platform-superset: data-platform-restored-superset
+#     data-platform-trino: data-platform-restored-trino
+#     data-platform-usecases: data-platform-restored-usecases
+#     fiware: fiware-restored
+#     gitlab-runner: gitlab-runner-restored
+#     gitlab-system: gitlab-system-restored
+#   restorePVs: true

@@ -226,59 +226,6 @@ objects:
           duration: 60s
           factor: 1
           maxDuration: 60s
-- kind: Application
-  apiVersion: argoproj.io/v1alpha1
-  metadata:
-    name: startx-cluster-storage-localstorage
-    namespace: "${ARGOCD_NS}"
-    labels:
-      <<: *basic_labels
-      app.kubernetes.io/name: "startx-cluster-storage-localstorage-application"
-    annotations:
-      <<: *basic_annotations
-      # argocd.argoproj.io/manifest-generate-paths: .
-    finalizers:
-      - resources-finalizer.argocd.argoproj.io
-  spec:
-    destination:
-      namespace: "${NS}"
-      server: 'https://kubernetes.default.svc'
-    info:
-      - name: teammail
-        value: dev@startx.fr
-    project: cluster-admin
-    source:
-      path: charts/cluster-storage/
-      repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: "${HELM_RELEASE}"
-      helm:
-        valueFiles:
-          - values-startx.yaml
-        parameters:
-          - name: context.scope
-            value: "${SCOPE}"
-          - name: context.cluster
-            value: "${CLUSTER}"
-          - name: context.environment
-            value: "${ENV}"
-          - name: context.version
-            value: "${VERSION}"
-          - name: context.app
-            value: "openshift-storage"
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: false
-      syncOptions:
-        - ApplyOutOfSyncOnly=true
-        - CreateNamespace=false
-        - Validate=true
-      retry:
-        limit: 2
-        backoff:
-          duration: 5s
-          factor: 2
-          maxDuration: 20s
 parameters:
   - name: ARGOCD_NS
     displayName: The namespace where argocd server goes to

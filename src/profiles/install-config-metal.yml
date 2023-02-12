@@ -11,7 +11,7 @@ metadata:
 compute:
   - name: worker
     hyperthreading: Enabled
-    replicas: 1
+    replicas: 2
     platform:
       aws:
         type: c5.metal
