@@ -383,7 +383,7 @@ objects:
   #             cpu: 200m
   #             memory: 2Gi
   #         storage:
-  #           storageClassName: gp2 
+  #           storageClassName: gp3-csi 
   #           size: 200G
   #         redundancyPolicy: "SingleRedundancy"
   #     visualization:

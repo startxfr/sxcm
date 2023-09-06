@@ -199,11 +199,11 @@ objects:
         resources:
           limits:
             cpu: 1000m
-            ephemeral-storage: 2Gi
+            ephemeral-storage: 2.5Gi
             memory: 2.5Gi
           requests:
             cpu: 500m
-            ephemeral-storage: 500Mi
+            ephemeral-storage: 1Gi
             memory: 1.5Gi
   # !!!!! warning sur les droits confies a argocd (creation de resources cluster)
   - kind: ClusterRoleBinding
