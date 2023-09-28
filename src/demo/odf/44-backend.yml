@@ -1,45 +1,45 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-storage-ocs-backend-project
+  name: sxcm-demo-storage-odf-backend-project
   annotations:
     openshift.io/display-name: Demo STARTX - Storage OCS Backends
-    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/ocs
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/odf
     openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description: Deployment of the backended OCS infrastructure to illustrate how to persist data within an hyper-converged openshift 4 environment
     iconClass: icon-nodejs
-    tags: startx,nodejs,ocs,storage,sxcm,demo,dev
+    tags: startx,nodejs,odf,storage,sxcm,demo,dev
   labels:
     component: demo
-    template: sxcm-demo-storage-ocs-backend-project
+    template: sxcm-demo-storage-odf-backend-project
 message: |-
-  Your ocs demo will be soon deployed in project ${SCOPE}-ocs.
+  Your odf demo will be soon deployed in project ${SCOPE}-odf.
   Monitor the deployement for application availability and
   Follow created route to browse running application
 
   Scope          : ${SCOPE}
   Environment    : ${ENV}
-  Project        : ${NS}-ocs
+  Project        : ${NS}-odf
 
 labels:
-  template: sxcm-demo-storage-ocs-backend-project
+  template: sxcm-demo-storage-odf-backend-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: AppProject
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${NS}-ocs
+    name: ${NS}-odf
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "${NS}-ocs"
-      app.kubernetes.io/name: "${NS}-ocs-context-application"
-      app.kubernetes.io/part-of: ${NS}-ocs
+      app.startx.fr/component: "${NS}-odf"
+      app.kubernetes.io/name: "${NS}-odf-context-application"
+      app.kubernetes.io/part-of: ${NS}-odf
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "${NS}-ocs-project"
+      app.kubernetes.io/component: "${NS}-odf-project"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
     finalizers:
@@ -57,7 +57,7 @@ objects:
         kind: '*'
     roles:
     - name: dev
-      description: Read-only privileges to group dev in ${NS}-ocs project
+      description: Read-only privileges to group dev in ${NS}-odf project
       policies:
       - g, dev, role:readonly
       - p, role:startx-dev, *, get, .${NS}/*, allow
@@ -95,16 +95,16 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: ${NS}-ocs-context
+    name: ${NS}-odf-context
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "${NS}-ocs"
-      app.kubernetes.io/name: "${NS}-ocs-context-application"
-      app.kubernetes.io/part-of: ${NS}-ocs
+      app.startx.fr/component: "${NS}-odf"
+      app.kubernetes.io/name: "${NS}-odf-context-application"
+      app.kubernetes.io/part-of: ${NS}-odf
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "${NS}-ocs-project"
+      app.kubernetes.io/component: "${NS}-odf-project"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
     finalizers:
@@ -116,14 +116,14 @@ objects:
     info:
       - name: teammail
         value: dev@startx.fr
-    project: "${NS}-ocs"
+    project: "${NS}-odf"
     source:
       path: charts/example-catalog/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values-storage_ocs_context.yaml
+          - values-storage_odf_context.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -134,18 +134,18 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "storage_ocs_context"
-          - name: demo.storage_ocs_context.namespace
+            value: "storage_odf_context"
+          - name: demo.storage_odf_context.namespace
             value: "${NS}"
-          - name: demo.storage_ocs_context.namespace_ocs
+          - name: demo.storage_odf_context.namespace_odf
             value: "${STORAGE_NS}"
-          - name: demo.storage_ocs_context.aws_access_id
+          - name: demo.storage_odf_context.aws_access_id
             value: "${AWS_ACCESS_ID}"
-          - name: demo.storage_ocs_context.aws_access_key
+          - name: demo.storage_odf_context.aws_access_key
             value: "${AWS_ACCESS_KEY}"
-          - name: demo.storage_ocs_context.aws_region
+          - name: demo.storage_odf_context.aws_region
             value: "${AWS_ZONE}"
-          - name: demo.storage_ocs_context.aws_bucket
+          - name: demo.storage_odf_context.aws_bucket
             value: "${AWS_BUCKET}"
     syncPolicy:
       automated:

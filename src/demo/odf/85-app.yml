@@ -1,21 +1,21 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-demo-storage-ocs-project
+  name: sxcm-demo-storage-odf-project
   annotations:
     openshift.io/display-name: Demo STARTX - Storage OCS
-    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/ocs
+    openshift.io/documentation-url: https://sxcm.readthedocs.io/en/latest/demo/odf
     openshift.io/support-url: https://github.com/startxfr/sxcm/issues/new
     openshift.io/generated-by: sxcm
     openshift.io/provider-display-name: STARTX
     description: Deployment of a sample application using OCS infrastructure to illustrate how to persist data within an hyper-converged openshift 4 environment
     iconClass: icon-nodejs
-    tags: startx,nodejs,ocs,storage,sxcm,demo,dev
+    tags: startx,nodejs,odf,storage,sxcm,demo,dev
   labels:
     component: demo
-    template: sxcm-demo-storage-ocs-project
+    template: sxcm-demo-storage-odf-project
 message: |-
-  Your ocs demo will be soon deployed in project ${SCOPE}-ocs.
+  Your odf demo will be soon deployed in project ${SCOPE}-odf.
   Monitor the deployement for application availability and
   Follow created route to browse running application
 
@@ -24,7 +24,7 @@ message: |-
   Project        : ${NS}
 
 labels:
-  template: sxcm-demo-storage-ocs-project
+  template: sxcm-demo-storage-odf-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
@@ -51,14 +51,14 @@ objects:
     info:
       - name: teammail
         value: dev@startx.fr
-    project: ${NS}-ocs
+    project: ${NS}-odf
     source:
       path: charts/example-catalog/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values-storage_ocs_apps.yaml
+          - values-storage_odf_apps.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -69,18 +69,18 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "storage_ocs_apps"
-          - name: demo.storage_ocs_apps.namespace
+            value: "storage_odf_apps"
+          - name: demo.storage_odf_apps.namespace
             value: "${NS}"
-          - name: demo.storage_ocs_apps.namespace_ocs
+          - name: demo.storage_odf_apps.namespace_odf
             value: "${STORAGE_NS}"
-          - name: demo.storage_ocs_apps.aws_access_id
+          - name: demo.storage_odf_apps.aws_access_id
             value: "${AWS_ACCESS_ID}"
-          - name: demo.storage_ocs_apps.aws_access_key
+          - name: demo.storage_odf_apps.aws_access_key
             value: "${AWS_ACCESS_KEY}"
-          - name: demo.storage_ocs_apps.aws_region
+          - name: demo.storage_odf_apps.aws_region
             value: "${AWS_ZONE}"
-          - name: demo.storage_ocs_apps.aws_bucket
+          - name: demo.storage_odf_apps.aws_bucket
             value: "${AWS_BUCKET}"
     syncPolicy:
       automated:

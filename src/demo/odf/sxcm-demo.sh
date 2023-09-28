@@ -63,7 +63,7 @@ Description : Complete demo to illustrate how to persist data within an hyper-co
               Deployment of multiple statefull applications using block and fs with various storage class
               backed by OCS (EBS hardware). Also include statefull applications using various ObjectBucketClaim
               backed with AWS S3 and EBS hardware. Show mirriring or spreading configurations.
-Require     : storage,ocs
+Require     : storage,odf
 EOF
 }
 

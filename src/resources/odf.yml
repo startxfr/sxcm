@@ -1,42 +1,42 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-ocs-project
+  name: sxcm-cluster-odf-project
   annotations:
     openshift.io/display-name: STARTX OCS Config (admin)
     description: Deploy cluster-wide resources to enable OCS support for converged storage according to sxcm definitions
     iconClass: icon-openshift
-    tags: startx,cluster,config,admin,storage,ocs
+    tags: startx,cluster,config,admin,storage,odf
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
     sxcm_console_timeout: "60"
   labels:
-    template: sxcm-cluster-ocs-project
-    app.kubernetes.io/name: "sxcm-cluster-ocs-project"
+    template: sxcm-cluster-odf-project
+    app.kubernetes.io/name: "sxcm-cluster-odf-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
   Your cluster-wide private persistent storage backend with OCS is now starting (may take some time to provision and startup).
 
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
-  Operator          : ocs-operator.v4.4.0
+  Operator          : odf-operator.v4.4.0
 labels:
-  template: sxcm-cluster-ocs-project
+  template: sxcm-cluster-odf-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-ocs-project
+    name: startx-cluster-odf-project
     namespace: "${ARGOCD_NS}"
     labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-ocs"
-      app.kubernetes.io/name: "startx-cluster-ocs-project-application"
+      app.startx.fr/component: "cluster-odf"
+      app.kubernetes.io/name: "startx-cluster-odf-project-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-ocs"
+      app.kubernetes.io/component: "cluster-odf"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -51,7 +51,7 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-ocs/
+      path: charts/cluster-odf/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: "${HELM_RELEASE}"
       helm:
@@ -67,14 +67,14 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "startx-ocs"
+            value: "startx-odf"
           - name: project.enabled
             value: "true"
           - name: project.project.requester
             value: "sxcm"
           - name: operator.enabled
             value: "false"
-          - name: ocs.enabled
+          - name: odf.enabled
             value: "false"
     syncPolicy:
       automated:
@@ -93,16 +93,16 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-ocs-operator
+    name: startx-cluster-odf-operator
     namespace: "${ARGOCD_NS}"
     labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-ocs"
-      app.kubernetes.io/name: "startx-cluster-ocs-operator-application"
+      app.startx.fr/component: "cluster-odf"
+      app.kubernetes.io/name: "startx-cluster-odf-operator-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-ocs"
+      app.kubernetes.io/component: "cluster-odf"
     annotations:
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -117,7 +117,7 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-ocs/
+      path: charts/cluster-odf/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: "${HELM_RELEASE}"
       helm:
@@ -133,12 +133,12 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "startx-ocs"
+            value: "startx-odf"
           - name: project.enabled
             value: "false"
           - name: operator.enabled
             value: "true"
-          - name: ocs.enabled
+          - name: odf.enabled
             value: "false"
     syncPolicy:
       automated: 
@@ -161,16 +161,16 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-ocs-instance
+    name: startx-cluster-odf-instance
     namespace: "${ARGOCD_NS}"
     labels:
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-ocs"
-      app.kubernetes.io/name: "startx-cluster-ocs-instance-application"
+      app.startx.fr/component: "cluster-odf"
+      app.kubernetes.io/name: "startx-cluster-odf-instance-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-ocs"
+      app.kubernetes.io/component: "cluster-odf"
     annotations:
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -185,7 +185,7 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-ocs/
+      path: charts/cluster-odf/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: "${HELM_RELEASE}"
       helm:
@@ -201,12 +201,12 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "startx-ocs"
+            value: "startx-odf"
           - name: project.enabled
             value: "false"
           - name: operator.enabled
             value: "false"
-          - name: ocs.enabled
+          - name: odf.enabled
             value: "true"
     syncPolicy:
       automated:
@@ -225,11 +225,11 @@ objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-storage-ocs
+    name: startx-cluster-storage-odf
     namespace: "${ARGOCD_NS}"
     labels:
       <<: *basic_labels
-      app.kubernetes.io/name: "startx-cluster-storage-ocs-application"
+      app.kubernetes.io/name: "startx-cluster-storage-odf-application"
     annotations:
       <<: *basic_annotations
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -249,7 +249,7 @@ objects:
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values-startx-ocs.yaml
+          - values-startx-odf.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"

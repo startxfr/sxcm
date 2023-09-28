@@ -13,6 +13,6 @@ echo -e "Found $COUNT worker node to label as storage node"
 if [[ $COUNT -gt 0 ]]; then
     for node in $LIST
     do
-        oc label $node cluster.ocs.openshift.io/openshift-storage="" --overwrite --token=$OCTOKEN --cluster=$OCCLUSTERNAME
+        oc label $node cluster.odf.openshift.io/openshift-storage="" --overwrite --token=$OCTOKEN --cluster=$OCCLUSTERNAME
     done
 fi
