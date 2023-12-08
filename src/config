@@ -4,8 +4,8 @@
 SXCM_VERSION=11.27.1
 
 # Manage OKD remote cluster
-SXCM_OCPI_BRANCH='4.11.27'
-SXCM_OCPI_RELEASE='4.11.27'
+SXCM_OCPI_BRANCH='4.13.26'
+SXCM_OCPI_RELEASE='4.13.26'
 SXCM_OCPI_PACKAGE="openshift-install-linux-${SXCM_OCPI_RELEASE}.tar.gz"
 SXCM_OCPI_URL="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${SXCM_OCPI_BRANCH}/${SXCM_OCPI_PACKAGE}"
 SXCM_OCPI_TMP='/tmp/ocpi'
@@ -52,5 +52,5 @@ SXCM_GIT_BRANCH_DEFAULT=mycluster
 
 # sxcm oc configuration
 SXCM_OCAPPLY_OPTS=""
-# Options for  4.4.11 compat in cluster creation
+# Options for  4.13 compat in cluster creation
 # SXCM_OCAPPLY_OPTS="--force-conflicts=true --server-side"

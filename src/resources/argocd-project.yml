@@ -285,7 +285,7 @@ parameters:
   - name: VERSION
     displayName: Project version
     description: "Project deployed release"
-    value: 4.11.x-dev
+    value: 4.13.x-dev
   - name: CLUSTER_PROFILE
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"
