@@ -40,6 +40,17 @@ objects:
         openshift.io/description: "STARTX ArgoCD control plane"
         openshift.io/display-name: "Startx ARGOCD"
         openshift.io/requester: sxcm
+  - kind: Project
+    apiVersion: project.openshift.io/v1
+    metadata:
+      name: "${ARGOCD_NS}-operator"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "${ARGOCD_NS}-operator-project"
+      annotations:
+        openshift.io/description: "Redhat GitOps Operator configured by startx"
+        openshift.io/display-name: "Startx ARGOCD Operator"
+        openshift.io/requester: sxcm
   - kind: ResourceQuota
     apiVersion: v1
     metadata:
@@ -118,7 +129,7 @@ objects:
             memory: "32Mi"
           max:
             cpu: 6
-            ephemeral-storage: "2Gi"
+            ephemeral-storage: "4Gi"
             memory: "5Gi"
         - type: "Container"
           defaultRequest:
@@ -132,7 +143,7 @@ objects:
             memory: "32Mi"
           max:
             cpu: 6
-            ephemeral-storage: "2Gi"
+            ephemeral-storage: "4Gi"
             memory: "5Gi"
   - kind: RoleBinding
     apiVersion: rbac.authorization.k8s.io/v1
@@ -226,6 +237,18 @@ objects:
       - kind: ServiceAccount
         name: ${ARGOCD_NS}-argocd-application-controller
         namespace: ${ARGOCD_NS}
+  - kind: OperatorGroup
+    apiVersion: operators.coreos.com/v1
+    metadata:
+      name: "gitops-operator"
+      namespace: "${ARGOCD_NS}-operator"
+      labels:
+        <<: *basic_labels
+        app.kubernetes.io/name: "gitops-operator-og"
+      annotations:
+        <<: *basic_annotations
+    spec:
+      upgradeStrategy: Default
   - kind: Subscription
     apiVersion: operators.coreos.com/v1alpha1
     metadata:
@@ -233,12 +256,12 @@ objects:
       namespace: "${OPERATOR_NS}"
       labels:
         <<: *basic_labels
-        app.kubernetes.io/name: "argocd-operator-subscription"
+        app.kubernetes.io/name: "gitops-operator-subscription"
       annotations:
         <<: *basic_annotations
     spec:
-      channel: stable
-      # startingCSV: openshift-gitops-operator.v1.5.2
+      channel: gitops-1.11
+      # startingCSV: openshift-gitops-operator.v1.11.0
       installPlanApproval: Automatic
       name: openshift-gitops-operator
       source: redhat-operators
@@ -265,7 +288,7 @@ parameters:
   - name: OPERATOR_NS
     displayName: The operator namespace where objects goes to
     description: "operator namespace to place objects to"
-    value: openshift-operators
+    value: openshift-gitops-operator
   - name: MARKETPLACE_NS
     displayName: The operator marketplace namespace where objects goes to
     description: "operator marketplace namespace to place objects to"

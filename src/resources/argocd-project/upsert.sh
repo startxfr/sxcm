@@ -8,10 +8,10 @@ OCCLUSTER=$6
 OCCLUSTERNAME=$7
 ARGOCDPREFIX=openshift-gitops
 PROJECT=openshift-gitops
-OPERATOR_PROJECT=openshift-operators
-DIR=`dirname $(readlink -f $0)`
-DIR="$DIR/_console/okd-cluster-resources/argcod-project"
-SERVER_NAME="controller-manager"
+OPERATOR_PROJECT=openshift-gitops-operator
+DIR=$(dirname $(readlink -f $0))
+DIR="${DIR}/_console/okd-cluster-resources/argcod-project"
+SERVER_NAME="gitops-operator"
 DELAY="60"
 
 oc wait po -l control-plane=$SERVER_NAME --for=condition=Ready --timeout=500ms -n $OPERATOR_PROJECT --token=$OCTOKEN --cluster=$OCCLUSTERNAME &>/dev/null

@@ -25,7 +25,7 @@ labels:
   app.kubernetes.io/managed-by: sxcm
 objects:
   - kind: ArgoCD
-    apiVersion: argoproj.io/v1alpha1
+    apiVersion: argoproj.io/v1beta1
     metadata:
       name: "openshift-gitops"
       namespace: "${ARGOCD_NS}"
@@ -184,7 +184,7 @@ objects:
         resources:
           limits:
             cpu: 500m
-            ephemeral-storage: 2.5Gi
+            ephemeral-storage: 3Gi
             memory: 3Gi
           requests:
             cpu: 300m
