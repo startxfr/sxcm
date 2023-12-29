@@ -1,42 +1,42 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sxcm-cluster-machine-project
+  name: sxcm-cluster-mustgather-project
   annotations:
-    openshift.io/display-name: STARTX Cluster Machine config (admin)
-    description: Configure machine ressource to sxcm cluster configuration
+    openshift.io/display-name: STARTX cluster MustGather (admin)
+    description: Deploy cluster-wide resources to enable MustGather support according to sxcm definitions
     iconClass: icon-openshift
-    tags: startx,cluster,config,admin,machine,machineset,iac,cluster
+    tags: startx,cluster,redhat,admin,support,mustgather
     openshift.io/provider-display-name: STARTX
     openshift.io/generated-by: sxcm
-    sxcm_console_timeout: "10"
+    sxcm_console_timeout: "40"
   labels:
-    template: sxcm-cluster-machine-project
-    app.kubernetes.io/name: "sxcm-cluster-machine-project"
+    template: sxcm-cluster-mustgather-project
+    app.kubernetes.io/name: "sxcm-cluster-mustgather-project"
     app.kubernetes.io/managed-by: sxcm
 message: |-
-  Your cluster-wide machine support is now configured.
+  Your cluster-wide MustGather support is now enabled.
 
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
-  Operator          : machine-operator.4.4.0
+  Operator          : mustgather-operator.v2.3.0
 labels:
-  template: sxcm-cluster-machine-project
+  template: sxcm-cluster-mustgather-project
   app.kubernetes.io/managed-by: sxcm
 objects:
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-machine-health
+    name: startx-cluster-mustgather-project
     namespace: "${ARGOCD_NS}"
-    labels: &basic_labels
+    labels:  &basic_labels
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-machine"
-      app.kubernetes.io/name: "startx-cluster-machine-health-application"
+      app.startx.fr/component: "cluster-mustgather"
+      app.kubernetes.io/name: "argoapp-cluster-mustgather-project-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-machine"
+      app.kubernetes.io/component: "cluster-mustgather"
     annotations: &basic_annotations
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -51,12 +51,12 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-machine/
+      path: charts/cluster-mustgather/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values-startx-${CLUSTER_PROFILE}.yaml
+          - values-startx.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -67,94 +67,42 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "${NS}"
-          - name: cluster.id
-            value: "${CLUSTERID}"
-          - name: cluster.region
-            value: "${CLUSTER_REGION}"
-          - name: cluster.autoscaler.enabled
-            value: "false"
-          - name: machineHealthCheck.enabled
+            value: "openshift-mustgather"
+          - name: project.enabled
             value: "true"
-          - name: machineAutoscaler.enabled
-            value: "false"
-          - name: machineSet.enabled
-            value: "false"
-    syncPolicy: {}
-- kind: Application
-  apiVersion: argoproj.io/v1alpha1
-  metadata:
-    name: startx-cluster-machine-set
-    namespace: "${ARGOCD_NS}"
-    labels: 
-      app.startx.fr/scope: "${SCOPE}"
-      app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-machine"
-      app.kubernetes.io/name: "startx-cluster-machine-set-application"
-      app.kubernetes.io/part-of: ${CLUSTER}
-      app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-machine"
-    annotations: 
-      openshift.io/generated-by: sxcm
-      # argocd.argoproj.io/manifest-generate-paths: .
-    finalizers:
-      - resources-finalizer.argocd.argoproj.io
-  spec:
-    destination:
-      namespace: "${NS}"
-      server: 'https://kubernetes.default.svc'
-    info:
-      - name: teammail
-        value: dev@startx.fr
-    project: cluster-admin
-    source:
-      path: charts/cluster-machine/
-      repoURL: 'https://github.com/startxfr/helm-repository.git'
-      targetRevision: "${HELM_RELEASE}"
-      helm:
-        valueFiles:
-          - values-startx-${CLUSTER_PROFILE}.yaml
-        parameters:
-          - name: context.scope
-            value: "${SCOPE}"
-          - name: context.cluster
-            value: "${CLUSTER}"
-          - name: context.environment
-            value: "${ENV}"
-          - name: context.version
-            value: "${VERSION}"
-          - name: context.app
-            value: "${NS}"
-          - name: cluster.id
-            value: "${CLUSTERID}"
-          - name: cluster.region
-            value: "${CLUSTER_REGION}"
-          - name: cluster.autoscaler.enabled
-            value: "false"
-          - name: machineHealthCheck.enabled
-            value: "false"
-          - name: machineAutoscaler.enabled
-            value: "false"
-          - name: machineSet.enabled
-            value: "true"
-    syncPolicy: {}
+          - name: project.project.requester
+            value: "sxcm"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: false
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
     ignoreDifferences:
-      - group: machine.openshift.io
-        kind: MachineSet
-        jsonPointers: [ "/spec/replicas" ]
+      - group: v1
+        kind: Namespace
+        jsonPointers: [ "/" ]
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-machine-autoscaler
+    name: startx-cluster-mustgather-operator
     namespace: "${ARGOCD_NS}"
     labels: 
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-machine"
-      app.kubernetes.io/name: "startx-cluster-machine-autoscaler-application"
+      app.startx.fr/component: "cluster-mustgather"
+      app.kubernetes.io/name: "argoapp-cluster-mustgather-operator-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-machine"
+      app.kubernetes.io/component: "cluster-mustgather"
     annotations:
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -169,12 +117,12 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-machine/
+      path: charts/cluster-mustgather/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values-startx-${CLUSTER_PROFILE}.yaml
+          - values-startx.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -185,37 +133,46 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "${NS}"
-          - name: cluster.id
-            value: "${CLUSTERID}"
-          - name: cluster.region
-            value: "${CLUSTER_REGION}"
-          - name: cluster.autoscaler.enabled
-            value: "false"
-          - name: machineHealthCheck.enabled
-            value: "false"
-          - name: machineAutoscaler.enabled
+            value: "openshift-mustgather"
+          - name: operator.enabled
             value: "true"
-          - name: machineSet.enabled
-            value: "false"
-    syncPolicy: {}
-    # ignoreDifferences:
-    #   - group: operators.coreos.com
-    #     kind: OperatorGroup
-    #     jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
+          - name: redhatCreds.enabled
+            value: "true"
+          - name: redhatCreds.username
+            value: "${RHN_USER}"
+          - name: redhatCreds.password
+            value: "${RHN_PASSWORD}"
+    syncPolicy:
+      automated: 
+        prune: false
+        selfHeal: false
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=false
+        - Validate=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 5m
+    ignoreDifferences:
+      - group: operators.coreos.com
+        kind: OperatorGroup
+        jsonPointers: [ "/metadata/annotations/olm.providedAPIs" ]
 - kind: Application
   apiVersion: argoproj.io/v1alpha1
   metadata:
-    name: startx-cluster-machine-config
+    name: startx-cluster-mustgather-report
     namespace: "${ARGOCD_NS}"
-    labels: 
+    labels:
       app.startx.fr/scope: "${SCOPE}"
       app.startx.fr/cluster: "${CLUSTER}"
-      app.startx.fr/component: "cluster-machine"
-      app.kubernetes.io/name: "startx-cluster-machine-config-application"
+      app.startx.fr/component: "cluster-mustgather"
+      app.kubernetes.io/name: "argoapp-cluster-mustgather-report-application"
       app.kubernetes.io/part-of: ${CLUSTER}
       app.kubernetes.io/version: "${VERSION}"
-      app.kubernetes.io/component: "cluster-machine"
+      app.kubernetes.io/component: "cluster-mustgather"
     annotations:
       openshift.io/generated-by: sxcm
       # argocd.argoproj.io/manifest-generate-paths: .
@@ -230,12 +187,12 @@ objects:
         value: dev@startx.fr
     project: cluster-admin
     source:
-      path: charts/cluster-machine/
+      path: charts/cluster-mustgather/
       repoURL: 'https://github.com/startxfr/helm-repository.git'
       targetRevision: "${HELM_RELEASE}"
       helm:
         valueFiles:
-          - values-startx-${CLUSTER_PROFILE}.yaml
+          - values-startx.yaml
         parameters:
           - name: context.scope
             value: "${SCOPE}"
@@ -246,23 +203,11 @@ objects:
           - name: context.version
             value: "${VERSION}"
           - name: context.app
-            value: "${NS}"
-          - name: cluster.id
-            value: "${CLUSTERID}"
-          - name: cluster.region
-            value: "${CLUSTER_REGION}"
-          - name: cluster.autoscaler.enabled
+            value: "openshift-mustgather"
+          - name: report.enabled
             value: "false"
-          - name: machineHealthCheck.enabled
-            value: "false"
-          - name: machineAutoscaler.enabled
-            value: "false"
-          - name: machineSet.enabled
-            value: "false"
-          - name: machineConfigPool.enabled
-            value: "true"
-          - name: machineConfig.enabled
-            value: "false"
+          - name: report.caseID
+            value: "01234567"
     syncPolicy: {}
 parameters:
   - name: ARGOCD_NS
@@ -272,7 +217,7 @@ parameters:
   - name: NS
     displayName: The namespace where objects goes to
     description: "Namespace to place objects to"
-    value: openshift-machine
+    value: openshift-cnv
   - name: SCOPE
     displayName: Project scope
     description: "Project scope (ex: sxv4)"
@@ -289,14 +234,6 @@ parameters:
     displayName: Project version
     description: "Project deployed release"
     value: 4.13.x-dev
-  - name: CLUSTERID
-    displayName: Machine cluster ID
-    description: "The cluster ID used for machine configuration"
-    value: sxsf-xxxxx
-  - name: CLUSTER_REGION
-    displayName: AWS Cluster region
-    description: "The name of the AWS region used"
-    value: eu-west-3
   - name: CLUSTER_PROFILE
     displayName: Name of the cluster profile
     description: "The name of the cluster profile"

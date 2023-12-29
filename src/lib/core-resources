@@ -151,7 +151,8 @@ function applyClusterResource {
         echo -e "${UPSERT} \e[1m$rn\e[0m cluster \e[1mresource\e[0m in cluster \e[1m$cn\e[0m from file \e[1m${rn}.yml\e[0m \e[93m(admin)\e[0m"
         if [[ 
               "$rn" == "quay" || 
-              "$rn" == "3scale" || 
+              "$rn" == "3scale" ||
+              "$rn" == "mustgather" || 
               "$rn" == "startx" || 
               "$rn" == "argocd-apps" 
             ]]

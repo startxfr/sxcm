@@ -19,7 +19,7 @@ message: |-
 
   Scope             : ${SCOPE}
   Cluster           : ${CLUSTER}
-  Operator          : mtv-hyperconverged-operator.v2.3.0
+  Operator          : mtv-operator.v2.3.0
 labels:
   template: sxcm-cluster-mtv-project
   app.kubernetes.io/managed-by: sxcm
