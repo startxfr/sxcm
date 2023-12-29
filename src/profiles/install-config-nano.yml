@@ -7,7 +7,7 @@ metadata:
     description: "1 master + worker (8Vcpu, 16Go RAM, 50Go gp2  50iop) - [AWS Dublin]"
     descriptionTab: "| 1  | 8  | 16  | 50  | gp2 | 50   |    |    |     |     |     |      | AWS Dublin"
     descriptionClusterconfig: argocd
-    clusterconfig: argocd-project,argocd-deploy-small,startx,infra,auth,rbac,console,storage
+    clusterconfig: argocd-project,argocd-deploy-small,startx,infra,auth,rbac,mustgather,console,storage
 compute:
   - name: worker
     hyperthreading: Enabled

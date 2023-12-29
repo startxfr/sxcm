@@ -7,7 +7,7 @@ metadata:
     description: "3 master + worker (8Vcpu, 32Go RAM, 50Go gp2  50iop) - [AWS Oregon]"
     descriptionTab: "| 3  | 8  | 32  | 50  | gp2 | 50   |    |    |     |     |     |      | AWS Oregon"
     descriptionClusterconfig: argocd,pipeline
-    clusterconfig: argocd-project,argocd-deploy-small,startx,infra,auth,rbac,console,storage,pipeline
+    clusterconfig: argocd-project,argocd-deploy-small,startx,infra,auth,rbac,mustgather,console,storage,pipeline
 compute:
   - name: worker
     hyperthreading: Enabled

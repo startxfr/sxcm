@@ -7,7 +7,7 @@ metadata:
     description: "3 master (4Vcpu, 16Go RAM, 120Go gp2  120iop) +  3 worker ( 8Vcpu,  32Go RAM, 120Go gp2  120iop) - [AWS Londres]"
     descriptionTab: "| 3  | 4  | 16  | 120 | gp2 | 120  | 3  | 8  | 32  | 120 | gp2 | 120  | AWS London"
     descriptionClusterconfig: argocd,pipeline,istio,quaysec,machine,workspaces,couchbase,sso,vault,Knative,quay
-    clusterconfig: argocd-project,argocd-deploy,startx,infra,auth,rbac,infra,machine,console,storage,pipeline,istio,couchbase,sso,knative,quaysec,quay,vault,workspaces
+    clusterconfig: argocd-project,argocd-deploy,startx,infra,auth,rbac,infra,machine,mustgather,console,storage,pipeline,istio,couchbase,sso,knative,quaysec,quay,vault,workspaces
 compute:
   - name: worker
     hyperthreading: Enabled
